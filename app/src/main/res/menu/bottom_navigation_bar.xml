@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/icon_recommend"
+        android:id="@+id/navigation_recommend"
         android:title="@string/recommend"
         android:icon="@drawable/recommend_icon"
         app:exb_color="#FFB11A" />
 
     <item
-        android:id="@+id/icon_menu"
+        android:id="@+id/navigation_menu_list"
         android:title="@string/menu"
         android:icon="@drawable/menu_list_icon"
         app:exb_color="#5CECFF" />
 
     <item
-        android:id="@+id/icon_like"
+        android:id="@+id/navigation_like"
         android:title="@string/like"
         android:icon="@drawable/like_icon"
         app:exb_color="#FFBAE0" />
 
     <item
-        android:id="@+id/icon_settings"
+        android:id="@+id/navigation_settings"
         android:title="@string/settings"
         android:icon="@drawable/settings_icon"
         app:exb_color="#6C6C6C" />
