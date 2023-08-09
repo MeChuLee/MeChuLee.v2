@@ -3,7 +3,9 @@ package com.recommendmenu.mechulee
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.NavHostFragment
 import com.recommendmenu.mechulee.databinding.ActivityMainBinding
+import github.com.st235.lib_expandablebottombar.navigation.ExpandableBottomBarNavigationUI
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,23 +14,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        setContentView(binding.root)
 
         initBottomNavigationBar()
     }
 
     private fun initBottomNavigationBar() {
-        binding.expandableBottomBar.onItemSelectedListener = { view, menuItem, isTrue ->
-            /**
-             * handle menu item clicks here,
-             * but clicks on already selected item will not affect this callback
-             */
-        }
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        binding.expandableBottomBar.onItemReselectedListener = { view, menuItem, isTrue ->
-            /**
-             * handle here all the click in already selected items
-             */
-        }
+        ExpandableBottomBarNavigationUI.setupWithNavController(binding.expandableBottomBar, navController)
     }
 }
