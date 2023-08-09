@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">MechuLee</string>
+    <string name="app_name">메추리</string>
+
+    <string name="recommend">추천</string>
+    <string name="menu">메뉴</string>
+    <string name="like">좋아요</string>
+    <string name="settings">설정</string>
 </resources>
