@@ -4,23 +4,23 @@
         android:id="@+id/navigation_recommend"
         android:title="@string/recommend"
         android:icon="@drawable/recommend_icon"
-        app:exb_color="#FFB11A" />
+        app:exb_color="@color/firstFragment" />
 
     <item
         android:id="@+id/navigation_menu_list"
         android:title="@string/menu"
         android:icon="@drawable/menu_list_icon"
-        app:exb_color="#5CECFF" />
+        app:exb_color="@color/secondFragment" />
 
     <item
         android:id="@+id/navigation_like"
         android:title="@string/like"
         android:icon="@drawable/like_icon"
-        app:exb_color="#FFBAE0" />
+        app:exb_color="@color/thirdFragment" />
 
     <item
         android:id="@+id/navigation_settings"
         android:title="@string/settings"
         android:icon="@drawable/settings_icon"
-        app:exb_color="#6C6C6C" />
+        app:exb_color="@color/fourthFragment" />
 </menu>

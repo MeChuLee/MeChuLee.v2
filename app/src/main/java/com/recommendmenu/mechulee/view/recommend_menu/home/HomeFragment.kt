@@ -1,23 +1,23 @@
-package com.recommendmenu.mechulee.settings
+package com.recommendmenu.mechulee.view.recommend_menu.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.recommendmenu.mechulee.databinding.FragmentSettingsBinding
+import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 
-class SettingsFragment : Fragment() {
+class HomeFragment : Fragment() {
 
-    private var _binding: FragmentSettingsBinding? = null
+    private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentSettingsBinding.inflate(layoutInflater)
+    ): View {
+        _binding = FragmentHomeBinding.inflate(layoutInflater)
         return binding.root
     }
 

@@ -2,25 +2,84 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="fragment"
-            type="com.recommendmenu.mechulee.menu_list.MenuListFragment" />
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context="com.practice.mechulee2.MainActivity">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="메뉴 리스트"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/menuSearchEditText"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/menu_search"
+            android:hint="검색어를 입력해주세요."
+            android:imeActionLabel="검색"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="20dp"
+            app:layout_constraintBottom_toTopOf="@id/menuCategoryRecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:src="@drawable/search_icon"
+            app:layout_constraintBottom_toBottomOf="@id/menuSearchEditText"
+            app:layout_constraintEnd_toEndOf="@id/menuSearchEditText"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/menuSearchEditText" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/menuCategoryRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:layout_constraintBottom_toTopOf="@id/menuListGridIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menuSearchEditText" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/menuListImageIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/menu_list_image_icon"
+            app:layout_constraintBottom_toBottomOf="@id/menuListGridIcon"
+            app:layout_constraintEnd_toStartOf="@id/menuListGridIcon"
+            app:layout_constraintTop_toTopOf="@id/menuListGridIcon" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/menuListGridIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/menu_grid_image_icon"
+            app:layout_constraintBottom_toTopOf="@id/fragmentContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menuCategoryRecyclerView" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menuListGridIcon" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

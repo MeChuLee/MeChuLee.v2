@@ -1,15 +1,15 @@
-package com.recommendmenu.mechulee.recommend_menu
+package com.recommendmenu.mechulee.view.recommend_menu.ai
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.recommendmenu.mechulee.databinding.FragmentRecommendBinding
+import com.recommendmenu.mechulee.databinding.FragmentAiBinding
 
-class RecommendFragment : Fragment() {
+class AIFragment : Fragment() {
 
-    private var _binding: FragmentRecommendBinding? = null
+    private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -17,7 +17,7 @@ class RecommendFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRecommendBinding.inflate(layoutInflater)
+        _binding = FragmentAiBinding.inflate(layoutInflater)
         return binding.root
     }
 

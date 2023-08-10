@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/navigation_recommend"
-        android:name="com.recommendmenu.mechulee.recommend_menu.RecommendFragment"
+        android:name="com.recommendmenu.mechulee.view.recommend_menu.RecommendFragment"
         android:label="@string/recommend"
         tools:layout="@layout/fragment_recommend" />
 
     <fragment
         android:id="@+id/navigation_menu_list"
-        android:name="com.recommendmenu.mechulee.menu_list.MenuListFragment"
+        android:name="com.recommendmenu.mechulee.view.menu_list.MenuListFragment"
         android:label="@string/menu"
         tools:layout="@layout/fragment_menu_list" />
 
     <fragment
         android:id="@+id/navigation_like"
-        android:name="com.recommendmenu.mechulee.like_menu.LikeFragment"
+        android:name="com.recommendmenu.mechulee.view.like_menu.LikeFragment"
         android:label="@string/like"
         tools:layout="@layout/fragment_like" />
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.recommendmenu.mechulee.settings.SettingsFragment"
+        android:name="com.recommendmenu.mechulee.view.settings.SettingsFragment"
         android:label="@string/settings"
         tools:layout="@layout/fragment_settings" />
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/menuImageCardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/menuImage"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:scaleType="fitXY"
+            app:srcCompat="@raw/example_menu" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/menuTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="된장찌개"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/menuDetail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toEndOf="@id/menuImageCardView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/menuDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="김치, 두부, 파, 양파, 고추"
+        app:layout_constraintBottom_toBottomOf="@id/menuImageCardView"
+        app:layout_constraintStart_toStartOf="@id/menuTitle"
+        app:layout_constraintTop_toBottomOf="@id/menuTitle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
