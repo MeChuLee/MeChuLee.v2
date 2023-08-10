@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="clicked">#FECC45</color>
+    <color name="unClicked">#EBEBEB</color>
+    <color name="defaultColor">#605B6A</color>
 </resources>
