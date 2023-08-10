@@ -49,4 +49,5 @@ dependencies {
 
     implementation 'com.github.st235:expandablebottombar:1.5.1'
     implementation("androidx.fragment:fragment-ktx:1.6.1")
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
 }
