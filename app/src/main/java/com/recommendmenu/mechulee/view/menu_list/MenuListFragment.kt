@@ -1,5 +1,6 @@
 package com.recommendmenu.mechulee.view.menu_list
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -10,21 +11,20 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentMenuListBinding
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuCategoryAdapter
-import com.recommendmenu.mechulee.view.menu_list.menu_type.MenuTypeGridFragment
-import com.recommendmenu.mechulee.view.menu_list.menu_type.MenuTypeListFragment
+import com.recommendmenu.mechulee.view.menu_list.adapter.MenuGridAdapter
+import com.recommendmenu.mechulee.view.menu_list.adapter.MenuListAdapter
 
 class MenuListFragment : Fragment() {
 
     companion object {
-        private const val FRAGMENT_TAG_MENU_LIST = "MenuList"
-        private const val FRAGMENT_TAG_MENU_GRID = "MenuGrid"
+        private const val MENU_TYPE_LIST = 0
+        private const val MENU_TYPE_GRID = 1
+        private const val GRID_LAYOUT_SPAN_COUNT = 3
     }
 
     private var _binding: FragmentMenuListBinding? = null
@@ -32,24 +32,32 @@ class MenuListFragment : Fragment() {
 
     private lateinit var viewModel: MenuListViewModel
 
+    private lateinit var menuListRecyclerViewAdapter: MenuListAdapter
+    private lateinit var menuGridRecyclerViewAdapter: MenuGridAdapter
+
+    private var currentMenuType = MENU_TYPE_LIST
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMenuListBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(this)[MenuListViewModel::class.java]
-        viewModel.menuList.observe(requireActivity()) { menuList ->
-            // menuList 정보 변경 감지 시 각 Fragment 에 RecyclerView 내용 갱신
-            val menuTypeListFragment = requireActivity().supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_MENU_LIST) as? MenuTypeListFragment
-            val menuTypeGridFragment = requireActivity().supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_MENU_GRID) as? MenuTypeGridFragment
 
-            menuTypeListFragment?.updateMenuList(menuList)
-            menuTypeGridFragment?.updateMenuList(menuList)
+        viewModel = ViewModelProvider(this)[MenuListViewModel::class.java]
+        initRecyclerView()
+
+        viewModel.menuList.observe(requireActivity()) { menuList ->
+            menuListRecyclerViewAdapter.list = menuList
+            menuGridRecyclerViewAdapter.list = menuList
+
+            when (currentMenuType) {
+                MENU_TYPE_LIST -> menuListRecyclerViewAdapter.notifyDataSetChanged()
+                MENU_TYPE_GRID -> menuGridRecyclerViewAdapter.notifyDataSetChanged()
+            }
         }
 
-        initRecyclerView()
-        initFragmentContainer(savedInstanceState)
         initButton()
         initEditText()
 
@@ -67,30 +75,31 @@ class MenuListFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = menuCategoryRecyclerViewAdapter
         }
-    }
 
-    // 처음 FragmentContainer 셋팅 -> '리스트' RecyclerView Fragment 가 보이게 설정
-    private fun initFragmentContainer(savedInstanceState: Bundle?) {
-        if (savedInstanceState == null) {
-            requireActivity().supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                add(R.id.fragmentContainer, MenuTypeListFragment(viewModel.menuList.value ?: arrayListOf()), FRAGMENT_TAG_MENU_LIST)
-            }
+        menuListRecyclerViewAdapter = MenuListAdapter()
+        menuGridRecyclerViewAdapter = MenuGridAdapter()
+
+        binding.menuListRecyclerView.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = menuListRecyclerViewAdapter
         }
     }
 
     private fun initButton() {
         // '리스트' 아이콘 클릭 시 -> Fragment 전환
         binding.menuListImageIcon.setOnClickListener {
-            switchFragment(FRAGMENT_TAG_MENU_GRID, FRAGMENT_TAG_MENU_LIST) {
-                MenuTypeListFragment(viewModel.menuList.value ?: arrayListOf())
+            binding.menuListRecyclerView.apply {
+                layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                adapter = menuListRecyclerViewAdapter
             }
         }
 
         // '그리드' 아이콘 클릭 시 -> Fragment 전환
         binding.menuListGridIcon.setOnClickListener {
-            switchFragment(FRAGMENT_TAG_MENU_LIST, FRAGMENT_TAG_MENU_GRID) {
-                MenuTypeGridFragment(viewModel.menuList.value ?: arrayListOf())
+            binding.menuListRecyclerView.apply {
+                layoutManager = GridLayoutManager(requireContext(), GRID_LAYOUT_SPAN_COUNT)
+                adapter = menuGridRecyclerViewAdapter
             }
         }
     }
@@ -114,22 +123,6 @@ class MenuListFragment : Fragment() {
                 handled = true
             }
             handled
-        }
-    }
-
-    // Fragment 전환 기능 ('리스트', '그리드' 버튼 클릭 시마다 사용)
-    private fun switchFragment(fromTag: String, toTag: String, newFragment: () -> Fragment) {
-        val fromFragment: Fragment? = requireActivity().supportFragmentManager.findFragmentByTag(fromTag)
-        val toFragment: Fragment? = requireActivity().supportFragmentManager.findFragmentByTag(toTag)
-
-        requireActivity().supportFragmentManager.commit {
-            fromFragment?.let { this.remove(it) }
-            if (toFragment == null) {
-                this.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                this.add(R.id.fragmentContainer, newFragment(), toTag)
-            } else {
-                this.replace(R.id.fragmentContainer, toFragment)
-            }
         }
     }
 }
