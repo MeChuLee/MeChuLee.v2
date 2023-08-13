@@ -5,41 +5,29 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".view.MainActivity">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".view.MainActivity">
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/bottom_navigation" />
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/nav_host_fragment"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:defaultNavHost="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:navGraph="@navigation/bottom_navigation" />
-
-            <github.com.st235.lib_expandablebottombar.ExpandableBottomBar
-                android:id="@+id/expandable_bottom_bar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                app:exb_backgroundCornerRadius="25dp"
-                app:exb_itemInactiveColor="#000000"
-                app:exb_item_horizontal_margin="10dp"
-                app:exb_item_vertical_margin="10dp"
-                app:exb_items="@menu/bottom_navigation_bar"
-                app:layout_behavior="github.com.st235.lib_expandablebottombar.behavior.ExpandableBottomBarScrollableBehavior"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <github.com.st235.lib_expandablebottombar.ExpandableBottomBar
+            android:id="@+id/expandable_bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="20dp"
+            app:exb_backgroundCornerRadius="25dp"
+            app:exb_itemInactiveColor="#000000"
+            app:exb_item_horizontal_margin="10dp"
+            app:exb_item_vertical_margin="10dp"
+            app:exb_items="@menu/bottom_navigation_bar"
+            app:layout_behavior="github.com.st235.lib_expandablebottombar.behavior.ExpandableBottomBarScrollableBehavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
