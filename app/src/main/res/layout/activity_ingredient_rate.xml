@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<!--    xml 내에서 사용할 변수들을 선언 -->
+<!--    name : 변수명-->
+<!--    type : 세팅 할 activity, fragment or model_name-->
+
+    <data>
+        <variable
+            name="ItemViewModel"
+            type="com.example.mechulee.viewmodel.ItemViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <EditText
+            android:id="@+id/menuSearchEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_background"
+            android:drawableLeft="@drawable/ic_baseline_search_24"
+            android:drawablePadding="16dp"
+            android:hint="평가하고 싶은 쟤료를 검색해보세요"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingLeft="20dp"
+            android:textSize="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.144"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.023" />
+
+        <!-- themes.xml에서 MaterialComponents는 버튼의 배경색을 default로 가지고 있다.(처음 실행했을 때 보이는 보라색)
+        그래서 임의로 색을 변경하려고 해도 변경이 안되는 것이다.
+    이를 해결하기 위해 MaterialComponents를 AppCompat으로 바꿔주어야 버튼 색상이변경된다. -->
+
+        <!--    카드 뷰에서 stroke를 안보이게 하려면 배경색을 투명으로 하는 것과 동시에 그림자도 0dp로 설정해주어야한다-->
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/menuSearchEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/menuSearchEditText"
+            app:layout_constraintTop_toTopOf="@id/menuSearchEditText">
+
+            <TextView
+                android:id="@+id/completeTextView"
+                android:layout_width="68dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ripple_effect"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="완료"
+                android:textColor="#386BF6"
+                android:textSize="15dp" />
+        </androidx.cardview.widget.CardView>
+
+
+        <LinearLayout
+            android:id="@+id/spinnerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="#33D9D9D9"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/recyclerView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menuSearchEditText">
+
+            <!-- LinearLayout 내부에 들어갈 뷰들 -->
+            <!-- 가로로 배치할 TextView -->
+
+            <!-- 가로로 배치할 ToggleButton -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="215dp"
+                android:layout_marginBottom="15dp"
+                android:text="목록"
+                android:textColor="#000000"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#33D9D9D9"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinnerView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+
+
