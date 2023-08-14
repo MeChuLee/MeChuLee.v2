@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="my_spinners">
+        <item>모두</item>
+        <item>평가완료</item>
+        <item>미완료</item>
+    </string-array>
+</resources>

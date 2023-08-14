@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size
+        android:width="315dp"
+        android:height="50dp" />
+    <solid android:color="#F3F3F3" /> <!-- 배경색을 원하는 색으로 설정 -->
+    <corners android:radius="20dp" /> <!-- 모서리 둥글기를 원하는 값으로 설정 -->
+</shape>

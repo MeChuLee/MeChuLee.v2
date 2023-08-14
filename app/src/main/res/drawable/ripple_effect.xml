@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#CCCCCC">
+    <!-- 적용될 뷰의 백그라운드 색상 -->
+    <item android:id="@android:id/mask">
+        <color android:color="#FFFFFF"/>
+    </item>
+    <!-- 클릭 효과 적용될 뷰의 배경 -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white"/>
+            <!-- 클릭 시 배경 색상 -->
+        </shape>
+    </item>
+</ripple>
