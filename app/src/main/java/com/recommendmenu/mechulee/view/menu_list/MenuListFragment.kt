@@ -24,8 +24,6 @@ import com.recommendmenu.mechulee.view.menu_list.adapter.MenuListAdapter
 class MenuListFragment : Fragment() {
 
     companion object {
-        private const val MENU_TYPE_LIST = 0
-        private const val MENU_TYPE_GRID = 1
         private const val GRID_LAYOUT_SPAN_COUNT = 3
     }
 
@@ -37,9 +35,6 @@ class MenuListFragment : Fragment() {
     // 메뉴 리스트 RecyclerView 에서 사용할 두 가지 Adapter (List, Grid)
     private lateinit var menuListRecyclerViewAdapter: MenuListAdapter
     private lateinit var menuGridRecyclerViewAdapter: MenuGridAdapter
-
-    // 현재 RecyclerView 에서 보여주고 있는 방식 상태 (MENU_TYPE_LIST, MENU_TYPE_GRID)
-    private var currentMenuType = MENU_TYPE_LIST
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -58,10 +53,8 @@ class MenuListFragment : Fragment() {
             menuListRecyclerViewAdapter.list = menuList
             menuGridRecyclerViewAdapter.list = menuList
 
-            when (currentMenuType) {
-                MENU_TYPE_LIST -> menuListRecyclerViewAdapter.notifyDataSetChanged()
-                MENU_TYPE_GRID -> menuGridRecyclerViewAdapter.notifyDataSetChanged()
-            }
+            menuListRecyclerViewAdapter.notifyDataSetChanged()
+            menuGridRecyclerViewAdapter.notifyDataSetChanged()
         }
 
         initButton()
