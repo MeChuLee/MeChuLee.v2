@@ -1,4 +1,4 @@
-package com.example.mechulee
+package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter
 
 import android.content.Context
 import android.view.Gravity

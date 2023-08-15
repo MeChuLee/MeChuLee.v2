@@ -1,4 +1,4 @@
-package com.example.mechulee.adapter
+package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter
 
 import android.view.LayoutInflater
 import android.view.View
