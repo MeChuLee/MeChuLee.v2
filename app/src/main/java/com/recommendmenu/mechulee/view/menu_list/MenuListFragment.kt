@@ -72,7 +72,13 @@ class MenuListFragment : Fragment() {
 
     private fun initRecyclerView() {
         // 메뉴 카테고리 RecyclerView 초기화
-        val menuCategoryRecyclerViewAdapter = MenuCategoryAdapter()
+        val menuCategoryRecyclerViewAdapter = MenuCategoryAdapter(object: MenuCategoryAdapter.MenuCategoryListener {
+            // Listener 내부 함수 정의
+            override fun changeCurrentCategory(category: String) {
+                // 카테고리 버튼을 클릭하여 현재 카테고리 변경 시
+                viewModel.searchMenuListWithCategory(category)
+            }
+        })
 
         // viewModel 에 선언되어 있는 categoryList 를 추가 (고정된 값이기 때문에 바로 반영, observe 사용 x)
         viewModel.categoryList.value?.forEach { menuCategoryRecyclerViewAdapter.list.add(it) }
