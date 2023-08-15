@@ -6,6 +6,10 @@ import com.recommendmenu.mechulee.model.data.MenuInfo
 
 class MenuListViewModel : ViewModel() {
 
+    companion object {
+        private const val MENU_CATEGORY_ALL = "전체"
+    }
+
     private var totalList: ArrayList<MenuInfo>
 
     val categoryList: MutableLiveData<ArrayList<String>> = MutableLiveData()
@@ -44,8 +48,12 @@ class MenuListViewModel : ViewModel() {
 
     // totalList 에서 category 가 인자로 받은 category 와 같은 경우 menuList 에 반영
     fun searchMenuListWithCategory(category: String) {
-        val searchList = ArrayList<MenuInfo>()
-        totalList.forEach { if (category == it.category) searchList.add(it) }
-        menuList.value = searchList
+        if (category == MENU_CATEGORY_ALL) {
+            menuList.value = totalList
+        } else {
+            val searchList = ArrayList<MenuInfo>()
+            totalList.forEach { if (category == it.category) searchList.add(it) }
+            menuList.value = searchList
+        }
     }
 }
