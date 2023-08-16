@@ -115,13 +115,7 @@ class IngredientActivity : AppCompatActivity() {
             ) { // 선택된 아이템에 대한 효과를 적용하는 코드 작성
                 val selectedItem = parent?.getItemAtPosition(position).toString()
 
-                if(selectedItem == "평가완료"){
-                    viewModel.completeMenuList()
-                } else if(selectedItem == "미완료"){
-                    viewModel.unCompleteMenuList()
-                } else if(selectedItem == "모두"){
-                    viewModel.allMenuList()
-                }
+                viewModel.showMenuList(selectedItem)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
