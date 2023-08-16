@@ -59,33 +59,20 @@ class ItemViewModel : ViewModel() {
         // 값만 바꿔도 menuList가 MutableLiveData이기 때문에 변경이 감지됨
     }
 
-    fun completeMenuList(){
+    fun showMenuList(selectedItem: String) {
         val  spinnerList = ArrayList<IngredientInfo>()
 
         totalList.forEach {
-            if(it.rating > 0.0f) spinnerList.add(it)
-        }
-
-        menuList.value = spinnerList
-    }
-
-    fun unCompleteMenuList(){
-        val  spinnerList = ArrayList<IngredientInfo>()
-
-        totalList.forEach {
-            if(it.rating == 0.0f) spinnerList.add(it)
-        }
-
-        menuList.value = spinnerList
-    }
-
-    fun allMenuList() {
-        val  spinnerList = ArrayList<IngredientInfo>()
-
-        totalList.forEach {
-            if(it.rating >= 0.0f) spinnerList.add(it)
+            if(selectedItem == "평가완료"){
+                if(it.rating > 0.0f) spinnerList.add(it)
+            } else if(selectedItem == "미완료"){
+                if(it.rating == 0.0f) spinnerList.add(it)
+            } else if(selectedItem == "모두"){
+                if(it.rating >= 0.0f) spinnerList.add(it)
+            }
         }
 
         menuList.value = spinnerList
     }
 }
+
