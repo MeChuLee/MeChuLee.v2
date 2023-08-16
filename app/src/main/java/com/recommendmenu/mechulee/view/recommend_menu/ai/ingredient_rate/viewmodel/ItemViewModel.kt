@@ -7,7 +7,24 @@ import com.recommendmenu.mechulee.model.data.IngredientInfo
 
 class ItemViewModel : ViewModel() {
 
-    private var totalList: ArrayList<IngredientInfo>
+    private var totalList: ArrayList<IngredientInfo> = arrayListOf(
+       IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "소시지", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "양배추", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "오이", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "떡", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "오리고기", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "골뱅이", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "시금치", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "카레가루", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "오징어", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "토마토", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f, ""),
+   )
 
     val menuList: MutableLiveData<ArrayList<IngredientInfo>> = MutableLiveData()
     // 데이터의 변경을 관찰 가능한 형태로 만들어준다.
@@ -15,24 +32,6 @@ class ItemViewModel : ViewModel() {
     init{
         // ViewModel이 생성될 때 데이터 초기화 작업 수행
         // 초기값이라고 보면 된다.
-         totalList = arrayListOf(
-            IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "소고기", 0.0f),
-             IngredientInfo(R.raw.pork_icon, "양상추", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f),
-             IngredientInfo(R.raw.pork_icon, "소시지", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f),
-             IngredientInfo(R.raw.pork_icon, "양배추", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "오이", 0.0f),
-             IngredientInfo(R.raw.pork_icon, "떡", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "오리고기", 0.0f),
-             IngredientInfo(R.raw.pork_icon, "골뱅이", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "시금치", 0.0f),
-             IngredientInfo(R.raw.pork_icon, "카레가루", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "오징어", 0.0f),
-             IngredientInfo(R.raw.pork_icon, "토마토", 0.0f),
-             IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f),
-        )
 
         menuList.value = totalList
         // 초기화하면서 menuList까지 동시에 totalList와 같도록
@@ -74,5 +73,6 @@ class ItemViewModel : ViewModel() {
 
         menuList.value = spinnerList
     }
+
 }
 
