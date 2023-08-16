@@ -24,8 +24,6 @@ import com.recommendmenu.mechulee.view.menu_list.adapter.MenuListAdapter
 class MenuListFragment : Fragment() {
 
     companion object {
-        private const val MENU_TYPE_LIST = 0
-        private const val MENU_TYPE_GRID = 1
         private const val GRID_LAYOUT_SPAN_COUNT = 3
     }
 
@@ -37,9 +35,6 @@ class MenuListFragment : Fragment() {
     // 메뉴 리스트 RecyclerView 에서 사용할 두 가지 Adapter (List, Grid)
     private lateinit var menuListRecyclerViewAdapter: MenuListAdapter
     private lateinit var menuGridRecyclerViewAdapter: MenuGridAdapter
-
-    // 현재 RecyclerView 에서 보여주고 있는 방식 상태 (MENU_TYPE_LIST, MENU_TYPE_GRID)
-    private var currentMenuType = MENU_TYPE_LIST
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -58,10 +53,8 @@ class MenuListFragment : Fragment() {
             menuListRecyclerViewAdapter.list = menuList
             menuGridRecyclerViewAdapter.list = menuList
 
-            when (currentMenuType) {
-                MENU_TYPE_LIST -> menuListRecyclerViewAdapter.notifyDataSetChanged()
-                MENU_TYPE_GRID -> menuGridRecyclerViewAdapter.notifyDataSetChanged()
-            }
+            menuListRecyclerViewAdapter.notifyDataSetChanged()
+            menuGridRecyclerViewAdapter.notifyDataSetChanged()
         }
 
         initButton()
@@ -72,7 +65,13 @@ class MenuListFragment : Fragment() {
 
     private fun initRecyclerView() {
         // 메뉴 카테고리 RecyclerView 초기화
-        val menuCategoryRecyclerViewAdapter = MenuCategoryAdapter()
+        val menuCategoryRecyclerViewAdapter = MenuCategoryAdapter(object: MenuCategoryAdapter.MenuCategoryListener {
+            // Listener 내부 함수 정의
+            override fun changeCurrentCategory(category: String) {
+                // 카테고리 버튼을 클릭하여 현재 카테고리 변경 시
+                viewModel.searchMenuListWithCategory(category)
+            }
+        })
 
         // viewModel 에 선언되어 있는 categoryList 를 추가 (고정된 값이기 때문에 바로 반영, observe 사용 x)
         viewModel.categoryList.value?.forEach { menuCategoryRecyclerViewAdapter.list.add(it) }

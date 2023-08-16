@@ -1,11 +1,10 @@
-package com.recommendmenu.mechulee.view.ingredient_rate
+package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -15,9 +14,9 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mechulee.CustomSpinnerAdapter
-import com.example.mechulee.adapter.RecyclerViewAdapter
-import com.example.mechulee.viewmodel.ItemViewModel
+import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.CustomSpinnerAdapter
+import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.RecyclerViewAdapter
+import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.viewmodel.ItemViewModel
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityIngredientRateBinding
 

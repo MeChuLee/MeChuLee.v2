@@ -1,10 +1,9 @@
-package com.example.mechulee.viewmodel
+package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
-import com.recommendmenu.mechulee.model.data.MenuInfo
 
 class ItemViewModel : ViewModel() {
 

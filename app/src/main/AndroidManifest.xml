@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MechuLee"
         tools:targetApi="31">
+
         <activity
             android:name=".view.MainActivity"
             android:exported="true">
@@ -21,19 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".view.ingredient_rate.IngredientActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity android:name=".view.recommend_menu.ai.ingredient_rate.IngredientActivity" />
 
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
     </application>
 
 </manifest>

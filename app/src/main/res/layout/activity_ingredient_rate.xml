@@ -11,7 +11,7 @@
     <data>
         <variable
             name="ItemViewModel"
-            type="com.example.mechulee.viewmodel.ItemViewModel" />
+            type="com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.viewmodel.ItemViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

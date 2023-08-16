@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
+import com.recommendmenu.mechulee.view.MainActivity
 
 class HomeFragment : Fragment() {
 
@@ -18,6 +19,11 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(layoutInflater)
+
+        binding.nestedScrollView.onBottomBarStatusChange = { status ->
+            (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(status)
+        }
+
         return binding.root
     }
 

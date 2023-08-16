@@ -8,7 +8,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 
-class MenuCategoryAdapter : RecyclerView.Adapter<MenuCategoryAdapter.MyViewHolder>() {
+class MenuCategoryAdapter(val menuCategoryListener : MenuCategoryListener)
+    : RecyclerView.Adapter<MenuCategoryAdapter.MyViewHolder>() {
 
     val list = ArrayList<String>()
     var currentClickIdx = 0
@@ -42,10 +43,17 @@ class MenuCategoryAdapter : RecyclerView.Adapter<MenuCategoryAdapter.MyViewHolde
             notifyItemChanged(currentClickIdx)
             currentClickIdx = position
             notifyItemChanged(currentClickIdx)
+
+            // 카테고리가 변경되었음을 알림
+            menuCategoryListener.changeCurrentCategory(holder.categoryButton.text.toString())
         }
     }
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    interface MenuCategoryListener {
+        fun changeCurrentCategory(category: String)
     }
 }

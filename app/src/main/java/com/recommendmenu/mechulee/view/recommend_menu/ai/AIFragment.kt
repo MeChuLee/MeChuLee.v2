@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.recommendmenu.mechulee.databinding.FragmentAiBinding
-import com.recommendmenu.mechulee.view.ingredient_rate.IngredientActivity
+import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
 
 class AIFragment : Fragment() {
 
