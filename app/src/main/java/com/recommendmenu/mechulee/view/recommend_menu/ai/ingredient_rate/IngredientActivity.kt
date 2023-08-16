@@ -74,7 +74,7 @@ class IngredientActivity : AppCompatActivity() {
             override fun onClick(v: View) {
                 // 클릭 시 실행할 동작 -> 평가한 쟤료들의 점수기록을 가지고
                 // 추천 결과 화면을 띄우는 동작 실행
-
+                finish()
             }
         })
 
