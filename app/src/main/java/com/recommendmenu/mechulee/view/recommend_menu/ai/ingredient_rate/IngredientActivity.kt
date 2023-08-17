@@ -9,6 +9,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -65,6 +66,8 @@ class IngredientActivity : AppCompatActivity() {
         var spinnerData = resources.getStringArray(R.array.my_spinners)
         var spinnerAdapter = CustomSpinnerAdapter(this, spinnerData)
         binding.spinner.adapter = spinnerAdapter
+
+
 
         // status Bar색상 설정
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
