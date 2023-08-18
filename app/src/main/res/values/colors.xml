@@ -16,4 +16,6 @@
     <color name="rippleColor">#FFEFC2</color>
 
     <color name="background">#F9F9F9</color>
+
+    <color name="recommendButton">#FFFF0000</color>
 </resources>
