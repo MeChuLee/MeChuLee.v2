@@ -5,4 +5,7 @@
     <string name="menu">메뉴</string>
     <string name="like">좋아요</string>
     <string name="settings">설정</string>
+
+    <string name="text_notice">&#160;현재 있는 재료를 선택해 메뉴를 추천 받으세요</string>
+    <string name="select_button">추천 받기</string>
 </resources>
