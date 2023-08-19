@@ -1,4 +1,4 @@
-package com.example.selectingredients
+package com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 
-class ClassificationAdapter(val classificationListener : ClassificationListener) :
+class ClassificationAdapter(val classificationListener: ClassificationListener) :
     RecyclerView.Adapter<ClassificationAdapter.ViewHolder>() {
 
     var datas = ArrayList<String>()
@@ -29,6 +29,7 @@ class ClassificationAdapter(val classificationListener : ClassificationListener)
         holder.classificationBtn.text = datas[position]
 
         if (nowIndex == position) {
+            // 현재 position이 현재 선택된 index일 경우, click 색상으로 변경
             holder.classificationBtn.setBackgroundResource(R.drawable.clicked_button)
             holder.classificationBtn.setTextColor(
                 ContextCompat.getColor(
@@ -37,6 +38,7 @@ class ClassificationAdapter(val classificationListener : ClassificationListener)
                 )
             )
         } else {
+            // 현재 position이 현재 선택되지 않은 index일 경우, unclick 색상으로 변경
             holder.classificationBtn.setBackgroundResource(R.drawable.unclicked_button)
             holder.classificationBtn.setTextColor(
                 ContextCompat.getColor(
@@ -46,12 +48,13 @@ class ClassificationAdapter(val classificationListener : ClassificationListener)
             )
         }
 
-        // 선택한 재료 카테고리 click event 처리 부분
         holder.classificationBtn.setOnClickListener {
+            // 선택한 재료 classification click event 처리 부분
             notifyItemChanged(nowIndex)
             nowIndex = position
             notifyItemChanged(nowIndex)
 
+            // classification이 변경되었음을 알림
             classificationListener.changeCurrentClassification(holder.classificationBtn.text.toString())
         }
     }

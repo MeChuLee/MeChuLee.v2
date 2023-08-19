@@ -1,4 +1,4 @@
-package com.example.selectingredients
+package com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +27,7 @@ class IngredientOuterAdapter : RecyclerView.Adapter<IngredientOuterAdapter.ViewH
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        // itemList 사이즈에 따라 key를 다르게 받아 Recycler View에 나타냄
         var nowKey = ""
         if (itemList.size == 1) {
             nowKey = itemList.keys.toList()[0]

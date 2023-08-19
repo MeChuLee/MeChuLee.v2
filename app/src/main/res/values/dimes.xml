@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="expanded_button_height">72dp</dimen>
+    <dimen name="original_button_height">48dp</dimen>
+    <dimen name="expanded_button_width">300dp</dimen>
+    <dimen name="original_button_width">120dp</dimen>
+<!--    <dimen name="initial_button_margin_bottom">300dp</dimen>-->
+<!--    <dimen name="scrolled_button_margin_bottom">1dp</dimen>-->
+</resources>
