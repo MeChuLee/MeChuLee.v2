@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.selectingredients.ClassificationAdapter
-import com.example.selectingredients.IngredientOuterAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
-import com.recommendmenu.mechulee.view.menu_list.MenuListViewModel
+import com.recommendmenu.mechulee.view.MainActivity
+import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.ClassificationAdapter
+import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.IngredientOuterAdapter
 
 class IngredientFragment : Fragment() {
 
@@ -21,6 +23,9 @@ class IngredientFragment : Fragment() {
     private lateinit var linearLayoutManager: LinearLayoutManager
     private val ingredientOuterAdapter = IngredientOuterAdapter()
 
+    private var isButtonAbove = true
+    private var isButtonExpanded = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,16 +35,32 @@ class IngredientFragment : Fragment() {
 
         viewModel = ViewModelProvider(this)[IngredientViewModel::class.java]
 
+        // 재료 classification 보여주는 RecyclerView
+        initClassificationRecycler()
+
+        // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerVieㅈ에 반영
         viewModel.selectClassificationMap.observe(requireActivity()) {
             ingredientOuterAdapter.itemList = it
 
             ingredientOuterAdapter.notifyDataSetChanged()
         }
 
-        // 분류 선택하는 RecyclerView
-        initClassificationRecycler()
+        // 아래로 Scroll down 시에는 버튼을 크게
+        // Scroll up 시에는 버튼을 작게 버튼의 크기를 변경하는 부분
+        binding.recyclerMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && !isButtonExpanded) {
+                    // Scroll down
+                    expandButton()
+                } else if (dy < 0 && isButtonExpanded) {
+                    // Scroll up
+                    shrinkButton()
+                }
+            }
+        })
 
-        // 재료 선택하는 RecyclerView
+        // 재료 보여주는 RecyclerView
         initIngredientsRecycler()
 
         return binding.root
@@ -50,30 +71,91 @@ class IngredientFragment : Fragment() {
         _binding = null
     }
 
-    // 재료 카테고리 RecyclerView
     private fun initClassificationRecycler() {
+        // 재료 classification RecyclerView 초기화
         val classificationAdapter =
             ClassificationAdapter(object : ClassificationAdapter.ClassificationListener {
                 override fun changeCurrentClassification(classification: String) {
+                    // classification 버튼을 클릭하여 현재 classification 변경 시
                     viewModel.selectClassification(classification)
                 }
             })
+
+        // ViewModel에 선언되어 있는 classificationList를 추가
         viewModel.classificationList.value?.forEach { classificationAdapter.datas.add(it) }
-        linearLayoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
         binding.classificationRecyclerView.apply {
+            setHasFixedSize(true)
             adapter = classificationAdapter
-            layoutManager = linearLayoutManager
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         }
     }
 
-    // 선택할 재료 전체 보여주는 recycler view
+    // 선택할 재료를 보여주는 RecyclerView
     private fun initIngredientsRecycler() {
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.recyclerMain.apply {
             adapter = ingredientOuterAdapter
             layoutManager = linearLayoutManager
+
+            // Scroll 이벤트 추가 -> MainActivity Bottom Bar 를 컨트롤하기 위해 MainActivity 에 Listener 로 알림
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    if (dy > 0) {
+                        // 아래로 스크롤 시 Bottom Bar 사라짐
+                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                            MainActivity.BOTTOM_BAR_STATUS_HIDE
+                        )
+                    } else {
+                        // 위로 스크롤 시 Bottom Bar 나타남
+                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                            MainActivity.BOTTOM_BAR_STATUS_SHOW
+                        )
+                    }
+                }
+            })
         }
     }
+
+    private fun expandButton() {
+        // 버튼을 크게 만드는 메소드
+        if (!isButtonExpanded) {
+            val layoutParams = binding.selectButton.layoutParams
+            layoutParams.height = resources.getDimensionPixelSize(R.dimen.expanded_button_height)
+            layoutParams.width = resources.getDimensionPixelSize(R.dimen.expanded_button_width)
+            binding.selectButton.layoutParams = layoutParams
+            isButtonExpanded = true
+            isButtonAbove = false
+
+        }
+    }
+
+    private fun shrinkButton() {
+        // 버튼을 원래의 크기로 돌리는 메소드
+        if (isButtonExpanded) {
+            val layoutParams = binding.selectButton.layoutParams
+            layoutParams.height = resources.getDimensionPixelSize(R.dimen.original_button_height)
+            layoutParams.width = resources.getDimensionPixelSize(R.dimen.original_button_width)
+            binding.selectButton.layoutParams = layoutParams
+            isButtonExpanded = false
+            isButtonAbove = true
+        }
+    }
+
+    // button의 margin bottom을 조정해 위치 조정하려는 의도
+//    private fun updateButtonMargin() {
+//        val layoutParams = binding.selectButton.layoutParams as ConstraintLayout.LayoutParams
+//        if (isButtonAbove) {
+//            layoutParams.bottomMargin =
+//                resources.getDimensionPixelSize(R.dimen.initial_button_margin_bottom)
+//        } else {
+//            layoutParams.bottomMargin =
+//                resources.getDimensionPixelSize(R.dimen.scrolled_button_margin_bottom)
+//        }
+//        binding.selectButton.layoutParams = layoutParams
+//    }
 }

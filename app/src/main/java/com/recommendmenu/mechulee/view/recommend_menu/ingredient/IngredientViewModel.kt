@@ -14,8 +14,10 @@ class IngredientViewModel : ViewModel() {
     private var noodleList: ArrayList<IngredientInfo>
     private var otherList: ArrayList<IngredientInfo>
 
-    val ingredientAllMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> = MutableLiveData()
-    val selectClassificationMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> = MutableLiveData()
+    val ingredientAllMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
+        MutableLiveData()
+    val selectClassificationMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
+        MutableLiveData()
 
     init {
         classificationList.value = arrayListOf("전체", "야채", "과일", "고기", "면", "추가재료")
@@ -73,6 +75,7 @@ class IngredientViewModel : ViewModel() {
     }
 
     fun selectClassification(classification: String) {
+        // 선택한 classification에 따라 selectClassificationMap에 반영
         if (classification == "전체") {
             selectClassificationMap.value = ingredientAllMap.value
         } else {

@@ -1,4 +1,4 @@
-package com.example.selectingredients
+package com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +29,7 @@ class IngredientInnerAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         fun removeItem(array: Array<String?>, value: String): Array<String?> {
+            // 선택해제를 처리하기 위해 정의한 메소드
             return array.filter { it != value }.toTypedArray()
         }
 
@@ -37,6 +38,7 @@ class IngredientInnerAdapter :
         holder.textView.text = item.title
 
         holder.itemView.setOnClickListener {
+            // 선택하지 않은 재료는 테두리가 생기게끔 표현하고, 이미 클릭했던 재료인 경우는 테두리 사라지게 표현
             if (ingredientList[position].title in clickedArray) {
                 clickedArray = removeItem(clickedArray, ingredientList[position].title)
                 arrayIndex--
@@ -46,10 +48,7 @@ class IngredientInnerAdapter :
                 arrayIndex++
                 holder.itemView.setBackgroundResource(R.drawable.clicked_ingredient)
             }
-            var newArray = clickedArray.filter { x: String? -> x != null } // null 값을 제외한 배열 출력
-            println(newArray)
         }
-
     }
 
     override fun getItemCount(): Int {
