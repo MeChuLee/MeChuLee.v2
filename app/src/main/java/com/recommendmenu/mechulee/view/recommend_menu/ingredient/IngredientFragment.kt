@@ -1,9 +1,14 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +31,7 @@ class IngredientFragment : Fragment() {
     private var isButtonAbove = true
     private var isButtonExpanded = false
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,6 +40,7 @@ class IngredientFragment : Fragment() {
         _binding = FragmentIngredientBinding.inflate(layoutInflater)
 
         viewModel = ViewModelProvider(this)[IngredientViewModel::class.java]
+
 
         // 재료 classification 보여주는 RecyclerView
         initClassificationRecycler()
@@ -47,21 +54,17 @@ class IngredientFragment : Fragment() {
 
         // 아래로 Scroll down 시에는 버튼을 크게
         // Scroll up 시에는 버튼을 작게 버튼의 크기를 변경하는 부분
-        binding.recyclerMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && !isButtonExpanded) {
-                    // Scroll down
-                    expandButton()
-                } else if (dy < 0 && isButtonExpanded) {
-                    // Scroll up
-                    shrinkButton()
-                }
-            }
-        })
+//        binding.recyclerMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//
+//        })
 
         // 재료 보여주는 RecyclerView
         initIngredientsRecycler()
+
+        binding.selectButton.setOnClickListener {
+            val intent = Intent(activity, IngredientRecommendResultActivity::class.java)
+            startActivity(intent)
+        }
 
         return binding.root
     }
@@ -115,6 +118,13 @@ class IngredientFragment : Fragment() {
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
                             MainActivity.BOTTOM_BAR_STATUS_SHOW
                         )
+                    }
+                    if (dy > 0 && !isButtonExpanded) {
+                        // Scroll down
+                        expandButton()
+                    } else if (dy < 0 && isButtonExpanded) {
+                        // Scroll up
+                        shrinkButton()
                     }
                 }
             })
