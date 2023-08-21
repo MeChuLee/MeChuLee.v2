@@ -17,6 +17,19 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        def naver_key = ""
+        try {
+            Properties localProperties = new Properties()
+            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+            if (localProperties.getProperty("naver_key") != null) {
+                naver_key = localProperties.getProperty("naver_key")
+            }
+        } catch (IOException e) {
+            e.printStackTrace()
+        }
+
+        manifestPlaceholders = [NAVER_KEY:naver_key]
     }
 
     buildTypes {
@@ -59,6 +72,8 @@ dependencies {
     // Protocol Buffers(protobuf)의 Java Lite 버전을 사용하기 위한 의존성을 추가
     // 이를 통해 프로젝트 내에서 Protocol Buffers를 사용
     implementation  "com.google.protobuf:protobuf-javalite:3.19.4"
+
+    implementation 'com.naver.maps:map-sdk:3.17.0'
 }
 
 // 프로토콜 버퍼(Protocol Buffers 또는 protobuf)는구조화된 데이터를
