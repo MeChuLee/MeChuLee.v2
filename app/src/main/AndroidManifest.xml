@@ -24,6 +24,7 @@
         </activity>
 
         <activity android:name=".view.recommend_menu.ai.ingredient_rate.IngredientActivity" />
+        <activity android:name=".view.recommend_menu.ingredient.IngredientRecommendResultActivity" />
 
     </application>
 
