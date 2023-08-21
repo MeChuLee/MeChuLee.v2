@@ -9,6 +9,7 @@ class ItemViewModel: ViewModel() {
 
     private var totalList: ArrayList<IngredientInfo> = arrayListOf(
        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
         IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, ""),
         IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, ""),
         IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, ""),

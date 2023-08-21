@@ -6,7 +6,7 @@ buildscript {
         //많은 오픈 소스 라이브러리들이 호스팅되어 있는 곳으로, 다양한 라이브러리들을 가져올 수 있다.
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.0"
+        classpath 'com.android.tools.build:gradle:8.0.2'
     }
 }
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
