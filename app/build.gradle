@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id "com.google.protobuf" version "0.9.1"
+    // 공식문서의 0.8.17 version이 적용이 안돼서 0.9.1 version으로 변경
 }
 
 android {
@@ -46,8 +48,33 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
     implementation 'com.github.st235:expandablebottombar:1.5.1'
     implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
+    // proto datastore 의존성 추가
+    implementation("androidx.datastore:datastore:1.0.0")
+
+    // Protocol Buffers(protobuf)의 Java Lite 버전을 사용하기 위한 의존성을 추가
+    // 이를 통해 프로젝트 내에서 Protocol Buffers를 사용
+    implementation  "com.google.protobuf:protobuf-javalite:3.19.4"
+}
+
+// 프로토콜 버퍼(Protocol Buffers 또는 protobuf)는구조화된 데이터를
+// 직렬화(serialize)하고, 역직렬화(deserialize)하는 방법을
+// 제공하는 언어 중립적인 데이터 포맷
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.19.4"
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
 }
