@@ -16,4 +16,9 @@
     <color name="rippleColor">#FFEFC2</color>
 
     <color name="background">#F9F9F9</color>
+
+    <color name="recommendButton">#FF0000</color>
+    <color name="clickedIngredient">#FFB958</color>
+    <color name="lineColor">#FFE0B5</color>
+
 </resources>
