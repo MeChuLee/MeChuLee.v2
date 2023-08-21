@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 
-class ItemViewModel : ViewModel() {
+class ItemViewModel: ViewModel() {
 
     private var totalList: ArrayList<IngredientInfo> = arrayListOf(
-       IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
         IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, ""),
         IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, ""),
         IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, ""),
@@ -37,10 +37,6 @@ class ItemViewModel : ViewModel() {
         // 초기화하면서 menuList까지 동시에 totalList와 같도록
         // 초기화 시켜준다.
     }
-
-    // 의문점 -> totalList를 mutable로 만들 수 있는건가? 그래야
-    // 평가가 계속 바뀌는 걸 감지할 수 있는데, 그러면 menuList가
-    // UI에 적용되도록 만들어야하나?
 
     // totalList에서 searchword가 포함된 제목을 가진 메뉴를 menuList에 반영
     fun searchMenuList(searchWord: String) {
@@ -74,5 +70,11 @@ class ItemViewModel : ViewModel() {
         menuList.value = spinnerList
     }
 
+    fun storeRatingDataFromMenuList() {
+
+    }
+
 }
+
+
 

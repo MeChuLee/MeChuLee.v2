@@ -9,7 +9,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -19,6 +18,7 @@ import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.RecyclerViewAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.viewmodel.ItemViewModel
 import com.recommendmenu.mechulee.R
+import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.databinding.ActivityIngredientRateBinding
 
 class IngredientActivity : AppCompatActivity() {
@@ -49,25 +49,14 @@ class IngredientActivity : AppCompatActivity() {
         viewModel.menuList.observe(this) { newMenuList ->
         // menuList 정보 변경 감지 시 RecyclerView 갱신
             recyclerViewAdapter.itemList = newMenuList
+            viewModel.storeRatingDataFromMenuList()
             recyclerViewAdapter.notifyDataSetChanged()
         }
-
-        // adapter가 2개 설정돼있으면 기존에 viewModel과 연결돼있는 adapter가 아니라
-        // 새로 만든 adapter로 설정이 되기 때문에 UI에 보이지 않았던 것이다!!!
-
-//        // recyclerViewAdapter 설정
-//        val recyclerViewAdapter = RecyclerViewAdapter()
-//        binding.recyclerView.apply{
-//            layoutManager = LinearLayoutManager(this@MainActivity)
-//            adapter = recyclerViewAdapter
-//        }
 
         // 스피너 어댑터 설정
         var spinnerData = resources.getStringArray(R.array.my_spinners)
         var spinnerAdapter = CustomSpinnerAdapter(this, spinnerData)
         binding.spinner.adapter = spinnerAdapter
-
-
 
         // status Bar색상 설정
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
