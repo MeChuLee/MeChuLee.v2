@@ -18,6 +18,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
                 android:text="오늘의 추천"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -48,16 +49,16 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingBottom="8dp"
-                app:layout_constraintTop_toBottomOf="@id/todayMenuViewPagerScrollableHost"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/todayMenuViewPagerScrollableHost" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/randomCardView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:elevation="10dp"
                 app:cardCornerRadius="20dp"
                 app:layout_constraintDimensionRatio="5:1"
@@ -101,8 +102,21 @@
 
             </androidx.cardview.widget.CardView>
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/searchRestaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="50dp"
+                android:text="주변 식당 찾기"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/randomCardView" />
+
             <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/map_fragment"
+                android:id="@+id/mapFragment"
                 android:name="com.naver.maps.map.MapFragment"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -111,7 +125,7 @@
                 app:layout_constraintDimensionRatio="2:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/randomCardView" />
+                app:layout_constraintTop_toBottomOf="@id/searchRestaurant" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

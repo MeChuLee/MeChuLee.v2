@@ -10,6 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.naver.maps.map.LocationTrackingMode
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.util.FusedLocationSource
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.view.MainActivity
@@ -18,7 +23,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnMapReadyCallback {
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -27,6 +36,9 @@ class HomeFragment : Fragment() {
     private var todayMenuListSize = 3
     private lateinit var job : Job
     private var active = false
+
+    private lateinit var locationSource: FusedLocationSource
+    private lateinit var naverMap: NaverMap
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +53,16 @@ class HomeFragment : Fragment() {
         }
 
         initViewPager()
+
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
+        val fm = requireActivity().supportFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.mapFragment) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.mapFragment, it).commit()
+            }
+
+        mapFragment.getMapAsync(this)
 
         return binding.root
     }
@@ -170,5 +192,11 @@ class HomeFragment : Fragment() {
                 binding.todayMenuViewPager.setCurrentItem(++bannerPosition, true)
             }
         }
+    }
+
+    override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
+        naverMap.locationSource = locationSource
+        naverMap.locationTrackingMode = LocationTrackingMode.Follow
     }
 }
