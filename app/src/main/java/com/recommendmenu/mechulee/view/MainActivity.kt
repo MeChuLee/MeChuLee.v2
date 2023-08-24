@@ -1,16 +1,16 @@
 package com.recommendmenu.mechulee.view
 
-import android.Manifest
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityMainBinding
 import github.com.st235.lib_expandablebottombar.navigation.ExpandableBottomBarNavigationUI
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,20 +22,27 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     lateinit var mainActivityListener: MainActivityListener
 
+    private var backPressedTime: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
-        // 위치 권한 요청
-        locationPermissionRequest.launch(arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION))
 
         initBottomNavigationBar()
         initListener()
 
         // StatusBar 색 변경
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
+
+        // 뒤로 가기 두 번 클릭 시 종료
+        onBackPressedDispatcher.addCallback(this) {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                finish()
+            } else {
+                Toast.makeText(this@MainActivity, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+            }
+            backPressedTime = System.currentTimeMillis()
+        }
     }
 
     // ExpandableBottomBar 에 Navigation 설정
@@ -59,23 +66,6 @@ class MainActivity : AppCompatActivity() {
                     BOTTOM_BAR_STATUS_SHOW -> binding.expandableBottomBar.show()
                     BOTTOM_BAR_STATUS_HIDE -> binding.expandableBottomBar.hide()
                 }
-            }
-        }
-    }
-
-    private val locationPermissionRequest = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                // Precise location access granted.
-            }
-            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // Only approximate location access granted.
-            } else -> {
-                // No location access granted
-                Toast.makeText(this, "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT)
-                finish()
             }
         }
     }
