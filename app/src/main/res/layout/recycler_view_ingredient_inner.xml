@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/containerIngredient"
-    android:layout_width="wrap_content"
+    android:layout_width="80dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="5dp"
@@ -17,11 +17,12 @@
 
     <TextView
         android:id="@+id/textView02"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:paddingBottom="5dp"
-        android:text="Ingredient"
+        android:gravity="center"
+        android:text="fruit"
         android:textColor="@color/black"
         android:textSize="16sp" />
 
