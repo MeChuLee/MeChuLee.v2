@@ -1,19 +1,25 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.viewmodel
 
+import android.util.Log
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.R
+import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
-class ItemViewModel: ViewModel() {
+class ItemViewModel(private val dataStore: DataStore<RatingData>): ViewModel() {
 
     private var totalList: ArrayList<IngredientInfo> = arrayListOf(
-       IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "소시지", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "돼지고기", 1.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "소고기", 2.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "양상추", 3.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "양갈비", 4.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "소시지", 5.0f, ""),
         IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f, ""),
         IngredientInfo(R.raw.pork_icon, "양배추", 0.0f, ""),
         IngredientInfo(R.raw.beef_icon, "오이", 0.0f, ""),
@@ -34,9 +40,18 @@ class ItemViewModel: ViewModel() {
         // ViewModel이 생성될 때 데이터 초기화 작업 수행
         // 초기값이라고 보면 된다.
 
-        menuList.value = totalList
+        // 여기서 totalList의 rating값들을 DataStore에서 가져온 rating값들로 교체한다.
+        viewModelScope.launch {
+            // DataStore에서 RatingData를 비동기적으로 가져와서 totalList 초기화
+            initTotalListFromDataStore()
+
+            // 초기화된 totalList를 menuList에 설정
+            menuList.value = totalList
+        }
+        //menuList.value = totalList
         // 초기화하면서 menuList까지 동시에 totalList와 같도록
         // 초기화 시켜준다.
+
     }
 
     // totalList에서 searchword가 포함된 제목을 가진 메뉴를 menuList에 반영
@@ -56,7 +71,7 @@ class ItemViewModel: ViewModel() {
     }
 
     fun showMenuList(selectedItem: String) {
-        val  spinnerList = ArrayList<IngredientInfo>()
+        val spinnerList = ArrayList<IngredientInfo>()
 
         totalList.forEach {
             if(selectedItem == "평가완료"){
@@ -71,8 +86,68 @@ class ItemViewModel: ViewModel() {
         menuList.value = spinnerList
     }
 
-    fun storeRatingDataFromMenuList() {
+    private suspend fun initTotalListFromDataStore() {
+        val storedRatingData = dataStore.data.firstOrNull()
 
+        // RatingData가 null이 아닐 경우, totalList의 rating 값을 업데이트한다.
+        storedRatingData?.let {
+            val updatedTotalList = ArrayList<IngredientInfo>()
+            for (info in totalList) {
+                val matchingRating = it.ratingList.getOrElse(totalList.indexOf(info)) { 0.0f }
+                updatedTotalList.add(info.copy(rating = matchingRating))
+            }
+            totalList = updatedTotalList
+        }
+    }
+
+    fun initMenuListFromDataStore(dataStore: DataStore<RatingData>) {
+        viewModelScope.launch {
+            // DataStore에서 RatingData를 가져온다
+            //dataStore.data는 DataStore에서 저장된 데이터를 읽어오는 Flow
+            // firstOrNull()은 Flow에서 첫 번째 값을 가져옴 없으면 null을 반환
+            val storedRatingData = dataStore.data.firstOrNull()
+
+            // RatingData가 null이 아닐 경우, totalList의 rating 값을 업데이트한다.
+            storedRatingData?.let {
+                val updatedMenuList = ArrayList<IngredientInfo>()
+                for (info in menuList.value.orEmpty()) { // orEmpty()로 null일 때 빈 리스트로 처리
+                    val matchingRating = it.ratingList.getOrElse(menuList.value?.indexOf(info) ?: -1) { 0.0f }
+                    updatedMenuList.add(info.copy(rating = matchingRating))
+                }
+                menuList.value = updatedMenuList
+            }
+        }
+    }
+
+    fun storeRatingDataFromMenuList(dataStore: DataStore<RatingData>) {
+        viewModelScope.launch {
+            val menuItems = menuList.value
+            if (menuItems != null) {
+                val ratingList = menuItems.map { it.rating }
+
+                val ratingData = RatingData.newBuilder()
+                    .addAllRating(ratingList)
+                    .build()
+
+                dataStore.updateData {
+                    ratingData.toBuilder()
+                        .clearRating()
+                        .addAllRating(ratingData.ratingList)
+                        .build()
+                }
+            }
+        }
+    }
+
+    fun showRatingDataStrore(dataStore: DataStore<RatingData>){
+        viewModelScope.launch {
+            // DataStore에 저장된 ratingList 값을 읽어와서 로그로 출력합니다.
+            val storedRatingData = dataStore.data.firstOrNull()
+            storedRatingData?.let {
+                val storedRatingList = it.ratingList
+                Log.d("DataStoreTest", "Stored Rating List: $storedRatingList")
+            }
+        }
     }
 
 }
