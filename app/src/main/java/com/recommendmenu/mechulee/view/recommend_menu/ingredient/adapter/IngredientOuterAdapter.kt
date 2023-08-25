@@ -29,6 +29,7 @@ class IngredientOuterAdapter : RecyclerView.Adapter<IngredientOuterAdapter.ViewH
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // itemList 사이즈에 따라 key를 다르게 받아 Recycler View에 나타냄
         var nowKey = ""
+        var englishName = ""
         if (itemList.size == 1) {
             nowKey = itemList.keys.toList()[0]
         } else {
@@ -40,8 +41,15 @@ class IngredientOuterAdapter : RecyclerView.Adapter<IngredientOuterAdapter.ViewH
                 4 -> nowKey = "추가재료"
             }
         }
+        when (nowKey) {
+            "야채" -> englishName = "Vegetables"
+            "과일" -> englishName = "Fruits"
+            "고기" -> englishName = "Meat"
+            "면" -> englishName = "Noodle"
+            "추가재료" -> englishName = "Others"
+        }
 
-        holder.textView.text = nowKey
+        holder.textView.text = "• $nowKey $englishName"
 
         recyclerViewAdapter02 = IngredientInnerAdapter()
 
