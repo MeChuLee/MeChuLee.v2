@@ -12,8 +12,8 @@ import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.willy.ratingbar.RotationRatingBar
 
-class RecyclerViewAdapter:
-    RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
+class IngredientRateRecyclerViewAdapter:
+    RecyclerView.Adapter<IngredientRateRecyclerViewAdapter.ViewHolder>() {
     var itemList = ArrayList<IngredientInfo>()
 
     var lastPosition = -1
