@@ -69,7 +69,7 @@ class MenuListFragment : Fragment() {
             // Listener 내부 함수 정의
             override fun changeCurrentCategory(category: String) {
                 // 카테고리 버튼을 클릭하여 현재 카테고리 변경 시
-                viewModel.searchMenuListWithCategory(category)
+                viewModel.searchMenuList(category, binding.menuSearchEditText.text.toString())
             }
         })
 
@@ -132,7 +132,7 @@ class MenuListFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                viewModel.searchMenuList(binding.menuSearchEditText.text.toString())
+                viewModel.searchMenuList(null, binding.menuSearchEditText.text.toString())
             }
         })
 
