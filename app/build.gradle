@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.airbnb.android:lottie:6.1.0'
+    implementation 'com.github.magic-goop:tag-sphere:1.0.0'
 
     // proto datastore 의존성 추가
     implementation("androidx.datastore:datastore:1.0.0")

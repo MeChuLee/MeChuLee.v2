@@ -9,7 +9,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
-import android.widget.RatingBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -18,8 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.CustomSpinnerAdapter
-import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.RecyclerViewAdapter
-import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.viewmodel.ItemViewModel
+import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.IngredientRateRecyclerViewAdapter
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.databinding.ActivityIngredientRateBinding
@@ -27,9 +25,9 @@ import com.recommendmenu.mechulee.proto.ratingDataStore
 
 class ItemViewModelFactory(private val dataStore: DataStore<RatingData>) : ViewModelProvider.Factory {
      override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ItemViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(IngredientRateViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ItemViewModel(dataStore) as T
+            return IngredientRateViewModel(dataStore) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -37,8 +35,8 @@ class ItemViewModelFactory(private val dataStore: DataStore<RatingData>) : ViewM
 class IngredientActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityIngredientRateBinding
-    private lateinit var viewModel: ItemViewModel
-    private lateinit var recyclerViewAdapter: RecyclerViewAdapter
+    private lateinit var viewModel: IngredientRateViewModel
+    private lateinit var ingredientRateRecyclerViewAdapter: IngredientRateRecyclerViewAdapter
 
     @SuppressLint("NotifyDataSetChanged")
     // NotifyDataSetChanged 이 함수가 리사이클러뷰 전체를 바꾸는 형식인데
@@ -54,7 +52,7 @@ class IngredientActivity : AppCompatActivity() {
 
         // ViewModelProvider.Factory를 생성하여 ItemViewModel 인스턴스를 생성
         val viewModelFactory = ItemViewModelFactory(ratingDataStore)
-        viewModel = ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[IngredientRateViewModel::class.java]
         // viewModel 인스턴스를 생성
 //        viewModel = ViewModelProvider(this)[ItemViewModel::class.java]
 
@@ -63,30 +61,21 @@ class IngredientActivity : AppCompatActivity() {
         // Context가 있는 곳에서만 선언가능한건가? 맞다.
         val dataStore = ratingDataStore
 
-        // DataStore로부터 메뉴화면 초기화
-        viewModel.initMenuListFromDataStore(dataStore)
-
-        viewModel.menuList.value?.forEachIndexed { index, ingredientInfo ->
-            binding.recyclerView.layoutManager?.findViewByPosition(index)?.let { itemView ->
-                val ratingBar = itemView.findViewById<RatingBar>(R.id.ratingBar)
-                ratingBar.rating = ingredientInfo.rating
-            }
-        }
 
         // RecyclerView 초기화
-        recyclerViewAdapter = RecyclerViewAdapter() // 초기에 빈 리스트를 넘겨 초기화합니다.
-        binding.recyclerView.adapter = recyclerViewAdapter
+        ingredientRateRecyclerViewAdapter = IngredientRateRecyclerViewAdapter() // 초기에 빈 리스트를 넘겨 초기화합니다.
+        binding.recyclerView.adapter = ingredientRateRecyclerViewAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this) // 리사이클러뷰 레이아웃 매니저 설정
 
         viewModel.menuList.observe(this) { newMenuList ->
         // menuList 정보 변경 감지 시 RecyclerView 갱신
-            recyclerViewAdapter.itemList = newMenuList
-            recyclerViewAdapter.notifyDataSetChanged()
+            ingredientRateRecyclerViewAdapter.itemList = newMenuList
+            ingredientRateRecyclerViewAdapter.notifyDataSetChanged()
         }
 
         // 스피너 어댑터 설정
-        var spinnerData = resources.getStringArray(R.array.my_spinners)
-        var spinnerAdapter = CustomSpinnerAdapter(this, spinnerData)
+        val spinnerData = resources.getStringArray(R.array.my_spinners)
+        val spinnerAdapter = CustomSpinnerAdapter(this, spinnerData)
         binding.spinner.adapter = spinnerAdapter
 
         // status Bar색상 설정
