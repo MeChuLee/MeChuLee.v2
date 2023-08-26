@@ -48,8 +48,9 @@ class IngredientOuterAdapter : RecyclerView.Adapter<IngredientOuterAdapter.ViewH
             "면" -> englishName = "Noodle"
             "추가재료" -> englishName = "Others"
         }
+        val classificationName = "• $nowKey $englishName"
 
-        holder.textView.text = "• $nowKey $englishName"
+        holder.textView.text = classificationName
 
         recyclerViewAdapter02 = IngredientInnerAdapter()
 

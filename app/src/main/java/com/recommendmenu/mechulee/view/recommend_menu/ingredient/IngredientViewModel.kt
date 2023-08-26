@@ -1,11 +1,12 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 
-class IngredientViewModel : ViewModel() {
+class IngredientViewModel(application: Application) : AndroidViewModel(application) {
 
     val classificationList: MutableLiveData<ArrayList<String>> = MutableLiveData()
     private var vegetableList: ArrayList<IngredientInfo>
@@ -23,43 +24,43 @@ class IngredientViewModel : ViewModel() {
         classificationList.value = arrayListOf("전체", "야채", "과일", "고기", "면", "추가재료")
 
         vegetableList = arrayListOf(
-            IngredientInfo(R.raw.chili, "고추", 0.0f, "야채"),
-            IngredientInfo(R.raw.potato, "감자", 0.0f, "야채"),
-            IngredientInfo(R.raw.cucumber, "오이", 0.0f, "야채"),
-            IngredientInfo(R.raw.carrot, "당근", 0.0f, "야채"),
-            IngredientInfo(R.raw.tomato, "토마토", 0.0f, "야채"),
-            IngredientInfo(R.raw.onion, "양파", 0.0f, "야채"),
-            IngredientInfo(R.raw.eggplant, "가지", 0.0f, "야채"),
-            IngredientInfo(R.raw.corn, "옥수수", 0.0f, "야채"),
+            IngredientInfo(R.raw.chili, "고추", 0.0f, "야채", false),
+            IngredientInfo(R.raw.potato, "감자", 0.0f, "야채", false),
+            IngredientInfo(R.raw.cucumber, "오이", 0.0f, "야채", false),
+            IngredientInfo(R.raw.carrot, "당근", 0.0f, "야채", false),
+            IngredientInfo(R.raw.tomato, "토마토", 0.0f, "야채", false),
+            IngredientInfo(R.raw.onion, "양파", 0.0f, "야채", false),
+            IngredientInfo(R.raw.eggplant, "가지", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "옥수수", 0.0f, "야채", false),
         )
 
         fruitList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "딸기", 0.0f, "과일"),
-            IngredientInfo(R.raw.garlic, "바나나", 0.0f, "과일"),
-            IngredientInfo(R.raw.garlic, "사과", 0.0f, "과일"),
-            IngredientInfo(R.raw.garlic, "배", 0.0f, "과일"),
-            IngredientInfo(R.raw.garlic, "오렌지", 0.0f, "과일"),
+            IngredientInfo(R.raw.garlic, "딸기", 0.0f, "과일", false),
+            IngredientInfo(R.raw.garlic, "바나나", 0.0f, "과일", false),
+            IngredientInfo(R.raw.garlic, "사과", 0.0f, "과일", false),
+            IngredientInfo(R.raw.garlic, "배", 0.0f, "과일", false),
+            IngredientInfo(R.raw.garlic, "오렌지", 0.0f, "과일", false),
         )
 
         meatList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "소고기", 0.0f, "고기"),
-            IngredientInfo(R.raw.garlic, "돼지고기", 0.0f, "고기"),
-            IngredientInfo(R.raw.garlic, "닭고기", 0.0f, "고기"),
+            IngredientInfo(R.raw.garlic, "소고기", 0.0f, "고기", false),
+            IngredientInfo(R.raw.garlic, "돼지고기", 0.0f, "고기", false),
+            IngredientInfo(R.raw.garlic, "닭고기", 0.0f, "고기", false),
         )
 
         noodleList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "국수", 0.0f, "면"),
-            IngredientInfo(R.raw.garlic, "스파게티", 0.0f, "면"),
-            IngredientInfo(R.raw.garlic, "칼국수", 0.0f, "면"),
-            IngredientInfo(R.raw.garlic, "라면", 0.0f, "면"),
+            IngredientInfo(R.raw.garlic, "국수", 0.0f, "면", false),
+            IngredientInfo(R.raw.garlic, "스파게티", 0.0f, "면", false),
+            IngredientInfo(R.raw.garlic, "칼국수", 0.0f, "면", false),
+            IngredientInfo(R.raw.garlic, "라면", 0.0f, "면", false),
         )
 
         otherList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "쌀국수", 0.0f, "추가재료"),
-            IngredientInfo(R.raw.garlic, "쯔유", 0.0f, "추가재료"),
-            IngredientInfo(R.raw.garlic, "고사리", 0.0f, "추가재료"),
-            IngredientInfo(R.raw.garlic, "미나리", 0.0f, "추가재료"),
-            IngredientInfo(R.raw.garlic, "바질", 0.0f, "추가재료"),
+            IngredientInfo(R.raw.garlic, "쌀국수", 0.0f, "추가재료", false),
+            IngredientInfo(R.raw.garlic, "쯔유", 0.0f, "추가재료", false),
+            IngredientInfo(R.raw.garlic, "고사리", 0.0f, "추가재료", false),
+            IngredientInfo(R.raw.garlic, "미나리", 0.0f, "추가재료", false),
+            IngredientInfo(R.raw.garlic, "바질", 0.0f, "추가재료", false),
         )
 
 
