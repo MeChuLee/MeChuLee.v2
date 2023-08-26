@@ -75,6 +75,7 @@ dependencies {
     implementation  "com.google.protobuf:protobuf-javalite:3.19.4"
 
     implementation 'com.naver.maps:map-sdk:3.17.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 }
 
 // 프로토콜 버퍼(Protocol Buffers 또는 protobuf)는구조화된 데이터를

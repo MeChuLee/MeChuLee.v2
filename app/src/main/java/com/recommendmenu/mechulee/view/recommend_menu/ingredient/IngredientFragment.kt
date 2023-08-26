@@ -2,13 +2,10 @@ package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,11 +38,10 @@ class IngredientFragment : Fragment() {
 
         viewModel = ViewModelProvider(this)[IngredientViewModel::class.java]
 
-
         // 재료 classification 보여주는 RecyclerView
         initClassificationRecycler()
 
-        // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerVieㅈ에 반영
+        // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerView에 반영
         viewModel.selectClassificationMap.observe(requireActivity()) {
             ingredientOuterAdapter.itemList = it
 
@@ -57,6 +53,12 @@ class IngredientFragment : Fragment() {
 //        binding.recyclerMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 //
 //        })
+
+//        viewModel.updatedClickedIngredients.observe(viewLifecycleOwner) { updatedIngredients ->
+//            println(updatedIngredients)
+        // 수정된 clicked 값들을 이용하여 화면을 업데이트하는 작업 수행
+        // updatedIngredients 리스트에는 수정된 clicked 값들이 들어있습니다.
+//        }
 
         // 재료 보여주는 RecyclerView
         initIngredientsRecycler()
@@ -119,13 +121,13 @@ class IngredientFragment : Fragment() {
                             MainActivity.BOTTOM_BAR_STATUS_SHOW
                         )
                     }
-                    if (dy > 0 && !isButtonExpanded) {
-                        // Scroll down
-                        expandButton()
-                    } else if (dy < 0 && isButtonExpanded) {
-                        // Scroll up
-                        shrinkButton()
-                    }
+//                    if (dy > 0 && !isButtonExpanded) {
+//                        // Scroll down
+//                        expandButton()
+//                    } else if (dy < 0 && isButtonExpanded) {
+//                        // Scroll up
+//                        shrinkButton()
+//                    }
                 }
             })
         }

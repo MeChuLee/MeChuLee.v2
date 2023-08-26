@@ -15,6 +15,8 @@ class MenuListViewModel : ViewModel() {
     val categoryList: MutableLiveData<ArrayList<String>> = MutableLiveData()
     val menuList: MutableLiveData<ArrayList<MenuInfo>> = MutableLiveData()
 
+    var currentCategory = MENU_CATEGORY_ALL
+
     init {
         categoryList.value = arrayListOf("전체", "한식", "중식", "일식", "양식", "분식", "아시안")
         totalList = arrayListOf(
@@ -39,21 +41,15 @@ class MenuListViewModel : ViewModel() {
         menuList.value = totalList
     }
 
-    // totalList 에서 searchWord 가 포함된 제목을 가진 메뉴를 menuList 에 반영
-    fun searchMenuList(searchWord: String) {
-        val searchList = ArrayList<MenuInfo>()
-        totalList.forEach { if (searchWord in it.title) searchList.add(it) }
-        menuList.value = searchList
-    }
+    // totalList 에서 searchWord 가 포함된 제목을 가지고 현재 category 에 포함된 메뉴를 menuList 에 반영
+    fun searchMenuList(category: String?, searchWord: String) {
+        if (category != null) currentCategory = category
 
-    // totalList 에서 category 가 인자로 받은 category 와 같은 경우 menuList 에 반영
-    fun searchMenuListWithCategory(category: String) {
-        if (category == MENU_CATEGORY_ALL) {
-            menuList.value = totalList
-        } else {
-            val searchList = ArrayList<MenuInfo>()
-            totalList.forEach { if (category == it.category) searchList.add(it) }
-            menuList.value = searchList
+        val searchList = ArrayList<MenuInfo>()
+        totalList.forEach {
+            if ((currentCategory == MENU_CATEGORY_ALL || currentCategory == it.category) && searchWord in it.title)
+                searchList.add(it)
         }
+        menuList.value = searchList
     }
 }
