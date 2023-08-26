@@ -8,22 +8,22 @@ import com.recommendmenu.mechulee.model.data.IngredientInfo
 class ItemViewModel: ViewModel() {
 
     private var totalList: ArrayList<IngredientInfo> = arrayListOf(
-        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "소시지", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "양배추", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "오이", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "떡", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "오리고기", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "골뱅이", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "시금치", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "카레가루", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "오징어", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "토마토", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "소시지", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "양배추", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "오이", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "떡", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "오리고기", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "골뱅이", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "시금치", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "카레가루", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "오징어", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "토마토", 0.0f, "", false),
+        IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f, "", false),
    )
 
     val menuList: MutableLiveData<ArrayList<IngredientInfo>> = MutableLiveData()
