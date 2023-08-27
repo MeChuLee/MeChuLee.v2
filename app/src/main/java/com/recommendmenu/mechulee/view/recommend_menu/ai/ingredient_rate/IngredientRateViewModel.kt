@@ -68,16 +68,16 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>): Vie
         // 값만 바꿔도 menuList가 MutableLiveData이기 때문에 변경이 감지됨
     }
 
-    fun showMenuList(selectedItem: String) {
+    fun showMenuList(selectedItem: String, searchWord: String) {
         val spinnerList = ArrayList<IngredientInfo>()
 
         totalList.forEach {
-            if(selectedItem == "평가완료"){
-                if(it.rating > 0.0f) spinnerList.add(it)
-            } else if(selectedItem == "미완료"){
-                if(it.rating == 0.0f) spinnerList.add(it)
-            } else if(selectedItem == "모두"){
-                if(it.rating >= 0.0f) spinnerList.add(it)
+            if((selectedItem == "평가완료") && (it.rating > 0.0f) && (searchWord in it.title)){
+                spinnerList.add(it)
+            } else if(selectedItem == "미완료" && it.rating == 0.0f && searchWord in it.title){
+                spinnerList.add(it)
+            } else if(selectedItem == "모두" && it.rating >= 0.0f && searchWord in it.title){
+                spinnerList.add(it)
             }
         }
 
@@ -128,7 +128,6 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>): Vie
             }
         }
     }
-
 }
 
 
