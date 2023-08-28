@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.MenuDto
 import com.recommendmenu.mechulee.model.network.MenuService
+import com.recommendmenu.mechulee.utils.network.NetworkUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,10 +26,7 @@ class MenuListViewModel : ViewModel() {
     private var currentCategory = MENU_CATEGORY_ALL
 
     init {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:5000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        val retrofit = NetworkUtils.getRetrofitInstance()
 
         val service = retrofit.create(MenuService::class.java)
 
@@ -50,7 +48,6 @@ class MenuListViewModel : ViewModel() {
                     println("테스트 : 실패")
                     println(t.message)
                 }
-
             })
 
         categoryList.value = arrayListOf("전체", "한식", "중식", "일식", "양식", "분식", "아시안")
