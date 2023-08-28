@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.databinding.FragmentMenuListBinding
+import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
+import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuCategoryAdapter
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuGridAdapter
@@ -98,10 +100,10 @@ class MenuListFragment : Fragment() {
 
                     if (dy > 0) {
                         // 아래로 스크롤 시 Bottom Bar 사라짐
-                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(MainActivity.BOTTOM_BAR_STATUS_HIDE)
+                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(BOTTOM_BAR_STATUS_HIDE)
                     } else {
                         // 위로 스크롤 시 Bottom Bar 나타남
-                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(MainActivity.BOTTOM_BAR_STATUS_SHOW)
+                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(BOTTOM_BAR_STATUS_SHOW)
                     }
                 }
             })
