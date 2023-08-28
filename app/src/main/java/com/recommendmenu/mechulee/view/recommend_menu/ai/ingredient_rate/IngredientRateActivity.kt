@@ -1,14 +1,7 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -99,51 +92,12 @@ class IngredientActivity : AppCompatActivity() {
             finish()
         }
 
-        initEditText()
-        initSpinnerIngredientList()
+        // text & spinner 요소 같이 검색하도록 돕는 클래스 선언
+        val spinnerEditTextSearch = SpinnerEditTextSearch(this, binding, viewModel)
+
+        spinnerEditTextSearch.initEditText()
+        spinnerEditTextSearch.initSpinnerIngredientList()
     }
-
-    private fun initEditText() {
-        // 검색창 입력 시 마다 검색 기능 수행
-        binding.menuSearchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.searchMenuList(binding.menuSearchEditText.text.toString())
-            }
-        })
-        binding.menuSearchEditText.setOnEditorActionListener { _, actionId, _ ->
-            var handled = false
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                // 키보드 내리기
-                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(binding.menuSearchEditText.windowToken, 0)
-                handled = true
-            }
-            handled
-        }
-    }
-
-    // 각 스피너에 따라 나오는 리스트 변경
-    private fun initSpinnerIngredientList(){
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) { // 선택된 아이템에 대한 효과를 적용하는 코드 작성
-                val selectedItem = parent?.getItemAtPosition(position).toString()
-
-                viewModel.showMenuList(selectedItem)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
-        }
-    }
-
 
     override fun onDestroy() {
         // binding을 해제하는 코드
