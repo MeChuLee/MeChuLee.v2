@@ -26,7 +26,7 @@ class MenuGridAdapter : RecyclerView.Adapter<MenuGridAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.menuTitleTextView.text = list[position].title
+        holder.menuTitleTextView.text = list[position].name
 
         // recyclerview animation 효과 추가
         val animation: Animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_in_row)
