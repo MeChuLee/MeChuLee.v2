@@ -38,6 +38,8 @@ class MenuListAdapter : RecyclerView.Adapter<MenuListAdapter.MyViewHolder>() {
 
         // 메뉴 테스트 이미지
         val menuName = (position % 20) + 1
+
+        // 메뉴 이미지 로드
         NetworkUtils.loadImage(
             holder.itemView.context,
             holder.binding.menuImage,

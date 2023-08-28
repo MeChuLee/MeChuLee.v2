@@ -9,48 +9,55 @@ import com.recommendmenu.mechulee.utils.network.NetworkUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MenuListViewModel : ViewModel() {
 
     companion object {
         private const val MENU_CATEGORY_ALL = "전체"
+        private val MENU_CATEGORY_LIST = arrayListOf("전체", "한식", "중식", "일식", "양식", "분식", "아시안")
     }
 
+    // 전체 메뉴 리스트 정보를 담고 있는 변수
     private lateinit var totalList: ArrayList<MenuInfo>
 
+    // 메뉴 카테고리 정보 리스트
     val categoryList: MutableLiveData<ArrayList<String>> = MutableLiveData()
+
+    // 현재 RecyclerView 에 표시되고 있는 메뉴 리스트
     val menuList: MutableLiveData<ArrayList<MenuInfo>> = MutableLiveData()
 
     private var currentCategory = MENU_CATEGORY_ALL
 
     init {
+        // retrofit instance 획득
         val retrofit = NetworkUtils.getRetrofitInstance()
 
         val service = retrofit.create(MenuService::class.java)
 
+        // retrofit 실행
         service.getAllIngredient()
             .enqueue(object : Callback<MenuDto> {
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                     if (response.isSuccessful.not()) {
-                        println("테스트 : not Succesful")
+                        println("실패 : not Succesful")
                         return
                     }
+                    // 성공 시, response.body 에 있는 데이터(응답 데이터) 가져오기
                     response.body()?.let {
+                        // 응답으로 온 메뉴 데이터를 viewModel data 에 반영
+                        totalList = it.menuList.toCollection(ArrayList())
                         menuList.value = it.menuList.toCollection(ArrayList())
-                        println("테스트 : 성공")
                     }
                 }
 
                 override fun onFailure(call: Call<MenuDto>, t: Throwable) {
                     // 실패
-                    println("테스트 : 실패")
-                    println(t.message)
+                    println("실패 : " + t.message)
                 }
             })
 
-        categoryList.value = arrayListOf("전체", "한식", "중식", "일식", "양식", "분식", "아시안")
+        // 메뉴 카테고리 정보 초기화
+        categoryList.value = MENU_CATEGORY_LIST
     }
 
     // totalList 에서 searchWord 가 포함된 제목을 가지고 현재 category 에 포함된 메뉴를 menuList 에 반영
