@@ -22,7 +22,9 @@
 
         <activity
             android:name=".view.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,8 +32,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.recommend_menu.ai.ingredient_rate.IngredientActivity" />
-        <activity android:name=".view.recommend_menu.ingredient.IngredientRecommendResultActivity" />
+        <activity
+            android:name=".view.recommend_menu.ai.ingredient_rate.IngredientActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".view.recommend_menu.ingredient.IngredientRecommendResultActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
 
     </application>
 

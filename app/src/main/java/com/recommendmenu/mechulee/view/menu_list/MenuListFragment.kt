@@ -50,8 +50,8 @@ class MenuListFragment : Fragment() {
 
         // 메뉴 리스트 observe -> 변경 감지 시 메뉴 정보 리스트 RecyclerView 에 반영
         viewModel.menuList.observe(requireActivity()) { menuList ->
-            menuListRecyclerViewAdapter.list = menuList
-            menuGridRecyclerViewAdapter.list = menuList
+            menuListRecyclerViewAdapter.list = menuList.map { it.copy() }.toCollection(ArrayList())
+            menuGridRecyclerViewAdapter.list = menuList.map { it.copy() }.toCollection(ArrayList())
 
             menuListRecyclerViewAdapter.notifyDataSetChanged()
             menuGridRecyclerViewAdapter.notifyDataSetChanged()
