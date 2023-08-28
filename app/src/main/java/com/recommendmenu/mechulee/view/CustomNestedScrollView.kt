@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.widget.NestedScrollView
+import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
+import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
 
 class CustomNestedScrollView(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
 
@@ -27,10 +29,10 @@ class CustomNestedScrollView(context: Context, attrs: AttributeSet) : NestedScro
 
                         if (prevY < currentY) {
                             // 위로 스크롤 시 Bottom Bar 나타남
-                            onBottomBarStatusChange?.invoke(MainActivity.BOTTOM_BAR_STATUS_SHOW)
+                            onBottomBarStatusChange?.invoke(BOTTOM_BAR_STATUS_SHOW)
                         } else if (prevY > currentY) {
                             // 아래로 스크롤 시 Bottom Bar 사라짐
-                            onBottomBarStatusChange?.invoke(MainActivity.BOTTOM_BAR_STATUS_HIDE)
+                            onBottomBarStatusChange?.invoke(BOTTOM_BAR_STATUS_HIDE)
                         }
 
                         prevY = currentY

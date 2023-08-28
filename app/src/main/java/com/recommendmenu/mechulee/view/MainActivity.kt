@@ -9,15 +9,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityMainBinding
+import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
+import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
 import github.com.st235.lib_expandablebottombar.navigation.ExpandableBottomBarNavigationUI
 
-
 class MainActivity : AppCompatActivity() {
-
-    companion object {
-        const val BOTTOM_BAR_STATUS_SHOW = 0
-        const val BOTTOM_BAR_STATUS_HIDE = 1
-    }
 
     private lateinit var binding: ActivityMainBinding
     lateinit var mainActivityListener: MainActivityListener
