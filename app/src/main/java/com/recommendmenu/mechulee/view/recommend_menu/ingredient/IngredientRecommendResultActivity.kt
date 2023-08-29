@@ -33,13 +33,13 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
         }
         // 얻은 결과 getResult의 값으로 넣어주기
         val nowResult = viewModel.getResult("햄버거")
-        binding.resultMenuName.setText(nowResult?.title)
-        binding.ingredientList.setText(nowResult?.detail)
+        binding.resultMenuName.setText(nowResult?.name)
+        binding.ingredientList.setText(nowResult?.ingredients)
 
         // 비슷한 메뉴는 일단 result의 category와 일치하는 값들을 가져오는 걸로
         val resultAdapter = ResultAdapter()
-        viewModel.recommendOthers(nowResult?.category, nowResult?.title)?.forEach {
-            resultAdapter.datas.add(it.title)
+        viewModel.recommendOthers(nowResult?.category, nowResult?.name)?.forEach {
+            resultAdapter.datas.add(it.name)
         }
         binding.otherMenuRecycler.apply {
             setHasFixedSize(true)

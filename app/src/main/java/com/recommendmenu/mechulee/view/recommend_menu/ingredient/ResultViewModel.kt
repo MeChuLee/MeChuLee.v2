@@ -27,7 +27,7 @@ class ResultViewModel : ViewModel() {
         val tempList = ArrayList<MenuInfo>()
 
         totalList.forEach {
-            if (it.category == nowTarget && it.title != nowMenu) {
+            if (it.category == nowTarget && it.name != nowMenu) {
                 tempList.add(it)
             }
         }
@@ -38,7 +38,7 @@ class ResultViewModel : ViewModel() {
     // 결과를 return하는 함수
     fun getResult(menuName: String): MenuInfo? {
         totalList.forEach {
-            if (it.title == menuName) {
+            if (it.name == menuName) {
                 nowResult.value = it
             }
         }
