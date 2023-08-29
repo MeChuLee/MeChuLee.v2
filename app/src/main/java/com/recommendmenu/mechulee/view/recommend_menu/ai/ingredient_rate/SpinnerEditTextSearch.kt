@@ -32,7 +32,10 @@ class SpinnerEditTextSearch(
                 id: Long
             ) {
                 selectedItem = parent?.getItemAtPosition(position).toString()
-                viewModel.showMenuList(selectedItem, binding.menuSearchEditText.text.toString())
+                viewModel.run {
+                    changeMenuListToTotalList()
+                    showMenuList(selectedItem, binding.menuSearchEditText.text.toString())
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

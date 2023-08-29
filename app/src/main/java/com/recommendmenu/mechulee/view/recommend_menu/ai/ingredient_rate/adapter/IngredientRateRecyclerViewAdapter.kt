@@ -9,14 +9,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
-import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientRateViewModel
 import com.willy.ratingbar.RotationRatingBar
 
-class IngredientRateRecyclerViewAdapter:
+class IngredientRateRecyclerViewAdapter(private val viewModel: IngredientRateViewModel):
     RecyclerView.Adapter<IngredientRateRecyclerViewAdapter.ViewHolder>() {
-    var itemList = ArrayList<IngredientInfo>()
-
-    var lastPosition = -1
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
@@ -30,31 +27,27 @@ class IngredientRateRecyclerViewAdapter:
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = itemList[position]
-        holder.imageView.setImageResource(item.imageResId)
-        holder.textView.text = item.title
+        val item = viewModel.menuList.value?.get(position)
+        item?.let {
+            holder.imageView.setImageResource(it.imageResId)
+            holder.textView.text = it.title
 
-        // 레이팅바의 리스너를 설정하여 평가 값이 변경되었을 때 평가 값 갱신
-        holder.rotationRatingBar.setOnRatingChangeListener { _, rating, _ ->
-            itemList[position].rating = rating // 평가 값 갱신
+            // 레이팅바의 리스너를 설정하여 평가 값이 변경되었을 때 평가 값 갱신
+            holder.rotationRatingBar.setOnRatingChangeListener { _, rating, _ ->
+                it.rating = rating // 평가 값 갱신
+            }
+
+            // RotationRating에 적용을 안시켜서 값이 적용이 안됐던 것임.
+            // 레이팅 값을 적용하는 부분을 따로 작성해야한다.
+            holder.rotationRatingBar.rating = it.rating
+
+            // recyclerview animation 효과 추가
+            val animation: Animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_in_row)
+            holder.itemView.startAnimation(animation)
         }
-
-        // RotationRating에 적용을 안시켜서 값이 적용이 안됐던 것임.
-        // 레이팅 값을 적용하는 부분을 따로 작성해야한다.
-        holder.rotationRatingBar.rating = itemList[position].rating
-
-//        if (holder.adapterPosition > lastPosition) {
-//            val animation: Animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_in_row)
-//            holder.itemView.startAnimation(animation)
-//        }
-
-        // recyclerview animation 효과 추가
-        val animation: Animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_in_row)
-        holder.itemView.startAnimation(animation)
     }
 
     override fun getItemCount(): Int {
-        return itemList.size
+        return viewModel.menuList.value?.size ?: 0
     }
-
 }
