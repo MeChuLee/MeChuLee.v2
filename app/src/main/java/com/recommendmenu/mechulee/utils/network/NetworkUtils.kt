@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkUtils {
     // 기기 : http://192.168.0.72:8000/
     // 에뮬레이터 : http://10.0.2.2:8000/
-    private const val BASE_URL = "http://192.168.0.72:8000/"
+    private const val BASE_URL = "http://10.0.2.2:8000/"
     private const val ADD_MENU_URL = "static/menu/"
     private const val ADD_INGREDIENT_URL = "static/ingredient/"
 
