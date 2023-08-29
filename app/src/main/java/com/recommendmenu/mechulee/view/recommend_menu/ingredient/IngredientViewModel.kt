@@ -12,7 +12,9 @@ class IngredientViewModel(application: Application) : AndroidViewModel(applicati
     private var vegetableList: ArrayList<IngredientInfo>
     private var fruitList: ArrayList<IngredientInfo>
     private var meatList: ArrayList<IngredientInfo>
-    private var noodleList: ArrayList<IngredientInfo>
+    private var fishList: ArrayList<IngredientInfo>
+    private var riceAndNoodleList: ArrayList<IngredientInfo>
+    private var sauceList: ArrayList<IngredientInfo>
     private var otherList: ArrayList<IngredientInfo>
 
     val ingredientAllMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
@@ -21,55 +23,76 @@ class IngredientViewModel(application: Application) : AndroidViewModel(applicati
         MutableLiveData()
 
     init {
-        classificationList.value = arrayListOf("전체", "야채", "과일", "고기", "면", "추가재료")
+        classificationList.value = arrayListOf("전체", "야채", "과일", "밥/면", "고기", "생선", "소스", "기타")
 
         vegetableList = arrayListOf(
-            IngredientInfo(R.raw.chili, "고추", 0.0f, "야채", false),
-            IngredientInfo(R.raw.potato, "감자", 0.0f, "야채", false),
-            IngredientInfo(R.raw.cucumber, "오이", 0.0f, "야채", false),
-            IngredientInfo(R.raw.carrot, "당근", 0.0f, "야채", false),
-            IngredientInfo(R.raw.tomato, "토마토", 0.0f, "야채", false),
-            IngredientInfo(R.raw.onion, "양파", 0.0f, "야채", false),
-            IngredientInfo(R.raw.eggplant, "가지", 0.0f, "야채", false),
-            IngredientInfo(R.raw.corn, "옥수수", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "양배추", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "오이", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "시금치", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "토마토", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "고구마", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "단호박", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "시래기", 0.0f, "야채", false),
+            IngredientInfo(R.raw.corn, "파", 0.0f, "야채", false),
         )
 
         fruitList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "딸기", 0.0f, "과일", false),
-            IngredientInfo(R.raw.garlic, "바나나", 0.0f, "과일", false),
-            IngredientInfo(R.raw.garlic, "사과", 0.0f, "과일", false),
-            IngredientInfo(R.raw.garlic, "배", 0.0f, "과일", false),
-            IngredientInfo(R.raw.garlic, "오렌지", 0.0f, "과일", false),
+            IngredientInfo(R.raw.corn, "사과", 0.0f, "과일", false),
+            IngredientInfo(R.raw.corn, "대추", 0.0f, "과일", false),
+        )
+
+        riceAndNoodleList = arrayListOf(
+            IngredientInfo(R.raw.corn, "쌀", 0.0f, "밥/면", false),
+            IngredientInfo(R.raw.corn, "쌀국수", 0.0f, "밥/면", false),
+            IngredientInfo(R.raw.corn, "스파게티", 0.0f, "밥/면", false),
+            IngredientInfo(R.raw.corn, "당면", 0.0f, "밥/면", false),
         )
 
         meatList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "소고기", 0.0f, "고기", false),
-            IngredientInfo(R.raw.garlic, "돼지고기", 0.0f, "고기", false),
-            IngredientInfo(R.raw.garlic, "닭고기", 0.0f, "고기", false),
+            IngredientInfo(R.raw.corn, "소고기", 0.0f, "고기", false),
+            IngredientInfo(R.raw.corn, "양갈비", 0.0f, "고기", false),
+            IngredientInfo(R.raw.corn, "소시지", 0.0f, "고기", false),
+            IngredientInfo(R.raw.corn, "삼겹살", 0.0f, "고기", false),
+            IngredientInfo(R.raw.corn, "오리고기", 0.0f, "고기", false),
+            IngredientInfo(R.raw.corn, "달고기", 0.0f, "고기", false),
         )
 
-        noodleList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "국수", 0.0f, "면", false),
-            IngredientInfo(R.raw.garlic, "스파게티", 0.0f, "면", false),
-            IngredientInfo(R.raw.garlic, "칼국수", 0.0f, "면", false),
-            IngredientInfo(R.raw.garlic, "라면", 0.0f, "면", false),
+        fishList = arrayListOf(
+            IngredientInfo(R.raw.corn, "생선", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "오징어", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "새우", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "조기", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "멸치", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "쭈꾸미", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "고등어", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "어묵", 0.0f, "생선", false),
+            IngredientInfo(R.raw.corn, "아귀", 0.0f, "생선", false),
+        )
+
+        sauceList = arrayListOf(
+            IngredientInfo(R.raw.corn, "케첩", 0.0f, "소스", false),
+            IngredientInfo(R.raw.corn, "고추장", 0.0f, "소스", false),
+            IngredientInfo(R.raw.corn, "생크림", 0.0f, "소스", false),
+            IngredientInfo(R.raw.corn, "버터", 0.0f, "소스", false),
         )
 
         otherList = arrayListOf(
-            IngredientInfo(R.raw.garlic, "쌀국수", 0.0f, "추가재료", false),
-            IngredientInfo(R.raw.garlic, "쯔유", 0.0f, "추가재료", false),
-            IngredientInfo(R.raw.garlic, "고사리", 0.0f, "추가재료", false),
-            IngredientInfo(R.raw.garlic, "미나리", 0.0f, "추가재료", false),
-            IngredientInfo(R.raw.garlic, "바질", 0.0f, "추가재료", false),
+            IngredientInfo(R.raw.corn, "우유", 0.0f, "기타", false),
+            IngredientInfo(R.raw.corn, "김치", 0.0f, "기타", false),
+            IngredientInfo(R.raw.corn, "두부", 0.0f, "기타", false),
+            IngredientInfo(R.raw.corn, "치즈", 0.0f, "기타", false),
+            IngredientInfo(R.raw.corn, "빵", 0.0f, "기타", false),
         )
 
 
         ingredientAllMap.value = mapOf(
             "야채" to vegetableList,
             "과일" to fruitList,
+            "밥/면" to riceAndNoodleList,
             "고기" to meatList,
-            "면" to noodleList,
-            "추가재료" to otherList
+            "생선" to fishList,
+            "소스" to sauceList,
+            "기타" to otherList,
         )
 
         selectClassificationMap.value = ingredientAllMap.value
@@ -83,9 +106,11 @@ class IngredientViewModel(application: Application) : AndroidViewModel(applicati
             when (classification) {
                 "야채" -> selectClassificationMap.value = mapOf(classification to vegetableList)
                 "과일" -> selectClassificationMap.value = mapOf(classification to fruitList)
+                "밥/면" -> selectClassificationMap.value = mapOf(classification to riceAndNoodleList)
                 "고기" -> selectClassificationMap.value = mapOf(classification to meatList)
-                "면" -> selectClassificationMap.value = mapOf(classification to noodleList)
-                "추가재료" -> selectClassificationMap.value = mapOf(classification to otherList)
+                "생선" -> selectClassificationMap.value = mapOf(classification to fishList)
+                "소스" -> selectClassificationMap.value = mapOf(classification to sauceList)
+                "기타" -> selectClassificationMap.value = mapOf(classification to otherList)
             }
         }
     }
