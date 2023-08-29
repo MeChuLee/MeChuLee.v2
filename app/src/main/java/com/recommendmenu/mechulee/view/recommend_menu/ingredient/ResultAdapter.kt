@@ -1,5 +1,6 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

@@ -1,6 +1,7 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -14,7 +15,7 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
     private lateinit var binding: ActivityIngredientRecommendResultBinding
 
     // TODO 결과용 새로운 ViewModel 만들기
-    private lateinit var viewModel: IngredientViewModel
+    private lateinit var viewModel: ResultViewModel
     private var isLiked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,15 +25,22 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
 
-        viewModel = ViewModelProvider(this)[IngredientViewModel::class.java]
+        viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
 
         binding.heartIcon.setOnClickListener {
             isLiked = !isLiked
             animateHeart(isLiked)
         }
+        // 얻은 결과 getResult의 값으로 넣어주기
+        val nowResult = viewModel.getResult("햄버거")
+        binding.resultMenuName.setText(nowResult?.title)
+        binding.ingredientList.setText(nowResult?.detail)
 
+        // 비슷한 메뉴는 일단 result의 category와 일치하는 값들을 가져오는 걸로
         val resultAdapter = ResultAdapter()
-        viewModel.classificationList.value?.forEach { resultAdapter.datas.add(it) }
+        viewModel.recommendOthers(nowResult?.category, nowResult?.title)?.forEach {
+            resultAdapter.datas.add(it.title)
+        }
         binding.otherMenuRecycler.apply {
             setHasFixedSize(true)
             adapter = resultAdapter
