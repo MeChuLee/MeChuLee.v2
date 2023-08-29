@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
+import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.ClassificationAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.IngredientOuterAdapter
@@ -42,8 +43,12 @@ class IngredientFragment : Fragment() {
         initClassificationRecycler()
 
         // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerView에 반영
-        viewModel.selectClassificationMap.observe(requireActivity()) {
-            ingredientOuterAdapter.itemList = it
+        viewModel.selectClassificationMap.observe(requireActivity()) { nowMap-> 
+            // 깊은 복사로 수정
+            var tempMap = nowMap.mapValues { (_, value) ->
+                value
+            }.toMap()
+            ingredientOuterAdapter.itemList = tempMap
 
             ingredientOuterAdapter.notifyDataSetChanged()
         }
