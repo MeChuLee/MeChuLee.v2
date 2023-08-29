@@ -76,7 +76,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
     private fun aiButtonClickEvent(){
         // 버튼 클릭 리스너 설정
-        binding.aiButton.setOnClickListener {
+        binding.tagView.setOnClickListener {
             // 액티비티로 전환하는 Intent 생성
             val intent = Intent(activity, IngredientActivity::class.java)
             startActivity(intent) // 액티비티로 전환
@@ -93,6 +93,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
     }
 
     override fun onTap(tagItem: TagItem) {
-
+        val intent = Intent(activity, IngredientActivity::class.java)
+        startActivity(intent) // 액티비티로 전환
     }
 }
