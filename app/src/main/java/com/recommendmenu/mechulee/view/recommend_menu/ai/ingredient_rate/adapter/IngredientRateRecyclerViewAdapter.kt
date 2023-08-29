@@ -27,7 +27,9 @@ class IngredientRateRecyclerViewAdapter(private val viewModel: IngredientRateVie
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         val item = viewModel.menuList.value?.get(position)
+
         item?.let {
             holder.imageView.setImageResource(it.imageResId)
             holder.textView.text = it.title

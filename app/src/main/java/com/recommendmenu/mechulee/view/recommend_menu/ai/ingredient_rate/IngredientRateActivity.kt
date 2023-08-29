@@ -31,7 +31,7 @@ class IngredientActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_ingredient_rate)
 
         // ViewModelProvider.Factory를 생성하여 ItemViewModel 인스턴스를 생성
-        val viewModelFactory = ItemViewModelFactory(ratingDataStore)
+        val viewModelFactory = IngredientRateViewModelFactory(ratingDataStore)
 
         // ItemViewModelFactory를 provider에 넘겨줌으로서 viewModel에서 DataStore를 접근가능하도록 설정
         viewModel = ViewModelProvider(this, viewModelFactory)[IngredientRateViewModel::class.java]
@@ -71,6 +71,8 @@ class IngredientActivity : AppCompatActivity() {
 
             finish()
         }
+
+        println("스피너 아이템"+binding.spinner.selectedView)
 
         // text & spinner 요소 같이 검색하도록 돕는 클래스 선언
         val spinnerEditTextSearch = SpinnerEditTextSearch(this, binding, viewModel)

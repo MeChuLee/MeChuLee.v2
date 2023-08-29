@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.recommendmenu.mechulee.RatingData
 
-class ItemViewModelFactory(private val dataStore: DataStore<RatingData>) : ViewModelProvider.Factory {
+class IngredientRateViewModelFactory(private val dataStore: DataStore<RatingData>) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(IngredientRateViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
