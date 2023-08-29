@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
 import com.magicgoop.tagsphere.OnTagLongPressedListener
 import com.magicgoop.tagsphere.OnTagTapListener
 import com.magicgoop.tagsphere.item.TagItem
@@ -56,7 +55,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
     private fun initTagView() {
         val samples = EmojiConstants.emojiCodePoints.size - 1
-        (0..100).map {
+        (0..120).map {
             TextTagItem(
                 text = String(
                     Character.toChars(EmojiConstants.emojiCodePoints[Random.nextInt(samples)])
