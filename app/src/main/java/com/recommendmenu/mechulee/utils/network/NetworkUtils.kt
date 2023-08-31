@@ -1,6 +1,8 @@
 package com.recommendmenu.mechulee.utils.network
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.recommendmenu.mechulee.utils.constant.Constants.URL_TYPE_INGREDIENT
@@ -14,6 +16,19 @@ object NetworkUtils {
     private const val BASE_URL = "http://10.0.2.2:8000/"
     private const val ADD_MENU_URL = "static/menu/"
     private const val ADD_INGREDIENT_URL = "static/ingredient/"
+
+    // 현재 기기에 인터넷 연결 여부 확인
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true // Mobile data connection.
+            else -> false
+        }
+    }
 
     // return Retrofit instance
     fun getRetrofitInstance(): Retrofit {
