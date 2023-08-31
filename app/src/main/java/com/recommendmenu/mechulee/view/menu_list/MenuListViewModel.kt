@@ -2,6 +2,7 @@ package com.recommendmenu.mechulee.view.menu_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.MenuDto
 import com.recommendmenu.mechulee.model.network.MenuService
@@ -39,21 +40,19 @@ class MenuListViewModel : ViewModel() {
             .enqueue(object : Callback<MenuDto> {
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                     if (response.isSuccessful.not()) {
-                        println("실패 : not Succesful")
                         return
                     }
                     // 성공 시, response.body 에 있는 데이터(응답 데이터) 가져오기
-                    response.body()?.let {
-                        // 응답으로 온 메뉴 데이터를 viewModel data 에 반영
-                        totalList = it.menuList.toCollection(ArrayList())
-                        menuList.value = it.menuList.toCollection(ArrayList())
+                    response.body()?.let { menuDto ->
+                        // 응답으로 온 메뉴 데이터를 viewModel data 에 반영 ( 분류 순 정렬 )
+                        val resultMenuList = menuDto.menuList.sortedWith(compareBy { it.category })
+
+                        totalList = resultMenuList.toCollection(ArrayList())
+                        menuList.value = resultMenuList.toCollection(ArrayList())
                     }
                 }
 
-                override fun onFailure(call: Call<MenuDto>, t: Throwable) {
-                    // 실패
-                    println("실패 : " + t.message)
-                }
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) { }
             })
 
         // 메뉴 카테고리 정보 초기화
