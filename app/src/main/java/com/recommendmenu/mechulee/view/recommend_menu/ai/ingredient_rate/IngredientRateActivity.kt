@@ -1,7 +1,14 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -72,13 +79,51 @@ class IngredientActivity : AppCompatActivity() {
             finish()
         }
 
-        println("스피너 아이템"+binding.spinner.selectedView)
+        initEditText()
+        initSpinnerIngredientList()
 
-        // text & spinner 요소 같이 검색하도록 돕는 클래스 선언
-        val spinnerEditTextSearch = SpinnerEditTextSearch(this, binding, viewModel)
+    }
 
-        spinnerEditTextSearch.initEditText()
-        spinnerEditTextSearch.initSpinnerIngredientList()
+    private fun initSpinnerIngredientList() {
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                viewModel.run {
+                    changeMenuListToTotalList()
+                    showMenuList(binding.spinner.selectedItem.toString(), binding.menuSearchEditText.text.toString())
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+    }
+
+    private fun initEditText() {
+        // 검색창 입력 시 마다 검색 기능 수행
+        binding.menuSearchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.showMenuList(binding.spinner.selectedItem.toString(), binding.menuSearchEditText.text.toString())
+            }
+        })
+        // 검색창 키보드 '검색' 아이콘 클릭 시 키보드 내리기
+        binding.menuSearchEditText.setOnEditorActionListener { _, actionId, _ ->
+            var handled = false
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(binding.menuSearchEditText.windowToken, 0)
+                handled = true
+            }
+            handled
+        }
     }
 
     override fun onDestroy() {
@@ -91,7 +136,6 @@ class IngredientActivity : AppCompatActivity() {
         // 쓰면 안되는 건가?
         super.onDestroy()
     }
-
 }
 
 
