@@ -20,7 +20,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.naver.maps.map.LocationTrackingMode
@@ -30,11 +32,14 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
+import com.recommendmenu.mechulee.utils.location.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -44,6 +49,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var viewModel: HomeViewModel
 
     private var bannerPosition = 0
     private var todayMenuListSize = 3
@@ -58,7 +65,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(layoutInflater)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+
+        // data binding 사용을 위해 선언 -> xml 의 viewModel 과 lifecycleOwner 를 현재 Fragment 값으로 반영
+        binding.homeViewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
         // CustomNestedScrollView 스크롤 함수 정의
         binding.nestedScrollView.onBottomBarStatusChange = { status ->
@@ -222,6 +234,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+        // 현재 주소 조회하여 반영
+        LocationUtils.getCurrentAddress(requireActivity(), onResult = { currentAddress ->
+            // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
+            viewModel.setCurrentAddress(currentAddress)
+        })
     }
 
     // 위치 권한 요청 선언
