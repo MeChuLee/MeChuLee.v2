@@ -14,44 +14,48 @@ class ResultViewModel : ViewModel() {
         MenuInfo("돼지불고기", "김치, 두부, 파, 양파, 고추", "한식"),
         MenuInfo("돼지갈비찜", "김치, 두부, 파, 양파, 고추", "한식"),
         MenuInfo("닭갈비", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("햄버거", "빵, 돼지고기, 양파, 토마토, 양상추, 마요네즈", "양식"),
+        MenuInfo("햄버거", "빵, 돼지고기, 양파, 토마토, 양상추, 마요네즈, 김치, 김치, 김치, 김치, 김치", "양식"),
         MenuInfo("피자", "김치, 두부, 파, 양파, 고추", "양식"),
         MenuInfo("치킨", "김치, 두부, 파, 양파, 고추", "양식"),
         MenuInfo("리조또", "김치, 두부, 파, 양파, 고추", "양식"),
     )
-    private val otherList: MutableLiveData<ArrayList<MenuInfo>> = MutableLiveData()
-    private var nowResult = MutableLiveData<MenuInfo>()
+    var nowResult = MutableLiveData<MenuInfo>()
+    val ingredientList: MutableLiveData<ArrayList<String>> = MutableLiveData()
+    val otherList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
-    // 비슷한 메뉴가 선택되는 함수 (지금은 같은 category인 경우만 고려)
-    fun recommendOthers(nowTarget: String?, nowMenu: String?): ArrayList<MenuInfo>? {
-        val tempList = ArrayList<MenuInfo>()
-
+    init {
+        // 최종 결과를 myResult에 넣고 초기화
+        var myResult = "햄버거"
         totalList.forEach {
-            if (it.category == nowTarget && it.name != nowMenu) {
-                tempList.add(it)
-            }
-        }
-        otherList.value = tempList
-        return otherList.value
-    }
-
-    // 결과를 return하는 함수
-    fun getResult(menuName: String): MenuInfo? {
-        totalList.forEach {
-            if (it.name == menuName) {
+            if (it.name == myResult) {
                 nowResult.value = it
             }
         }
-        return nowResult.value
+        nowResult.value?.let {
+            getIngredient(it)
+            recommendOthers(it.category, it.name)
+        }
+    }
+
+    fun getIngredient(nowMenu: MenuInfo) {
+        val tempSplit = nowMenu.ingredients.split(", ")
+        var tempList = ArrayList<String>()
+        tempSplit.forEach {
+            tempList.add(it)
+        }
+        ingredientList.value = tempList
+    }
+
+    // 비슷한 메뉴가 선택되는 함수 (지금은 같은 category인 경우만 고려)
+    fun recommendOthers(nowTarget: String, nowMenu: String) {
+        val tempList = ArrayList<String>()
+
+        totalList.forEach {
+            if (it.category == nowTarget && it.name != nowMenu) {
+                tempList.add(it.name)
+            }
+        }
+        otherList.value = tempList
     }
 }
-
-
-
-
-
-
-
-
-
 

@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="주요 재료"
+                android:text="재료"
                 android:textColor="#565260"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -74,17 +74,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/resultMenuName" />
 
-            <TextView
-                android:id="@+id/ingredientList"
-                android:layout_width="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="김치, 두부, 파, 양파, 고추"
-                android:textSize="20sp"
+                android:layout_marginStart="10dp"
+                android:id="@+id/ingredientList"
                 app:layout_constraintBottom_toTopOf="@+id/otherMenuText"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.07"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ingredientText" />
+                app:layout_constraintTop_toBottomOf="@+id/ingredientText"
+                            />
+                        <!--            <TextView-->
+<!--                android:id="@+id/ingredientList"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="20sp"-->
+<!--                app:layout_constraintBottom_toTopOf="@+id/otherMenuText"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintHorizontal_bias="0.07"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/ingredientText" />-->
 
             <TextView
                 android:id="@+id/otherMenuText"

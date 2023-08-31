@@ -1,12 +1,12 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityIngredientRecommendResultBinding
@@ -14,7 +14,6 @@ import com.recommendmenu.mechulee.databinding.ActivityIngredientRecommendResultB
 class IngredientRecommendResultActivity : AppCompatActivity() {
     private lateinit var binding: ActivityIngredientRecommendResultBinding
 
-    // TODO 결과용 새로운 ViewModel 만들기
     private lateinit var viewModel: ResultViewModel
     private var isLiked = false
 
@@ -31,20 +30,33 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
             isLiked = !isLiked
             animateHeart(isLiked)
         }
-        // 얻은 결과 getResult의 값으로 넣어주기
-        val nowResult = viewModel.getResult("햄버거")
-        binding.resultMenuName.setText(nowResult?.name)
-        binding.ingredientList.setText(nowResult?.ingredients)
 
-        // 비슷한 메뉴는 일단 result의 category와 일치하는 값들을 가져오는 걸로
-        val resultAdapter = ResultAdapter()
-        viewModel.recommendOthers(nowResult?.category, nowResult?.name)?.forEach {
-            resultAdapter.datas.add(it.name)
-        }
-        binding.otherMenuRecycler.apply {
-            setHasFixedSize(true)
-            adapter = resultAdapter
-            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+        viewModel.nowResult.observe(this) {
+            // 선택된 메뉴 적용
+            binding.resultMenuName.text = viewModel.nowResult.value?.name
+
+            // 재료 리스트 연결
+            val resultIngredientAdapter = ResultIngredientAdapter()
+            viewModel.ingredientList.value?.forEach {
+                resultIngredientAdapter.ingredientList.add(it)
+            }
+            binding.ingredientList.apply {
+                adapter = resultIngredientAdapter
+                layoutManager = GridLayoutManager(context, 5)
+                setHasFixedSize(true)
+            }
+
+            // 비슷한 메뉴 연결
+            val resultOtherMenuAdapter = ResultOtherMenuAdapter()
+            viewModel.otherList.value?.forEach {
+                resultOtherMenuAdapter.datas.add(it)
+            }
+            binding.otherMenuRecycler.apply {
+                setHasFixedSize(true)
+                adapter = resultOtherMenuAdapter
+                layoutManager =
+                    LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+            }
         }
     }
 
