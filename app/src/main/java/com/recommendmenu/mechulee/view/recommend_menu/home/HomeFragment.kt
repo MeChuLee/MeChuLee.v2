@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -18,7 +20,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.naver.maps.map.LocationTrackingMode
@@ -28,11 +32,14 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
+import com.recommendmenu.mechulee.utils.location.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -42,6 +49,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var viewModel: HomeViewModel
 
     private var bannerPosition = 0
     private var todayMenuListSize = 3
@@ -56,7 +65,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(layoutInflater)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+
+        // data binding 사용을 위해 선언 -> xml 의 viewModel 과 lifecycleOwner 를 현재 Fragment 값으로 반영
+        binding.homeViewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
         // CustomNestedScrollView 스크롤 함수 정의
         binding.nestedScrollView.onBottomBarStatusChange = { status ->
@@ -74,26 +88,24 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         active = true
         scrollJobCreate()
 
-        // 위치 권한 체크
-        val fineLocationGranted = ActivityCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val coarseLocationGranted = ActivityCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        if (fineLocationGranted || coarseLocationGranted) {
-            initMap()
-        } else {
-            locationPermissionRequest.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+        if (isNetworkAvailable()) {
+            // 네트워크 (인터넷) 연결 시
+            if (isLocationAvailable()) {
+                // 위치 권한 허용 상태
+                initMap()
+            } else {
+                // 위치 권한 요청
+                locationPermissionRequest.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
                 )
-            )
+            }
+        } else {
+            // 네트워크 미연결 시 -> 네트워크 설정 화면으로 이동
+            val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
+            startActivity(intent)
         }
     }
 
@@ -222,25 +234,27 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+        // 현재 주소 조회하여 반영
+        LocationUtils.getCurrentAddress(requireActivity(), onResult = { currentAddress ->
+            // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
+            viewModel.setCurrentAddress(currentAddress)
+        })
     }
 
-    // 위치 권한 요청
+    // 위치 권한 요청 선언
     private val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
-            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                // Precise location access granted.
-                initMap()
-            }
-
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) ||
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // Only approximate location access granted.
+                // 위치 권한 허용 시 네이버 지도 초기화
                 initMap()
             }
 
             else -> {
-                // No location access granted
+                // 위치 권한 미허용 시 -> 권한 허용 화면으로 이동
                 Toast.makeText(requireContext(), "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
                 val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
                     Uri.parse("package:${requireActivity().packageName}")
@@ -278,10 +292,38 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     startActivity(intent)
                 }
                 setNegativeButton("취소") { _, _ ->
+                    Toast.makeText(requireContext(), "위치 서비스를 활성화하고 시도해주세요.", Toast.LENGTH_SHORT).show()
                     requireActivity().finish()
                 }
+                setCancelable(false)
                 create()
             }.show()
         }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true // Mobile data connection.
+            else -> false
+        }
+    }
+
+    private fun isLocationAvailable(): Boolean {
+        val fineLocationGranted = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val coarseLocationGranted = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        return fineLocationGranted || coarseLocationGranted
     }
 }

@@ -38,7 +38,8 @@ class MenuGridAdapter : RecyclerView.Adapter<MenuGridAdapter.MyViewHolder>() {
 
         // 메뉴 테스트 이미지
         val menuName = (position % 20) + 1
-        println(menuName)
+
+        // 메뉴 이미지 로드
         NetworkUtils.loadImage(
             holder.itemView.context,
             holder.binding.menuImage,
