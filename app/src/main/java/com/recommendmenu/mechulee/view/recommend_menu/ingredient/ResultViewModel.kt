@@ -7,7 +7,7 @@ import com.recommendmenu.mechulee.model.data.MenuInfo
 class ResultViewModel : ViewModel() {
     private val totalList: ArrayList<MenuInfo> = arrayListOf(
         MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("김치찌개", "김치, 두부, 파, 양파, 고추", "한식"),
+        MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
         MenuInfo("바지락칼국수", "김치, 두부, 파, 양파, 고추", "한식"),
         MenuInfo("닭볶음탕", "김치, 두부, 파, 양파, 고추", "한식"),
         MenuInfo("비빔밥", "김치, 두부, 파, 양파, 고추", "한식"),
@@ -23,21 +23,11 @@ class ResultViewModel : ViewModel() {
     val ingredientList: MutableLiveData<ArrayList<String>> = MutableLiveData()
     val otherList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
-    init {
-        // 최종 결과를 myResult에 넣고 초기화
-        var myResult = "햄버거"
-        totalList.forEach {
-            if (it.name == myResult) {
-                nowResult.value = it
-            }
-        }
-        nowResult.value?.let {
-            getIngredient(it)
-            recommendOthers(it.category, it.name)
-        }
+    fun recommendResult(nowMenu: MenuInfo) {
+        nowResult.value = nowMenu
     }
 
-    fun getIngredient(nowMenu: MenuInfo) {
+    fun showIngredient(nowMenu: MenuInfo) {
         val tempSplit = nowMenu.ingredients.split(", ")
         var tempList = ArrayList<String>()
         tempSplit.forEach {
@@ -47,11 +37,11 @@ class ResultViewModel : ViewModel() {
     }
 
     // 비슷한 메뉴가 선택되는 함수 (지금은 같은 category인 경우만 고려)
-    fun recommendOthers(nowTarget: String, nowMenu: String) {
+    fun showOthers(nowMenu: MenuInfo) {
         val tempList = ArrayList<String>()
 
         totalList.forEach {
-            if (it.category == nowTarget && it.name != nowMenu) {
+            if (it.category == nowMenu.category && it.name != nowMenu.name) {
                 tempList.add(it.name)
             }
         }

@@ -3,23 +3,44 @@ package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.datastore.core.DataStore
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.recommendmenu.mechulee.R
+import com.orhanobut.logger.Logger
+import com.recommendmenu.mechulee.IngredientData
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
+import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.ClassificationAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.IngredientOuterAdapter
+import com.recommendmenu.mechulee.proto.checkedIngredientDataStore
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+
+class CheckedIngredientFactory(private val dataStore: DataStore<IngredientData>) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(IngredientViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return IngredientViewModel(dataStore) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
 
 class IngredientFragment : Fragment() {
-
     private var _binding: FragmentIngredientBinding? = null
     private val binding get() = _binding!!
 
@@ -27,8 +48,7 @@ class IngredientFragment : Fragment() {
     private lateinit var linearLayoutManager: LinearLayoutManager
     private val ingredientOuterAdapter = IngredientOuterAdapter()
 
-    private var isButtonAbove = true
-    private var isButtonExpanded = false
+    private var tempList = ArrayList<String>()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -37,45 +57,64 @@ class IngredientFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentIngredientBinding.inflate(layoutInflater)
-
-        viewModel = ViewModelProvider(this)[IngredientViewModel::class.java]
+        val checkedIngredientFactory =
+            CheckedIngredientFactory(requireContext().checkedIngredientDataStore)
+        viewModel =
+            ViewModelProvider(this, checkedIngredientFactory)[IngredientViewModel::class.java]
 
         // 재료 classification 보여주는 RecyclerView
         initClassificationRecycler()
 
         // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerView에 반영
-        viewModel.selectClassificationMap.observe(requireActivity()) { nowMap-> 
-            // 깊은 복사로 수정
-            var tempMap = nowMap.mapValues { (_, value) ->
-                value
-            }.toMap()
-            ingredientOuterAdapter.itemList = tempMap
-
+        viewModel.selectClassificationMap.observe(requireActivity()) { nowMap ->
+            ingredientOuterAdapter.itemList = nowMap
             ingredientOuterAdapter.notifyDataSetChanged()
         }
-
-        // 아래로 Scroll down 시에는 버튼을 크게
-        // Scroll up 시에는 버튼을 작게 버튼의 크기를 변경하는 부분
-//        binding.recyclerMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//
-//        })
-
-//        viewModel.updatedClickedIngredients.observe(viewLifecycleOwner) { updatedIngredients ->
-//            println(updatedIngredients)
-        // 수정된 clicked 값들을 이용하여 화면을 업데이트하는 작업 수행
-        // updatedIngredients 리스트에는 수정된 clicked 값들이 들어있습니다.
-//        }
 
         // 재료 보여주는 RecyclerView
         initIngredientsRecycler()
 
         binding.selectButton.setOnClickListener {
+            // 추천받기 버튼 클릭 시 선택한 값들 모두 출력
+//            tempList.clear()
+//            ingredientOuterAdapter.adapterList.forEach {
+//                Logger.d("클릭한 재료들 리스트 확인: ${it.clickedArray}")
+//                for (s in it.clickedArray) {
+//                    if(s !in tempList) {
+//                        tempList.add(s)
+//                    }
+//                }
+//            }
+//            viewModel.addCheckedIngredientInfo(tempList)
+
+//            viewModel.deleteAllCheckedIngredientInfo()
+
+//            MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
+//            MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
+            val resultMenu = MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식")
             val intent = Intent(activity, IngredientRecommendResultActivity::class.java)
+            intent.putExtra("object", resultMenu)
             startActivity(intent)
         }
 
         return binding.root
     }
+
+//    override fun onPause() {
+//        super.onPause()
+//        lifecycleScope.launch {
+//            tempList.clear()
+//            ingredientOuterAdapter.adapterList.forEach {
+//                for (s in it.clickedArray) {
+//                    if(s !in tempList) {
+//                        tempList.add(s)
+//                    }
+//                }
+//            }
+//            viewModel.addCheckedIngredientInfo(tempList)
+//            viewModel.initTotalMapFromDataStore()
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -127,53 +166,8 @@ class IngredientFragment : Fragment() {
                             BOTTOM_BAR_STATUS_SHOW
                         )
                     }
-//                    if (dy > 0 && !isButtonExpanded) {
-//                        // Scroll down
-//                        expandButton()
-//                    } else if (dy < 0 && isButtonExpanded) {
-//                        // Scroll up
-//                        shrinkButton()
-//                    }
                 }
             })
         }
     }
-
-    private fun expandButton() {
-        // 버튼을 크게 만드는 메소드
-        if (!isButtonExpanded) {
-            val layoutParams = binding.selectButton.layoutParams
-            layoutParams.height = resources.getDimensionPixelSize(R.dimen.expanded_button_height)
-            layoutParams.width = resources.getDimensionPixelSize(R.dimen.expanded_button_width)
-            binding.selectButton.layoutParams = layoutParams
-            isButtonExpanded = true
-            isButtonAbove = false
-
-        }
-    }
-
-    private fun shrinkButton() {
-        // 버튼을 원래의 크기로 돌리는 메소드
-        if (isButtonExpanded) {
-            val layoutParams = binding.selectButton.layoutParams
-            layoutParams.height = resources.getDimensionPixelSize(R.dimen.original_button_height)
-            layoutParams.width = resources.getDimensionPixelSize(R.dimen.original_button_width)
-            binding.selectButton.layoutParams = layoutParams
-            isButtonExpanded = false
-            isButtonAbove = true
-        }
-    }
-
-    // button의 margin bottom을 조정해 위치 조정하려는 의도
-//    private fun updateButtonMargin() {
-//        val layoutParams = binding.selectButton.layoutParams as ConstraintLayout.LayoutParams
-//        if (isButtonAbove) {
-//            layoutParams.bottomMargin =
-//                resources.getDimensionPixelSize(R.dimen.initial_button_margin_bottom)
-//        } else {
-//            layoutParams.bottomMargin =
-//                resources.getDimensionPixelSize(R.dimen.scrolled_button_margin_bottom)
-//        }
-//        binding.selectButton.layoutParams = layoutParams
-//    }
 }
