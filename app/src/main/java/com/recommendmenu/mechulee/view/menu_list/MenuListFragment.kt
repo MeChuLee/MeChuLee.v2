@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.databinding.FragmentMenuListBinding
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
@@ -35,8 +36,9 @@ class MenuListFragment : Fragment() {
     private lateinit var viewModel: MenuListViewModel
 
     // 메뉴 리스트 RecyclerView 에서 사용할 두 가지 Adapter (List, Grid)
-    private lateinit var menuListRecyclerViewAdapter: MenuListAdapter
-    private lateinit var menuGridRecyclerViewAdapter: MenuGridAdapter
+    private var menuListRecyclerViewAdapter: MenuListAdapter? = null
+    private var menuGridRecyclerViewAdapter: MenuGridAdapter? = null
+    private var menuCategoryRecyclerViewAdapter: MenuCategoryAdapter? = null
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -47,16 +49,27 @@ class MenuListFragment : Fragment() {
         _binding = FragmentMenuListBinding.inflate(layoutInflater)
 
         viewModel = ViewModelProvider(this)[MenuListViewModel::class.java]
+
         // viewModel 을 선언한 후, initRecyclerView() 를 순서대로 실행해야 동기적 선언 오류가 없음
         initRecyclerView()
 
+        // recyclerView 초기화 후 viewModel 에서 retrofit 으로 메뉴 정보를 가져와야 하므로, crate 함수 따로 생성 후 실행
+        viewModel.create()
+
         // 메뉴 리스트 observe -> 변경 감지 시 메뉴 정보 리스트 RecyclerView 에 반영
         viewModel.menuList.observe(requireActivity()) { menuList ->
-            menuListRecyclerViewAdapter.menuList = menuList.map { it.copy() }.toCollection(ArrayList())
-            menuGridRecyclerViewAdapter.menuList = menuList.map { it.copy() }.toCollection(ArrayList())
+            menuListRecyclerViewAdapter?.menuList = menuList.map { it.copy() }.toCollection(ArrayList())
+            menuGridRecyclerViewAdapter?.menuList = menuList.map { it.copy() }.toCollection(ArrayList())
 
-            menuListRecyclerViewAdapter.notifyDataSetChanged()
-            menuGridRecyclerViewAdapter.notifyDataSetChanged()
+            menuListRecyclerViewAdapter?.notifyDataSetChanged()
+            menuGridRecyclerViewAdapter?.notifyDataSetChanged()
+        }
+
+        // 메뉴 카테고리 리스트 observe -> 변경 감지 시 메뉴 카테고리 리스트 RecyclerView 에 반영
+        viewModel.categoryList.observe(requireActivity()) { categoryList ->
+            menuCategoryRecyclerViewAdapter?.list?.clear()
+            menuCategoryRecyclerViewAdapter?.list?.addAll(categoryList)
+            menuCategoryRecyclerViewAdapter?.notifyDataSetChanged()
         }
 
         initButton()
@@ -65,18 +78,23 @@ class MenuListFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        menuListRecyclerViewAdapter = null
+        menuGridRecyclerViewAdapter = null
+        menuCategoryRecyclerViewAdapter = null
+    }
+
     private fun initRecyclerView() {
         // 메뉴 카테고리 RecyclerView 초기화
-        val menuCategoryRecyclerViewAdapter = MenuCategoryAdapter(object: MenuCategoryAdapter.MenuCategoryListener {
+        menuCategoryRecyclerViewAdapter = MenuCategoryAdapter(object: MenuCategoryAdapter.MenuCategoryListener {
             // Listener 내부 함수 정의
             override fun changeCurrentCategory(category: String) {
                 // 카테고리 버튼을 클릭하여 현재 카테고리 변경 시
                 viewModel.searchMenuList(category, binding.menuSearchEditText.text.toString())
             }
         })
-
-        // viewModel 에 선언되어 있는 categoryList 를 추가 (고정된 값이기 때문에 바로 반영, observe 사용 x)
-        viewModel.categoryList.value?.forEach { menuCategoryRecyclerViewAdapter.list.add(it) }
 
         binding.menuCategoryRecyclerView.apply {
             setHasFixedSize(true)
