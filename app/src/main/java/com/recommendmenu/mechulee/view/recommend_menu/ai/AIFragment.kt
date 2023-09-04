@@ -5,9 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextPaint
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.magicgoop.tagsphere.OnTagLongPressedListener
@@ -27,13 +25,6 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
     private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
 
-    companion object {
-        fun newInstance(): AIFragment = AIFragment()
-
-        private const val MIN_SENSITIVITY = 1
-        private const val MIN_RADIUS = 10f
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,7 +33,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         _binding = FragmentAiBinding.inflate(layoutInflater)
 
         // CustomNestedScrollView 스크롤 함수 정의 -> BottomNavigationBar 내려감
-        binding.nestedScrollView.onBottomBarStatusChange = { status ->
+        binding.aiNestedScrollView.onBottomBarStatusChange = { status ->
             (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(status)
         }
 
@@ -76,7 +67,6 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         )
         binding.tagView.setOnLongPressedListener(this)
         binding.tagView.setOnTagTapListener(this)
-
     }
 
     private fun aiButtonClickEvent(){
@@ -89,11 +79,10 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
     }
 
     override fun onLongPressed(tagItem: TagItem) {
-        binding.tagView.stopAutoRotation()
+
     }
 
     override fun onTap(tagItem: TagItem) {
-
         val intent = Intent(activity, IngredientActivity::class.java)
         startActivity(intent) // 액티비티로 전환
     }

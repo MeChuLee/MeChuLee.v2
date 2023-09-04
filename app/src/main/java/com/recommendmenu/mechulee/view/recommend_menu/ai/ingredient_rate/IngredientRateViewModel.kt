@@ -8,10 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.view.menu_list.MenuListViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-class IngredientRateViewModel(private val dataStore: DataStore<RatingData>): ViewModel() {
+class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : ViewModel() {
 
     // 데이터의 변경을 관찰 가능한 형태로 만들어준다.
     val menuList: MutableLiveData<ArrayList<IngredientInfo>> = MutableLiveData()
@@ -35,10 +36,10 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>): Vie
         IngredientInfo(R.raw.beef_icon, "오징어", 0.0f, "", false),
         IngredientInfo(R.raw.pork_icon, "토마토", 0.0f, "", false),
         IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f, "", false),
-   )
+    )
 
     // ViewModel이 생성될 때 데이터 초기화 작업 수행
-    init{
+    init {
         // 여기서 totalList의 rating값들을 DataStore에서 가져온 rating값들로 교체한다.
         viewModelScope.launch {
             // DataStore에서 RatingData를 비동기적으로 가져와서 totalList 초기화
@@ -49,15 +50,15 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>): Vie
         }
     }
 
-     fun showMenuList(selectedItem: String, searchWord: String) {
+    fun showMenuList(selectedItem: String, searchWord: String) {
         val spinnerList = ArrayList<IngredientInfo>()
 
         totalList.forEach {
-            if((selectedItem == "평가완료") && (it.rating > 0.0f) && (searchWord in it.title)){
+            if ((selectedItem == "평가완료") && (it.rating > 0.0f) && (searchWord in it.title)) {
                 spinnerList.add(it)
-            } else if(selectedItem == "미완료" && it.rating == 0.0f && searchWord in it.title){
+            } else if (selectedItem == "미완료" && it.rating == 0.0f && searchWord in it.title) {
                 spinnerList.add(it)
-            } else if(selectedItem == "모두" && it.rating >= 0.0f && searchWord in it.title){
+            } else if (selectedItem == "모두" && it.rating >= 0.0f && searchWord in it.title) {
                 spinnerList.add(it)
             }
         }
@@ -110,7 +111,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>): Vie
         }
     }
 
-    fun showRatingDataStrore(){
+    fun showRatingDataStrore() {
         viewModelScope.launch {
             // DataStore에 저장된 ratingList 값을 읽어와서 로그로 출력합니다.
             val storedRatingData = dataStore.data.firstOrNull()
@@ -122,12 +123,22 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>): Vie
     }
 
     fun changeMenuListToTotalList() {
-            for (menuItem in totalList) {
-                val matchingTotalItem = menuList.value?.find { it.title == menuItem.title }
-                if (matchingTotalItem != null) {
-                    menuItem.rating = matchingTotalItem.rating
+        for (menuItem in totalList) {
+            val matchingTotalItem = menuList.value?.find { it.title == menuItem.title }
+            if (matchingTotalItem != null) {
+                menuItem.rating = matchingTotalItem.rating
+            }
+        }
+    }
+
+    fun changeItemFromItemList(item: IngredientInfo) {
+        menuList.value?.let { menuItems ->
+            for (ingredientInfo in menuItems) {
+                if(ingredientInfo.title == item.title){
+                    ingredientInfo.rating = item.rating
                 }
             }
+        }
     }
 
 }
