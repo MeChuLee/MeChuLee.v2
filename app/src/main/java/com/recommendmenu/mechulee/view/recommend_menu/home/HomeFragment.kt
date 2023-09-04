@@ -30,7 +30,6 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.utils.location.LocationUtils
@@ -83,7 +82,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        Logger.d("OnResume")
         // viewPager 자동 슬라이드 설정
         active = true
         scrollJobCreate()
@@ -115,30 +113,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     override fun onPause() {
         super.onPause()
-        Logger.d("OnPause")
         // viewPager 자동 슬라이드 취소
         active = false
         job.cancel()
     }
 
-    override fun onStop() {
-        super.onStop()
-        Logger.d("OnStop")
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        Logger.d("OnSaveInstanceState")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Logger.d("OnStart")
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        Logger.d("onDestroy")
         _binding = null
     }
 
