@@ -15,3 +15,6 @@ message RatingData {
   // repeated 필드를 사용해서 리스트 형태로 레이팅 데이터를 저장할 수 있다.
   repeated float rating = 1;
 }
+message IngredientData {
+  repeated string selectedIngredient = 1;
+}
