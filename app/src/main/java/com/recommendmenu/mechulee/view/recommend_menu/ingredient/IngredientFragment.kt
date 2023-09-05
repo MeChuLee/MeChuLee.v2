@@ -75,17 +75,18 @@ class IngredientFragment : Fragment() {
         initIngredientsRecycler()
 
         binding.selectButton.setOnClickListener {
+
             // 추천받기 버튼 클릭 시 선택한 값들 모두 출력
-//            tempList.clear()
-//            ingredientOuterAdapter.adapterList.forEach {
-//                Logger.d("클릭한 재료들 리스트 확인: ${it.clickedArray}")
-//                for (s in it.clickedArray) {
-//                    if(s !in tempList) {
-//                        tempList.add(s)
-//                    }
-//                }
-//            }
-//            viewModel.addCheckedIngredientInfo(tempList)
+            tempList.clear()
+            Logger.d("확인용 ${ingredientOuterAdapter.clickedData}")
+
+            ingredientOuterAdapter.clickedData.forEach {
+                tempList.add(it)
+            }
+
+            lifecycleScope.launch {
+                viewModel.addCheckedIngredientInfo(tempList)
+            }
 
 //            viewModel.deleteAllCheckedIngredientInfo()
 
@@ -100,21 +101,18 @@ class IngredientFragment : Fragment() {
         return binding.root
     }
 
-//    override fun onPause() {
-//        super.onPause()
-//        lifecycleScope.launch {
-//            tempList.clear()
-//            ingredientOuterAdapter.adapterList.forEach {
-//                for (s in it.clickedArray) {
-//                    if(s !in tempList) {
-//                        tempList.add(s)
-//                    }
-//                }
-//            }
-//            viewModel.addCheckedIngredientInfo(tempList)
-//            viewModel.initTotalMapFromDataStore()
-//        }
-//    }
+    override fun onPause() {
+        super.onPause()
+        lifecycleScope.launch {
+            tempList.clear()
+            ingredientOuterAdapter.clickedData.forEach {
+                tempList.add(it)
+            }
+
+            viewModel.addCheckedIngredientInfo(tempList)
+
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

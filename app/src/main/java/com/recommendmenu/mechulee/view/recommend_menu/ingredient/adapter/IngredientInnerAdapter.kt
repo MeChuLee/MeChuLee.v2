@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 
-class IngredientInnerAdapter :
+class IngredientInnerAdapter(val clickedArray: ArrayList<String>) :
     RecyclerView.Adapter<IngredientInnerAdapter.ViewHolder>() {
 
     var ingredientList = ArrayList<IngredientInfo>()
-
-    private var clickedArray: ArrayList<String> = ArrayList()
+    var nowIndex = -1
+//    var myArr = ArrayList<String>()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView02)
@@ -29,19 +29,29 @@ class IngredientInnerAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = ingredientList[position]
+
         holder.imageView.setImageResource(item.imageResId)
         holder.textView.text = item.title
+        // check된 재료들은 테두리 표시되어 있도록
+
+        if(item.title in clickedArray) {
+            holder.itemView.setBackgroundResource(R.drawable.clicked_ingredient)
+        }
 
         holder.itemView.setOnClickListener {
             // 선택하지 않은 재료는 테두리가 생기게끔 표현하고, 이미 클릭했던 재료인 경우는 테두리 사라지게 표현
-            val tempValue = ingredientList[position].title
+            val tempValue = item.title
             if (tempValue in clickedArray) {
-                clickedArray.remove(tempValue) // ArrayList에서 값 제거
+                clickedArray.remove(tempValue)
                 holder.itemView.setBackgroundResource(0)
             } else {
                 clickedArray.add(tempValue)
                 holder.itemView.setBackgroundResource(R.drawable.clicked_ingredient)
             }
+            notifyItemChanged(nowIndex)
+            nowIndex = position
+            notifyItemChanged(nowIndex)
+
         }
     }
 
