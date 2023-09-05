@@ -29,7 +29,7 @@ class MenuListViewModel : ViewModel() {
 
     private var currentCategory = MENU_CATEGORY_ALL
 
-    init {
+    fun create() {
         // retrofit instance 획득
         val retrofit = NetworkUtils.getRetrofitInstance()
 

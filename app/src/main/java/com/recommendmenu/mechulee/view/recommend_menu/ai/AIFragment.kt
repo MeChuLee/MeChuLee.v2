@@ -1,5 +1,6 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ai
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextPaint
@@ -18,17 +19,11 @@ import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.Ingredi
 import com.recommendmenu.mechulee.view.recommend_menu.ai.util.EmojiConstants
 import kotlin.random.Random
 
+
 class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
     private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
-
-    companion object {
-        fun newInstance(): AIFragment = AIFragment()
-
-        private const val MIN_SENSITIVITY = 1
-        private const val MIN_RADIUS = 10f
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +33,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         _binding = FragmentAiBinding.inflate(layoutInflater)
 
         // CustomNestedScrollView 스크롤 함수 정의 -> BottomNavigationBar 내려감
-        binding.nestedScrollView.onBottomBarStatusChange = { status ->
+        binding.aiNestedScrollView.onBottomBarStatusChange = { status ->
             (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(status)
         }
 
@@ -83,11 +78,6 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onLongPressed(tagItem: TagItem) {
 
     }
@@ -96,4 +86,21 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         val intent = Intent(activity, IngredientActivity::class.java)
         startActivity(intent) // 액티비티로 전환
     }
+
+    override fun onResume() {
+        super.onResume()
+        binding.tagView.startAutoRotation(-1f, 1f)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.tagView.stopAutoRotation()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+
 }

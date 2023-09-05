@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
@@ -35,32 +36,41 @@ object LocationUtils {
         }
 
         val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) as Location
 
         val geocoder = Geocoder(activity, Locale.KOREA)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            geocoder.getFromLocation(location.latitude, location.longitude, 3) { addresses ->
-                addresses.forEach { address ->
-                    Logger.d(address.getAddressLine(0))
-                    Logger.d("---------------------")
-                }
+        val locationListener = object : LocationListener {
+            override fun onLocationChanged(currentLocation: Location) {
 
-                onResult(addresses[0].getAddressLine(0))
-            }
-        } else {
-            // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
-            activity.lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 3) as List<Address>
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    geocoder.getFromLocation(currentLocation.latitude, currentLocation.longitude, 3) { addresses ->
+                        addresses.forEach { address ->
+                            Logger.d(address.getAddressLine(0))
+                        }
 
-                    withContext(Dispatchers.Main) {
-                        onResult(addresses[0].getAddressLine(0))
+                        onResult(addresses[2].getAddressLine(0))
                     }
-                } catch (e: IOException) {
-                    e.printStackTrace()
+                } else {
+                    // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
+                    activity.lifecycleScope.launch(Dispatchers.IO) {
+                        try {
+                            val addresses = geocoder.getFromLocation(currentLocation.latitude, currentLocation.longitude, 3) as List<Address>
+
+                            withContext(Dispatchers.Main) {
+                                onResult(addresses[0].getAddressLine(0))
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
                 }
+
+                // 반복적 위치 업데이트를 막기 위해 업데이트 삭제
+                locationManager.removeUpdates(this)
             }
         }
+
+        // 위치 정보 요청
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10.0f, locationListener)
     }
 }

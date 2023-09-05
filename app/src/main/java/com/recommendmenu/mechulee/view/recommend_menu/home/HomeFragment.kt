@@ -35,11 +35,9 @@ import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.utils.location.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -103,9 +101,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 )
             }
         } else {
-            // 네트워크 미연결 시 -> 네트워크 설정 화면으로 이동
-            val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
-            startActivity(intent)
+            // 네트워크 미연결 시 -> 사용자가 WIFI 서비스를 키도록 AlertDialog 를 사용하여 유도
+            showAlertDialog(
+                "네트워크 연결 활성화",
+                "앱에서 기능을 사용하려면 네트워크를 연결해야 합니다. 네트워크 설정으로 이동하시겠습니까?",
+                Settings.ACTION_WIRELESS_SETTINGS,
+                "네트워크를 연결하고 시도해주세요."
+            )
         }
     }
 
@@ -284,20 +286,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             mapFragment.getMapAsync(this)
         } else {
             // 사용자가 위치 서비스를 키도록 AlertDialog 를 사용하여 유도
-            AlertDialog.Builder(requireContext()).apply {
-                setTitle("위치 서비스 활성화")
-                setMessage("앱에서 위치 기능을 사용하려면 위치 서비스를 활성화해야 합니다. 위치 설정으로 이동하시겠습니까?")
-                setPositiveButton("이동") { _, _ ->
-                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    startActivity(intent)
-                }
-                setNegativeButton("취소") { _, _ ->
-                    Toast.makeText(requireContext(), "위치 서비스를 활성화하고 시도해주세요.", Toast.LENGTH_SHORT).show()
-                    requireActivity().finish()
-                }
-                setCancelable(false)
-                create()
-            }.show()
+            showAlertDialog(
+                "위치 서비스",
+                "앱에서 위치 기능을 사용하려면 위치 서비스를 활성화해야 합니다. 위치 설정으로 이동하시겠습니까?",
+                Settings.ACTION_LOCATION_SOURCE_SETTINGS,
+                "위치 서비스를 활성화하고 시도해주세요."
+            )
         }
     }
 
@@ -325,5 +319,23 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
 
         return fineLocationGranted || coarseLocationGranted
+    }
+
+    private fun showAlertDialog(title: String, message: String, positiveIntentName: String, negativeMessage: String) {
+        // 사용자가 위치 서비스를 키도록 AlertDialog 를 사용하여 유도
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle(title)
+            setMessage(message)
+            setPositiveButton("이동") { _, _ ->
+                val intent = Intent(positiveIntentName)
+                startActivity(intent)
+            }
+            setNegativeButton("취소") { _, _ ->
+                Toast.makeText(requireContext(), negativeMessage, Toast.LENGTH_SHORT).show()
+                requireActivity().finish()
+            }
+            setCancelable(false)
+            create()
+        }.show()
     }
 }
