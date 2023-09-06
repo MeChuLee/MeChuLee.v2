@@ -18,3 +18,6 @@ message RatingData {
 message IngredientData {
   repeated string selectedIngredient = 1;
 }
+message LikeData {
+  repeated string likedMenu = 1;
+}
