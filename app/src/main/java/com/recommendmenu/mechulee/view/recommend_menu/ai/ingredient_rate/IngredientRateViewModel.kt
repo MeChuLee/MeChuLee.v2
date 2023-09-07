@@ -20,22 +20,22 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
     // 두 개의 리스트를 나눠서 사용하는 이유는 개념적으로 UI에 표시되는 데이터와
     // 비즈니스 로직에 의해 가공되는 데이터를 분리하여 관리하기 위함
     private var totalList: ArrayList<IngredientInfo> = arrayListOf(
-        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, "", false),
-        IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, "", false),
-        IngredientInfo(R.raw.pork_icon, "소시지", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f, "", false),
-        IngredientInfo(R.raw.pork_icon, "양배추", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "오이", 0.0f, "", false),
-        IngredientInfo(R.raw.pork_icon, "떡", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "오리고기", 0.0f, "", false),
-        IngredientInfo(R.raw.pork_icon, "골뱅이", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "시금치", 0.0f, "", false),
-        IngredientInfo(R.raw.pork_icon, "카레가루", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "오징어", 0.0f, "", false),
-        IngredientInfo(R.raw.pork_icon, "토마토", 0.0f, "", false),
-        IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f, "", false),
+        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "소시지", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "양배추", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "오이", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "떡", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "오리고기", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "골뱅이", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "시금치", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "카레가루", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "오징어", 0.0f, ""),
+        IngredientInfo(R.raw.pork_icon, "토마토", 0.0f, ""),
+        IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f, ""),
     )
 
     // ViewModel이 생성될 때 데이터 초기화 작업 수행

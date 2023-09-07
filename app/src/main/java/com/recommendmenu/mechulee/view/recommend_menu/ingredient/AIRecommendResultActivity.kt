@@ -5,14 +5,29 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.datastore.core.DataStore
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityIngredientRecommendResultBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.orhanobut.logger.Logger
+import com.recommendmenu.mechulee.LikeData
+import com.recommendmenu.mechulee.proto.likedMenuDataStore
+import kotlinx.coroutines.launch
 
+class LikedMenuFactory(private val dataStore: DataStore<LikeData>): ViewModelProvider.Factory {
+    override fun <T :ViewModel> create(modelClass: Class<T>): T {
+        if(modelClass.isAssignableFrom(ResultViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ResultViewModel(dataStore) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
 class IngredientRecommendResultActivity : AppCompatActivity() {
     private lateinit var binding: ActivityIngredientRecommendResultBinding
 
@@ -26,14 +41,14 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
 
-        viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
+        val likedMenuFactory = LikedMenuFactory(likedMenuDataStore)
+        viewModel = ViewModelProvider(this, likedMenuFactory)[ResultViewModel::class.java]
 
         binding.heartIcon.setOnClickListener {
             isLiked = !isLiked
             animateHeart(isLiked)
         }
 
-        val intent = intent
         val resultMenu = intent.getSerializableExtra("object") as MenuInfo?
 //        Logger.d("전달받은 객체 $resultMenu")
 //        Logger.d("전달받은 이름 ${resultMenu?.name}")
@@ -44,6 +59,11 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
             viewModel.recommendResult(resultMenu)
             viewModel.showIngredient(resultMenu)
             viewModel.showOthers(resultMenu)
+//            Logger.d("기존값 확인 ${viewModel.nowResult.value?.like}")
+//            lifecycleScope.launch {
+//                viewModel.initTotalListFromDataStore()
+//                Logger.d("나중값 확인 ${viewModel.nowResult.value?.like}")
+//            }
 
             viewModel.nowResult.observe(this) {
                 // 선택된 메뉴 적용
