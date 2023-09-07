@@ -4,24 +4,31 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.BuildConfig
-import com.recommendmenu.mechulee.model.network.menu.MenuDto
-import com.recommendmenu.mechulee.model.network.menu.MenuService
+import com.recommendmenu.mechulee.model.network.search.Item
 import com.recommendmenu.mechulee.model.network.search.SearchDto
 import com.recommendmenu.mechulee.model.network.search.SearchService
 import com.recommendmenu.mechulee.utils.network.NetworkUtils
-import com.recommendmenu.mechulee.view.menu_list.MenuListViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class HomeViewModel : ViewModel() {
 
     val currentAddress = MutableLiveData<String>()
+    val restaurantList = MutableLiveData<ArrayList<Item>>()
 
-    init {
+    // Activity 에서 사용한 Coroutine 에서 CallBack 을 받았기 때문에 현재 Background Thread 상태
+    // Background Thread 에서는 ViewModel 의 LiveData 값을 변경할 때, setValue() 대신 postValue() 사용
+    fun setCurrentAddress(address: String, shortAddress: String) {
+        // retrofit 실행하여 주변 식당 검색
+        startRetrofit(shortAddress)
 
+        val resultAddress = address.split(" ").drop(1).joinToString(" ")
+        currentAddress.postValue(resultAddress)
+    }
+
+    // 현재 주소 기반으로 주변 식당 검색
+    private fun startRetrofit(address: String) {
         // retrofit instance 획득
         val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.NAVER_SEARCH_BASE_URL)
 
@@ -31,8 +38,8 @@ class HomeViewModel : ViewModel() {
         service.getSearchRestaurant(
             BuildConfig.NAVER_CLIENT_ID,
             BuildConfig.NAVER_CLIENT_SECRET,
-            "대전 궁동",
-            "10",
+            "$address 맛집",
+            "5",
             "1",
             "random"
         ).enqueue(object : Callback<SearchDto> {
@@ -43,7 +50,7 @@ class HomeViewModel : ViewModel() {
                 }
 
                 response.body()?.let { searchDto ->
-                    TODO("추가")
+                    restaurantList.value = searchDto.items.toCollection(ArrayList())
                 }
             }
 
@@ -51,11 +58,5 @@ class HomeViewModel : ViewModel() {
                 Logger.e(t.message.toString())
             }
         })
-    }
-
-    fun setCurrentAddress(address: String) {
-        // Activity 에서 사용한 Coroutine 에서 CallBack 을 받았기 때문에 현재 Background Thread 상태
-        // Background Thread 에서는 ViewModel 의 LiveData 값을 변경할 때, setValue() 대신 postValue() 사용
-        currentAddress.postValue(address)
     }
 }
