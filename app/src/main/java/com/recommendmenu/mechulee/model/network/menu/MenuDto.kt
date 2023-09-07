@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.model.network
+package com.recommendmenu.mechulee.model.network.menu
 
 import com.google.gson.annotations.SerializedName
 import com.recommendmenu.mechulee.model.data.MenuInfo

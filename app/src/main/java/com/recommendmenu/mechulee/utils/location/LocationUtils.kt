@@ -71,10 +71,6 @@ object LocationUtils {
         getLocationGPS(activity, onResultLocation = { latitude, longitude ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
-                    addresses.forEach { address ->
-                        Logger.d(address.getAddressLine(0))
-                    }
-
                     onResult(addresses[2].getAddressLine(0))
                 }
             } else {
