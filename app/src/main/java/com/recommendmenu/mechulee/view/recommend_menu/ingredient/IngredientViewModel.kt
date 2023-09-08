@@ -7,13 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.IngredientData
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : ViewModel() {
-
     val classificationList: MutableLiveData<ArrayList<String>> = MutableLiveData()
-    val selectClassificationMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
+    val selectedMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
         MutableLiveData()
     val selectedIngredientList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
@@ -92,19 +93,16 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
         viewModelScope.launch {
             classificationList.value = arrayListOf("전체", "야채", "과일", "밥/면", "고기", "생선", "소스", "기타")
             // DataStore에 저장된 값에 대한 초기화
-            selectClassificationMap.value = ingredientTotalMap
-            initTotalMapFromDataStore()
+            selectedMap.value = ingredientTotalMap
+            initStoredIngredientFromDataStore()
             selectedIngredientList.value = myStoredIngredient
         }
     }
 
     // 선택한 classification에 따라 selectClassificationMap에 반영
     fun selectClassification(classification: String) {
-        viewModelScope.launch {
-            initTotalMapFromDataStore()
-        }
         if (classification == "전체") {
-            selectClassificationMap.value = ingredientTotalMap
+            selectedMap.value = ingredientTotalMap
         } else {
             lateinit var tempMap: Map<String, ArrayList<IngredientInfo>>
             when (classification) {
@@ -116,14 +114,13 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
                 "소스" -> tempMap = mapOf(classification to sauceList)
                 "기타" -> tempMap = mapOf(classification to otherList)
             }
-            selectClassificationMap.value = tempMap
+            selectedMap.value = tempMap
         }
     }
 
     // DataStore에 저장된 재료들을 확인해 myStoredIngredient에 넣고 그 값을 selectedIngredientList에 적용시킨다.
-    private suspend fun initTotalMapFromDataStore() {
+    private suspend fun initStoredIngredientFromDataStore() {
         val storedCheckedData = dataStore.data.firstOrNull()
-
         storedCheckedData?.let {
             ingredientTotalMap.forEach { nowMap ->
                 nowMap.value.forEach { nowIngredient ->
@@ -136,12 +133,13 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
     }
 
     // 입력받은 리스트의 값들을 모두 DataStore에 저장하는 메소드
-    fun addCheckedIngredientInfo(ingredientList: ArrayList<String>) {
-        viewModelScope.launch {
+    @OptIn(DelicateCoroutinesApi::class)
+    fun storeSelectedIngredient() {
+        GlobalScope.launch {
             dataStore.updateData { ingredientData ->
                 ingredientData.toBuilder()
                     .clearSelectedIngredient()
-                    .addAllSelectedIngredient(ingredientList)
+                    .addAllSelectedIngredient(selectedIngredientList.value)
                     .build()
             }
         }
