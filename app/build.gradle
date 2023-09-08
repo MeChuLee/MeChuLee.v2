@@ -5,6 +5,9 @@ plugins {
     // 공식문서의 0.8.17 version이 적용이 안돼서 0.9.1 version으로 변경
 }
 
+//Properties properties = new Properties()
+//properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     namespace 'com.recommendmenu.mechulee'
     compileSdk 33
@@ -19,17 +22,26 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         def naver_key = ""
+        def weather_key = ""
+
         try {
             Properties localProperties = new Properties()
             localProperties.load(new FileInputStream(rootProject.file("local.properties")))
             if (localProperties.getProperty("naver_key") != null) {
                 naver_key = localProperties.getProperty("naver_key")
             }
+            if (localProperties.getProperty("weather_key") != null) {
+                weather_key = localProperties.getProperty("weather_key")
+            }
+
         } catch (IOException e) {
             e.printStackTrace()
         }
 
         manifestPlaceholders = [NAVER_KEY:naver_key]
+        
+        buildConfigField("String", "weather_key", weather_key)
+
     }
 
     buildTypes {
@@ -37,6 +49,8 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -47,6 +61,9 @@ android {
     }
     dataBinding {
         enabled = true
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
