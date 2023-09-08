@@ -6,7 +6,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import com.google.protobuf.InvalidProtocolBufferException
-import com.recommendmenu.mechulee.IngredientData
 import com.recommendmenu.mechulee.LikeData
 import java.io.InputStream
 import java.io.OutputStream

@@ -44,22 +44,20 @@ class IngredientFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentIngredientBinding.inflate(layoutInflater)
-        val checkedIngredientFactory =
+        val ingredientViewModelFactory =
             IngredientViewModelFactory(requireContext().checkedIngredientDataStore)
         viewModel =
-            ViewModelProvider(this, checkedIngredientFactory)[IngredientViewModel::class.java]
+            ViewModelProvider(this, ingredientViewModelFactory)[IngredientViewModel::class.java]
 
         // 재료 classification 보여주는 RecyclerView
         initClassificationRecycler()
 
         // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerView에 반영
-        viewModel.selectClassificationMap.observe(requireActivity()) { nowTotalMap ->
-            ingredientOuterAdapter?.outerMap = nowTotalMap.toMutableMap()
+        viewModel.selectedMap.observe(requireActivity()) { nowMap ->
+            ingredientOuterAdapter?.outerMap = nowMap.toMutableMap()
             ingredientOuterAdapter?.notifyDataSetChanged()
         }
 
@@ -78,7 +76,7 @@ class IngredientFragment : Fragment() {
             // 밑에 2줄 중 원하는 MenuInfo로 선택해서 하드코딩으로 넣기
 //            MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
 //            MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
-            val resultMenu = MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식")
+            val resultMenu = MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식")
             val intent = Intent(activity, IngredientRecommendResultActivity::class.java)
             intent.putExtra("object", resultMenu)
             startActivity(intent)
@@ -153,8 +151,7 @@ class IngredientFragment : Fragment() {
     // onPause시에 DataStore에 저장
     override fun onPause() {
         super.onPause()
-        val tempValue = viewModel.selectedIngredientList.value
-        tempValue?.let { viewModel.addCheckedIngredientInfo(it) }
+        viewModel.storeSelectedIngredient()
     }
 
     override fun onDestroyView() {
