@@ -1,11 +1,18 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.utils.data.DataStoreUtils
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-class ResultViewModel : ViewModel() {
-    private val totalList: ArrayList<MenuInfo> = arrayListOf(
+class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
+    private var totalList: ArrayList<MenuInfo> = arrayListOf(
         MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
         MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
         MenuInfo("바지락칼국수", "김치, 두부, 파, 양파, 고추", "한식"),
@@ -19,33 +26,65 @@ class ResultViewModel : ViewModel() {
         MenuInfo("치킨", "김치, 두부, 파, 양파, 고추", "양식"),
         MenuInfo("리조또", "김치, 두부, 파, 양파, 고추", "양식"),
     )
-    var nowResult = MutableLiveData<MenuInfo>()
-    val ingredientList: MutableLiveData<ArrayList<String>> = MutableLiveData()
-    val otherList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
-    fun recommendResult(nowMenu: MenuInfo) {
-        nowResult.value = nowMenu
+    private var myStoredMenu = ArrayList<String>()
+    val likedMenuList: MutableLiveData<ArrayList<String>> = MutableLiveData()
+
+    lateinit var nowResult: MenuInfo
+    val ingredientList = ArrayList<String>()
+    val otherList = ArrayList<String>()
+
+    init {
+        DataStoreUtils.loadFromLikeData(viewModelScope, dataStore, onResult = {
+            myStoredMenu.addAll(it)
+            likedMenuList.value = myStoredMenu
+        })
     }
 
-    fun showIngredient(nowMenu: MenuInfo) {
+    fun showResult(nowMenu: MenuInfo) {
+        nowResult = nowMenu.copy()
+        showIngredient(nowMenu)
+        showOthers(nowMenu)
+    }
+
+    // 결과 메뉴의 재료 보여주는 메소드
+    private fun showIngredient(nowMenu: MenuInfo) {
         val tempSplit = nowMenu.ingredients.split(", ")
-        var tempList = ArrayList<String>()
         tempSplit.forEach {
-            tempList.add(it)
+            ingredientList.add(it)
         }
-        ingredientList.value = tempList
     }
 
-    // 비슷한 메뉴가 선택되는 함수 (지금은 같은 category인 경우만 고려)
-    fun showOthers(nowMenu: MenuInfo) {
-        val tempList = ArrayList<String>()
-
+    // 비슷한 메뉴가 보여주는 메소드 (지금은 같은 category인 경우만 고려)
+    private fun showOthers(nowMenu: MenuInfo) {
         totalList.forEach {
             if (it.category == nowMenu.category && it.name != nowMenu.name) {
-                tempList.add(it.name)
+                otherList.add(it.name)
             }
         }
-        otherList.value = tempList
+    }
+
+    fun checkLikedMenu(clickedData: String) {
+        val tempList = ArrayList<String>(likedMenuList.value?.toList() ?: ArrayList())
+        if (clickedData in tempList) {
+            tempList.remove(clickedData)
+        } else {
+            tempList.add(clickedData)
+        }
+        likedMenuList.value = tempList
+    }
+
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun storeLikeMenu() {
+        val tempList = ArrayList<String>(likedMenuList.value?.toList() ?: ArrayList())
+        GlobalScope.launch {
+            dataStore.updateData { MenuData ->
+                MenuData.toBuilder()
+                    .clearLikedMenu()
+                    .addAllLikedMenu(tempList)
+                    .build()
+            }
+        }
     }
 }
-
