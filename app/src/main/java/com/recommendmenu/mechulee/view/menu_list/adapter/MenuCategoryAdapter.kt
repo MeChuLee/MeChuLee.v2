@@ -30,7 +30,7 @@ class MenuCategoryAdapter(private val menuCategoryListener : MenuCategoryListene
 
         if (position == currentClickIdx) {
             // 현재 position 이 현재 선택된 index 일 경우, click 색상으로 변경
-            holder.categoryButton.setBackgroundResource(R.drawable.clicked_button)
+            holder.categoryButton.setBackgroundResource(R.drawable.clicked_button_green)
             holder.categoryButton.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
         } else {
             // 현재 position 이 현재 선택되지 않은 index 일 경우, unclick 색상으로 변경
