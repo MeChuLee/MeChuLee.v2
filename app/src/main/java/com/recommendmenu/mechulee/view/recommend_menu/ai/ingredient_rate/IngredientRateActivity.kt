@@ -64,9 +64,7 @@ class IngredientActivity : AppCompatActivity() {
         // menuList 정보 변경 감지 시 RecyclerView 갱신
         viewModel.menuList.observe(this) { newMenuList ->
             ingredientRateRecyclerViewAdapter.itemList = newMenuList.mapTo(ArrayList()) { it.copy() }
-
             ingredientRateRecyclerViewAdapter.notifyDataSetChanged()
-
         }
 
         // 스피너 어댑터 설정

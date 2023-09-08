@@ -1,6 +1,5 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ai
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextPaint
@@ -8,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.magicgoop.tagsphere.OnTagLongPressedListener
 import com.magicgoop.tagsphere.OnTagTapListener
 import com.magicgoop.tagsphere.item.TagItem
@@ -24,6 +24,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
     private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
+    private lateinit var aiViewModel: AIViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,6 +32,14 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAiBinding.inflate(layoutInflater)
+
+        aiViewModel = ViewModelProvider(this)[AIViewModel::class.java]
+
+        binding.temperature.text
+        binding.weatherText.text
+        binding.locationText.text
+        binding.weatherAnimation.setAnimation(R.raw.weather_cloud_rain_animation)
+        // 함수로 변경해서 되는지 확인해보기
 
         // CustomNestedScrollView 스크롤 함수 정의 -> BottomNavigationBar 내려감
         binding.aiNestedScrollView.onBottomBarStatusChange = { status ->
@@ -45,6 +54,11 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
         aiButtonClickEvent()
         initTagView()
+        // ViewModel에 있는 강수형태, 하늘상태, 기온에 따라 Weather카드의 text요소가 변경되는 함수
+        initWeatherCardContents()
+    }
+
+    private fun initWeatherCardContents() {
 
     }
 
