@@ -13,7 +13,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkUtils {
     // 기기 : http://192.168.0.72:8000/
     // 에뮬레이터 : http://10.0.2.2:8000/
-    private const val BASE_URL = "http://10.0.2.2:8000/"
+    const val MY_SERVER_BASE_URL = "http://10.0.2.2:8000/"
+    const val NAVER_SEARCH_BASE_URL = "https://openapi.naver.com/"
+
     private const val ADD_MENU_URL = "static/menu/"
     private const val ADD_INGREDIENT_URL = "static/ingredient/"
 
@@ -31,16 +33,16 @@ object NetworkUtils {
     }
 
     // return Retrofit instance
-    fun getRetrofitInstance(): Retrofit {
+    fun getRetrofitInstance(url: String): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
     // Glide 를 사용하여 이미지 로드
     fun loadImage(context: Context, imageView: ImageView, url: String, urlType: Int) {
-        var loadUrl = BASE_URL
+        var loadUrl = MY_SERVER_BASE_URL
 
         when (urlType) {
             URL_TYPE_MENU -> loadUrl += ADD_MENU_URL
