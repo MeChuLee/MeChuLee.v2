@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 
-class MenuCategoryAdapter(val menuCategoryListener : MenuCategoryListener)
+class MenuCategoryAdapter(private val menuCategoryListener : MenuCategoryListener)
     : RecyclerView.Adapter<MenuCategoryAdapter.MyViewHolder>() {
 
     val list = ArrayList<String>()

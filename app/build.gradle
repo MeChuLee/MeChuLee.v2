@@ -9,6 +9,10 @@ plugins {
 //properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
+    buildFeatures {
+        buildConfig = true
+    }
+
     namespace 'com.recommendmenu.mechulee'
     compileSdk 33
 
@@ -22,13 +26,19 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         def naver_key = ""
+
         def weather_key = ""
+
+        def naver_client_id = ""
+        def naver_client_secret = ""
 
         try {
             Properties localProperties = new Properties()
             localProperties.load(new FileInputStream(rootProject.file("local.properties")))
             if (localProperties.getProperty("naver_key") != null) {
                 naver_key = localProperties.getProperty("naver_key")
+                naver_client_id = localProperties.getProperty("naver_client_id")
+                naver_client_secret = localProperties.getProperty("naver_client_secret")
             }
             if (localProperties.getProperty("weather_key") != null) {
                 weather_key = localProperties.getProperty("weather_key")
@@ -38,9 +48,14 @@ android {
             e.printStackTrace()
         }
 
+        // 네이버 지도
         manifestPlaceholders = [NAVER_KEY:naver_key]
         
         buildConfigField("String", "weather_key", weather_key)
+
+        // 네이버 검색
+        buildConfigField "String", "NAVER_CLIENT_ID", naver_client_id
+        buildConfigField "String", "NAVER_CLIENT_SECRET", naver_client_secret
 
     }
 

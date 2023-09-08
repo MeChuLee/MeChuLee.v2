@@ -6,12 +6,15 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.Fragment
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityMainBinding
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
-import github.com.st235.lib_expandablebottombar.navigation.ExpandableBottomBarNavigationUI
+import com.recommendmenu.mechulee.view.like_menu.LikeFragment
+import com.recommendmenu.mechulee.view.menu_list.MenuListFragment
+import com.recommendmenu.mechulee.view.recommend_menu.RecommendFragment
+import com.recommendmenu.mechulee.view.settings.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +22,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var mainActivityListener: MainActivityListener
 
     private var backPressedTime: Long = 0
+
+    private lateinit var activeFragment: Fragment
+    private val recommendFragment by lazy { RecommendFragment() }
+    private val menuListFragment by lazy { MenuListFragment() }
+    private val likeFragment by lazy { LikeFragment() }
+    private val settingFragment by lazy { SettingsFragment() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -42,14 +52,42 @@ class MainActivity : AppCompatActivity() {
 
     // ExpandableBottomBar 에 Navigation 설정
     private fun initBottomNavigationBar() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        activeFragment = recommendFragment
 
-        ExpandableBottomBarNavigationUI.setupWithNavController(
-            binding.expandableBottomBar,
-            navController
-        )
+        supportFragmentManager.beginTransaction()
+            .add(R.id.nav_host_fragment, recommendFragment).show(recommendFragment)
+            .add(R.id.nav_host_fragment, menuListFragment).hide(menuListFragment)
+            .add(R.id.nav_host_fragment, likeFragment).hide(likeFragment)
+            .add(R.id.nav_host_fragment, settingFragment).hide(settingFragment)
+            .commit()
+
+        binding.expandableBottomBar.onItemSelectedListener = { view, menuItem, fromUser ->
+            when (menuItem.id) {
+                R.id.navigation_recommend -> {
+                    supportFragmentManager.beginTransaction()
+                        .hide(activeFragment).show(recommendFragment).commit()
+                    activeFragment = recommendFragment
+                }
+
+                R.id.navigation_menu_list -> {
+                    supportFragmentManager.beginTransaction()
+                        .hide(activeFragment).show(menuListFragment).commit()
+                    activeFragment = menuListFragment
+                }
+
+                R.id.navigation_like -> {
+                    supportFragmentManager.beginTransaction()
+                        .hide(activeFragment).show(likeFragment).commit()
+                    activeFragment = likeFragment
+                }
+
+                R.id.navigation_settings -> {
+                    supportFragmentManager.beginTransaction()
+                        .hide(activeFragment).show(settingFragment).commit()
+                    activeFragment = settingFragment
+                }
+            }
+        }
     }
 
     // Listener 설정

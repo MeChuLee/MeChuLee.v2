@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.model.network
+package com.recommendmenu.mechulee.model.network.menu
 
 import retrofit2.Call
 import retrofit2.http.GET

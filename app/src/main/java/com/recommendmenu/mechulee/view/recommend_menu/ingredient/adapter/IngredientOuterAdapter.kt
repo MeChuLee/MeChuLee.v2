@@ -9,10 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 
-class IngredientOuterAdapter : RecyclerView.Adapter<IngredientOuterAdapter.ViewHolder>() {
-    private lateinit var recyclerViewAdapter02: IngredientInnerAdapter
+class IngredientOuterAdapter(private val ingredientOuterListener: IngredientOuterListener) :
+    RecyclerView.Adapter<IngredientOuterAdapter.ViewHolder>() {
 
-    lateinit var itemList: Map<String, ArrayList<IngredientInfo>>
+    var outerMap = mapOf<String, ArrayList<IngredientInfo>>()
+    var outerSelectedIngredientList = ArrayList<String>()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.findViewById(R.id.textView01)
@@ -22,16 +23,15 @@ class IngredientOuterAdapter : RecyclerView.Adapter<IngredientOuterAdapter.ViewH
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_view_ingredient_outer, parent, false)
-
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // itemList 사이즈에 따라 key를 다르게 받아 Recycler View에 나타냄
+        // itemList 사이즈 따라 key 다르게 받아 RecyclerView 반환
         var nowKey = ""
         var englishName = ""
-        if (itemList.size == 1) {
-            nowKey = itemList.keys.toList()[0]
+        if (outerMap.size == 1) {
+            nowKey = outerMap.keys.toList()[0]
         } else {
             when (position) {
                 0 -> nowKey = "야채"
@@ -56,18 +56,29 @@ class IngredientOuterAdapter : RecyclerView.Adapter<IngredientOuterAdapter.ViewH
 
         holder.textView.text = classificationName
 
-        recyclerViewAdapter02 = IngredientInnerAdapter()
+        val ingredientInnerAdapter =
+            IngredientInnerAdapter(object : IngredientInnerAdapter.IngredientInnerListener {
+                override fun clickIngredient(clickedIngredient: String) {
+                    ingredientOuterListener.clickIngredient(clickedIngredient)
+                }
+            })
+        ingredientInnerAdapter.innerSelectedIngredientList.clear()
+        ingredientInnerAdapter.innerSelectedIngredientList.addAll(outerSelectedIngredientList)
 
-        itemList[nowKey]?.forEach { recyclerViewAdapter02.ingredientList.add(it) }
+        outerMap[nowKey]?.forEach { ingredientInnerAdapter.innerIngredientList.add(it) }
 
         holder.recyclerView.apply {
-            adapter = recyclerViewAdapter02
+            adapter = ingredientInnerAdapter
             layoutManager = GridLayoutManager(holder.itemView.context, 4)
             setHasFixedSize(true)
         }
     }
 
     override fun getItemCount(): Int {
-        return itemList.size
+        return outerMap.size
+    }
+
+    interface IngredientOuterListener {
+        fun clickIngredient(clickedIngredient: String)
     }
 }

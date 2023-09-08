@@ -1,13 +1,12 @@
 package com.recommendmenu.mechulee.view.recommend_menu.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -24,6 +23,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -33,13 +33,13 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.utils.location.LocationUtils
+import com.recommendmenu.mechulee.utils.network.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
+import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.RestaurantRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -60,6 +60,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
 
+    private var  restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,6 +81,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         initViewPager()
+        initRecyclerView()
+
+        viewModel.restaurantList.observe(requireActivity()) { restaurantList ->
+            restaurantRecyclerViewAdapter?.restaurantList?.clear()
+            restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
+            restaurantRecyclerViewAdapter?.notifyDataSetChanged()
+        }
 
         return binding.root
     }
@@ -88,7 +98,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         active = true
         scrollJobCreate()
 
-        if (isNetworkAvailable()) {
+        if (NetworkUtils.isNetworkAvailable(requireContext())) {
             // 네트워크 (인터넷) 연결 시
             if (isLocationAvailable()) {
                 // 위치 권한 허용 상태
@@ -103,9 +113,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 )
             }
         } else {
-            // 네트워크 미연결 시 -> 네트워크 설정 화면으로 이동
-            val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
-            startActivity(intent)
+            // 네트워크 미연결 시 -> 사용자가 WIFI 서비스를 키도록 AlertDialog 를 사용하여 유도
+            showAlertDialog(
+                "네트워크 연결 활성화",
+                "앱에서 기능을 사용하려면 네트워크를 연결해야 합니다. 네트워크 설정으로 이동하시겠습니까?",
+                Settings.ACTION_WIRELESS_SETTINGS,
+                "네트워크를 연결하고 시도해주세요."
+            )
         }
     }
 
@@ -119,6 +133,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        restaurantRecyclerViewAdapter = null
     }
 
     private fun initViewPager() {
@@ -230,15 +245,16 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    // 네이버 지도가 준비 완료되었을 경우
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
         // 현재 주소 조회하여 반영
-        LocationUtils.getCurrentAddress(requireActivity(), onResult = { currentAddress ->
+        LocationUtils.getCurrentAddress(requireActivity(), onResult = { currentAddress, shortAddress ->
             // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
-            viewModel.setCurrentAddress(currentAddress)
+            viewModel.setCurrentAddress(currentAddress, shortAddress)
         })
     }
 
@@ -284,35 +300,16 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             mapFragment.getMapAsync(this)
         } else {
             // 사용자가 위치 서비스를 키도록 AlertDialog 를 사용하여 유도
-            AlertDialog.Builder(requireContext()).apply {
-                setTitle("위치 서비스 활성화")
-                setMessage("앱에서 위치 기능을 사용하려면 위치 서비스를 활성화해야 합니다. 위치 설정으로 이동하시겠습니까?")
-                setPositiveButton("이동") { _, _ ->
-                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    startActivity(intent)
-                }
-                setNegativeButton("취소") { _, _ ->
-                    Toast.makeText(requireContext(), "위치 서비스를 활성화하고 시도해주세요.", Toast.LENGTH_SHORT).show()
-                    requireActivity().finish()
-                }
-                setCancelable(false)
-                create()
-            }.show()
+            showAlertDialog(
+                "위치 서비스",
+                "앱에서 위치 기능을 사용하려면 위치 서비스를 활성화해야 합니다. 위치 설정으로 이동하시겠습니까?",
+                Settings.ACTION_LOCATION_SOURCE_SETTINGS,
+                "위치 서비스를 활성화하고 시도해주세요."
+            )
         }
     }
 
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-
-        return when {
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true // Mobile data connection.
-            else -> false
-        }
-    }
-
+    // 위치 서비스가 켜져 있는지 확인 후 true / false return
     private fun isLocationAvailable(): Boolean {
         val fineLocationGranted = ActivityCompat.checkSelfPermission(
             requireContext(),
@@ -325,5 +322,34 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
 
         return fineLocationGranted || coarseLocationGranted
+    }
+
+    // 사용자가 관련 서비스를 키도록 AlertDialog 를 사용하여 유도
+    private fun showAlertDialog(title: String, message: String, positiveIntentName: String, negativeMessage: String) {
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle(title)
+            setMessage(message)
+            setPositiveButton("이동") { _, _ ->
+                val intent = Intent(positiveIntentName)
+                startActivity(intent)
+            }
+            setNegativeButton("취소") { _, _ ->
+                Toast.makeText(requireContext(), negativeMessage, Toast.LENGTH_SHORT).show()
+                requireActivity().finish()
+            }
+            setCancelable(false)
+            create()
+        }.show()
+    }
+
+    private fun initRecyclerView() {
+        // 메뉴 카테고리 RecyclerView 초기화
+        restaurantRecyclerViewAdapter = RestaurantRecyclerViewAdapter()
+
+        binding.restaurantRecyclerView.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = restaurantRecyclerViewAdapter
+        }
     }
 }
