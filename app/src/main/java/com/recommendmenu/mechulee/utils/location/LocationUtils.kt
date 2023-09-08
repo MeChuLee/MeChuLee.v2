@@ -53,7 +53,7 @@ object LocationUtils {
     }
 
     // 현재 주소 가져오기 (activity 가 필요하므로, Activity 나 Fragment 에서 수행)
-    fun getCurrentAddress(activity : FragmentActivity, onResult: (String) -> Unit) {
+    fun getCurrentAddress(activity : FragmentActivity, onResult: (String, String) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -71,11 +71,7 @@ object LocationUtils {
         getLocationGPS(activity, onResultLocation = { latitude, longitude ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
-                    addresses.forEach { address ->
-                        Logger.d(address.getAddressLine(0))
-                    }
-
-                    onResult(addresses[2].getAddressLine(0))
+                    onResult(addresses[0].getAddressLine(0), addresses[2].getAddressLine(0))
                 }
             } else {
                 // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
@@ -84,7 +80,7 @@ object LocationUtils {
                         val addresses = geocoder.getFromLocation(latitude, longitude, 3) as List<Address>
 
                         withContext(Dispatchers.Main) {
-                            onResult(addresses[0].getAddressLine(0))
+                            onResult(addresses[0].getAddressLine(0), addresses[2].getAddressLine(0))
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()
