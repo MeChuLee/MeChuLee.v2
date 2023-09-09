@@ -74,6 +74,15 @@ class IngredientFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // ViewPager 여러번 전환 시 MotionLayout 이 제대로 동작하지 않는 오류가 있어
+        // MotionLayout Transition 에 대해 초기화 과정 수행 (끊겨보일 수 있음)
+        binding.motionLayout.setTransition(R.id.motionLayoutTransition)
+        binding.motionLayout.progress = 0f
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -134,6 +143,8 @@ class IngredientFragment : Fragment() {
                     ) {
                         binding.motionLayout.transitionToStart()
 
+                        Logger.e("transitionStart")
+
                         // 위로 스크롤 시 Bottom Bar 나타남
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
                             BOTTOM_BAR_STATUS_SHOW
@@ -148,6 +159,8 @@ class IngredientFragment : Fragment() {
                                 || binding.motionLayout.progress <= 0f)
                     ) {
                         binding.motionLayout.transitionToEnd()
+
+                        Logger.e("transitionEnd")
 
                         // 아래로 스크롤 시 Bottom Bar 사라짐
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
