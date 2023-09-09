@@ -2,7 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -10,34 +9,58 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/classificationRecyclerView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            app:layout_constraintBottom_toTopOf="@id/noticeTextView"
+            app:layout_constraintBottom_toTopOf="@id/motionLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/noticeTextView"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.motion.widget.MotionLayout
+            android:id="@+id/motionLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/info_round_background"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp"
-            android:text="@string/text_notice"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:drawableLeftCompat="@drawable/info_icon"
-            app:layout_constraintBottom_toTopOf="@+id/recyclerMain"
+            android:layout_marginHorizontal="2dp"
+            app:layoutDescription="@xml/fragment_ingredient_xml_motionlayout_scene"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/classificationRecyclerView" />
+            app:layout_constraintTop_toBottomOf="@id/classificationRecyclerView">
 
+            <TextView
+                android:id="@+id/noticeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/info_round_background"
+                android:paddingStart="15dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="5dp"
+                android:text="@string/text_notice"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:drawableLeftCompat="@drawable/info_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/classificationRecyclerView" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/selectButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/recommend_button"
+                android:text="@string/select_button"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.motion.widget.MotionLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerMain"
@@ -47,30 +70,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noticeTextView" />
-
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/selectButton"
-            android:layout_width="120dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="60dp"
-            android:background="@drawable/recommend_button"
-            android:elevation="30dp"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp"
-            android:text="@string/select_button"
-            android:textColor="@color/white"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            app:drawableLeftCompat="@raw/button_icon"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.913" />
-
+            app:layout_constraintTop_toBottomOf="@id/motionLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

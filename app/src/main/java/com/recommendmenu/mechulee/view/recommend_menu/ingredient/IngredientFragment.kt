@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
@@ -112,16 +113,24 @@ class IngredientFragment : Fragment() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+                    // 첫 번째 항목이 완전히 보이는지 확인
+                    if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0 && dy < 0) {
+                        // 스크롤 맨 위
+                        // 위로 스크롤 시 Bottom Bar 나타남
+                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                            BOTTOM_BAR_STATUS_SHOW
+                        )
+                        binding.motionLayout.transitionToStart()
+                    }
+
                     if (dy > 0) {
                         // 아래로 스크롤 시 Bottom Bar 사라짐
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
                             BOTTOM_BAR_STATUS_HIDE
                         )
-                    } else {
-                        // 위로 스크롤 시 Bottom Bar 나타남
-                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
-                            BOTTOM_BAR_STATUS_SHOW
-                        )
+                        binding.motionLayout.transitionToEnd()
                     }
 //                    if (dy > 0 && !isButtonExpanded) {
 //                        // Scroll down
