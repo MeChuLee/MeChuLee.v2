@@ -113,32 +113,47 @@ class IngredientFragment : Fragment() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
+                    if (binding.motionLayout.currentState == R.id.start) {
+                        Logger.e("START 상태")
+                    } else if (binding.motionLayout.currentState == R.id.end) {
+                        Logger.e("END 상태")
+                    } else {
+                        Logger.e("모르는 상태 ${binding.motionLayout.currentState}")
+                    }
+
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
 
-                    // 첫 번째 항목이 완전히 보이는지 확인
-                    if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0 && dy < 0) {
-                        // 스크롤 맨 위
+                    // 스크롤을 위로 올렸을 경우, 첫 번째 항목이 완전히 보이는지 확인 (맨 위까지 스크롤),
+                    // 버벅거림 방지를 위해 transition 상태가 확인 후,
+                    // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
+                    if (dy < 0
+                        && layoutManager.findFirstCompletelyVisibleItemPosition() == 0
+                        && binding.motionLayout.currentState == R.id.end
+                        && (binding.motionLayout.progress >= 1f
+                                || binding.motionLayout.progress <= 0f)
+                    ) {
+                        binding.motionLayout.transitionToStart()
+
                         // 위로 스크롤 시 Bottom Bar 나타남
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
                             BOTTOM_BAR_STATUS_SHOW
                         )
-                        binding.motionLayout.transitionToStart()
                     }
 
-                    if (dy > 0) {
+                    // 스크롤을 아래로 내렸을 경우, 버벅거림 방지를 위해 transition 상태가 확인 후,
+                    // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
+                    if (dy > 0
+                        && binding.motionLayout.currentState == R.id.start
+                        && (binding.motionLayout.progress >= 1f
+                                || binding.motionLayout.progress <= 0f)
+                    ) {
+                        binding.motionLayout.transitionToEnd()
+
                         // 아래로 스크롤 시 Bottom Bar 사라짐
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
                             BOTTOM_BAR_STATUS_HIDE
                         )
-                        binding.motionLayout.transitionToEnd()
                     }
-//                    if (dy > 0 && !isButtonExpanded) {
-//                        // Scroll down
-//                        expandButton()
-//                    } else if (dy < 0 && isButtonExpanded) {
-//                        // Scroll up
-//                        shrinkButton()
-//                    }
                 }
             })
         }
