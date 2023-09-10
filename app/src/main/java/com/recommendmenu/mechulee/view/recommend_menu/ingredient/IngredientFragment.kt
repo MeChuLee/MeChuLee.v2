@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
@@ -87,20 +86,6 @@ class IngredientFragment : Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        // ViewPager 여러번 전환 시 MotionLayout 이 제대로 동작하지 않는 오류가 있어
-        // MotionLayout Transition 에 대해 초기화 과정 수행 (끊겨보일 수 있음)
-        binding.motionLayout.setTransition(R.id.motionLayoutTransition)
-        binding.motionLayout.progress = 0f
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     // 재료 classification RecyclerView 초기화
     @SuppressLint("NotifyDataSetChanged")
     private fun initClassificationRecycler() {
@@ -148,14 +133,6 @@ class IngredientFragment : Fragment() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
-                    if (binding.motionLayout.currentState == R.id.start) {
-                        Logger.e("START 상태")
-                    } else if (binding.motionLayout.currentState == R.id.end) {
-                        Logger.e("END 상태")
-                    } else {
-                        Logger.e("모르는 상태 ${binding.motionLayout.currentState}")
-                    }
-
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
 
                     // 스크롤을 위로 올렸을 경우, 첫 번째 항목이 완전히 보이는지 확인 (맨 위까지 스크롤),
@@ -168,8 +145,6 @@ class IngredientFragment : Fragment() {
                                 || binding.motionLayout.progress <= 0f)
                     ) {
                         binding.motionLayout.transitionToStart()
-
-                        Logger.e("transitionStart")
 
                         // 위로 스크롤 시 Bottom Bar 나타남
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
@@ -186,8 +161,6 @@ class IngredientFragment : Fragment() {
                     ) {
                         binding.motionLayout.transitionToEnd()
 
-                        Logger.e("transitionEnd")
-
                         // 아래로 스크롤 시 Bottom Bar 사라짐
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
                             BOTTOM_BAR_STATUS_HIDE
@@ -196,6 +169,15 @@ class IngredientFragment : Fragment() {
                 }
             })
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // ViewPager 여러번 전환 시 MotionLayout 이 제대로 동작하지 않는 오류가 있어
+        // MotionLayout Transition 에 대해 초기화 과정 수행 (끊겨보일 수 있음)
+        binding.motionLayout.setTransition(R.id.motionLayoutTransition)
+        binding.motionLayout.progress = 0f
     }
 
     // onPause시에 DataStore에 저장
