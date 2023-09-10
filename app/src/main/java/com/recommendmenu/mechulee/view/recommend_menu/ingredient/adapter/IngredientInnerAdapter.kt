@@ -9,12 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 
-class IngredientInnerAdapter :
+class IngredientInnerAdapter(private val ingredientInnerListener: IngredientInnerListener) :
     RecyclerView.Adapter<IngredientInnerAdapter.ViewHolder>() {
 
-    var ingredientList = ArrayList<IngredientInfo>()
-
-    private var clickedArray: ArrayList<String> = ArrayList()
+    var innerIngredientList = ArrayList<IngredientInfo>()
+    var innerSelectedIngredientList = ArrayList<String>()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView02)
@@ -28,24 +27,29 @@ class IngredientInnerAdapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = ingredientList[position]
+        val item = innerIngredientList[position]
+
         holder.imageView.setImageResource(item.imageResId)
         holder.textView.text = item.title
 
-        holder.itemView.setOnClickListener {
-            // 선택하지 않은 재료는 테두리가 생기게끔 표현하고, 이미 클릭했던 재료인 경우는 테두리 사라지게 표현
-            val tempValue = ingredientList[position].title
-            if (tempValue in clickedArray) {
-                clickedArray.remove(tempValue) // ArrayList에서 값 제거
-                holder.itemView.setBackgroundResource(0)
-            } else {
-                clickedArray.add(tempValue)
+        // innerSelectedIngredeintList에 들어있는 재료들은 선택한 표시를 반영
+        innerSelectedIngredientList.let {
+            if (item.title in it) {
                 holder.itemView.setBackgroundResource(R.drawable.clicked_ingredient)
             }
+        }
+
+        holder.itemView.setOnClickListener {
+            ingredientInnerListener.clickIngredient(item.title)
+            notifyItemChanged(position)
         }
     }
 
     override fun getItemCount(): Int {
-        return ingredientList.size
+        return innerIngredientList.size
+    }
+
+    interface IngredientInnerListener {
+        fun clickIngredient(clickedIngredient: String)
     }
 }

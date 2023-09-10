@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -13,61 +14,73 @@ import androidx.recyclerview.widget.RecyclerView
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
+import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.ClassificationAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.IngredientOuterAdapter
+import com.recommendmenu.mechulee.proto.checkedIngredientDataStore
 
 class IngredientFragment : Fragment() {
-
     private var _binding: FragmentIngredientBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewModel: IngredientViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private val ingredientOuterAdapter = IngredientOuterAdapter()
 
-    private var isButtonAbove = true
-    private var isButtonExpanded = false
+    private var classificationAdapter: ClassificationAdapter? =
+        ClassificationAdapter(object : ClassificationAdapter.ClassificationListener {
+            override fun changeCurrentClassification(classification: String) {
+                // classification 버튼을 클릭하여 현재 classification 변경 시
+                viewModel.selectClassification(classification)
+            }
+        })
+
+    private var ingredientOuterAdapter: IngredientOuterAdapter? =
+        IngredientOuterAdapter(object : IngredientOuterAdapter.IngredientOuterListener {
+            override fun clickIngredient(clickedIngredient: String) {
+                viewModel.checkClickedIngredient(clickedIngredient)
+            }
+        })
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentIngredientBinding.inflate(layoutInflater)
-
-        viewModel = ViewModelProvider(this)[IngredientViewModel::class.java]
+        val ingredientViewModelFactory =
+            IngredientViewModelFactory(requireContext().checkedIngredientDataStore)
+        viewModel =
+            ViewModelProvider(this, ingredientViewModelFactory)[IngredientViewModel::class.java]
 
         // 재료 classification 보여주는 RecyclerView
         initClassificationRecycler()
 
         // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerView에 반영
-        viewModel.selectClassificationMap.observe(requireActivity()) {
-            ingredientOuterAdapter.itemList = it
-
-            ingredientOuterAdapter.notifyDataSetChanged()
+        viewModel.selectedMap.observe(requireActivity()) { nowMap ->
+            ingredientOuterAdapter?.outerMap = nowMap.toMutableMap()
+            ingredientOuterAdapter?.notifyDataSetChanged()
         }
 
-        // 아래로 Scroll down 시에는 버튼을 크게
-        // Scroll up 시에는 버튼을 작게 버튼의 크기를 변경하는 부분
-//        binding.recyclerMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//
-//        })
+        // 재료 선택 또는 해제 시에 변경을 감지 시에 outer Adapter에 바뀐 리스트 넘겨줌
+        viewModel.selectedIngredientList.observe(requireActivity()) { selectedIngredients ->
+            ingredientOuterAdapter?.outerSelectedIngredientList?.clear()
+            ingredientOuterAdapter?.outerSelectedIngredientList?.addAll(selectedIngredients)
+            ingredientOuterAdapter?.notifyDataSetChanged()
 
-//        viewModel.updatedClickedIngredients.observe(viewLifecycleOwner) { updatedIngredients ->
-//            println(updatedIngredients)
-        // 수정된 clicked 값들을 이용하여 화면을 업데이트하는 작업 수행
-        // updatedIngredients 리스트에는 수정된 clicked 값들이 들어있습니다.
-//        }
-
+        }
         // 재료 보여주는 RecyclerView
         initIngredientsRecycler()
 
+        // 추천 받기 버튼 누르면 결과 화면으로 이동
         binding.selectButton.setOnClickListener {
+            // 밑에 2줄 중 원하는 MenuInfo로 선택해서 하드코딩으로 넣기
+//            MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
+//            MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
+            val resultMenu = MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식")
             val intent = Intent(activity, IngredientRecommendResultActivity::class.java)
+            intent.putExtra("object", resultMenu)
             startActivity(intent)
         }
 
@@ -88,18 +101,31 @@ class IngredientFragment : Fragment() {
         _binding = null
     }
 
+    // 재료 classification RecyclerView 초기화
+    @SuppressLint("NotifyDataSetChanged")
     private fun initClassificationRecycler() {
-        // 재료 classification RecyclerView 초기화
-        val classificationAdapter =
-            ClassificationAdapter(object : ClassificationAdapter.ClassificationListener {
-                override fun changeCurrentClassification(classification: String) {
-                    // classification 버튼을 클릭하여 현재 classification 변경 시
-                    viewModel.selectClassification(classification)
-                }
-            })
+        // 재료 분류 쪽 스크롤 시 fragment가 넘어가지지 않도록 방지
+        binding.classificationRecyclerView.addOnItemTouchListener(object :
+            RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                rv.parent.requestDisallowInterceptTouchEvent(true)
+                return false
+            }
 
-        // ViewModel에 선언되어 있는 classificationList를 추가
-        viewModel.classificationList.value?.forEach { classificationAdapter.datas.add(it) }
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                // Handle touch event if needed
+            }
+
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+                // Handle request disallow intercept event if needed
+            }
+        })
+
+        viewModel.classificationList.observe(requireActivity()) {
+            classificationAdapter?.datas?.clear()
+            classificationAdapter?.datas?.addAll(it)
+            classificationAdapter?.notifyDataSetChanged()
+        }
 
         binding.classificationRecyclerView.apply {
             setHasFixedSize(true)
@@ -172,41 +198,16 @@ class IngredientFragment : Fragment() {
         }
     }
 
-    private fun expandButton() {
-        // 버튼을 크게 만드는 메소드
-        if (!isButtonExpanded) {
-            val layoutParams = binding.selectButton.layoutParams
-            layoutParams.height = resources.getDimensionPixelSize(R.dimen.expanded_button_height)
-            layoutParams.width = resources.getDimensionPixelSize(R.dimen.expanded_button_width)
-            binding.selectButton.layoutParams = layoutParams
-            isButtonExpanded = true
-            isButtonAbove = false
-
-        }
+    // onPause시에 DataStore에 저장
+    override fun onPause() {
+        super.onPause()
+        viewModel.storeSelectedIngredient()
     }
 
-    private fun shrinkButton() {
-        // 버튼을 원래의 크기로 돌리는 메소드
-        if (isButtonExpanded) {
-            val layoutParams = binding.selectButton.layoutParams
-            layoutParams.height = resources.getDimensionPixelSize(R.dimen.original_button_height)
-            layoutParams.width = resources.getDimensionPixelSize(R.dimen.original_button_width)
-            binding.selectButton.layoutParams = layoutParams
-            isButtonExpanded = false
-            isButtonAbove = true
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        classificationAdapter = null
+        ingredientOuterAdapter = null
     }
-
-    // button의 margin bottom을 조정해 위치 조정하려는 의도
-//    private fun updateButtonMargin() {
-//        val layoutParams = binding.selectButton.layoutParams as ConstraintLayout.LayoutParams
-//        if (isButtonAbove) {
-//            layoutParams.bottomMargin =
-//                resources.getDimensionPixelSize(R.dimen.initial_button_margin_bottom)
-//        } else {
-//            layoutParams.bottomMargin =
-//                resources.getDimensionPixelSize(R.dimen.scrolled_button_margin_bottom)
-//        }
-//        binding.selectButton.layoutParams = layoutParams
-//    }
 }
