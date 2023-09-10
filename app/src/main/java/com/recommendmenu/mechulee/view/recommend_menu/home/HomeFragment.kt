@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -24,14 +25,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
+import com.recommendmenu.mechulee.utils.constant.Constants
 import com.recommendmenu.mechulee.utils.location.LocationUtils
 import com.recommendmenu.mechulee.utils.network.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
@@ -61,6 +65,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
 
     private var  restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
+
+    private var shortAddress = ""
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -251,10 +257,18 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
+        // 지도 클릭 시 네이버 맵 webview 페이지로 전환
+        naverMap.setOnMapClickListener { pointF, latLng ->
+            val intent = Intent(requireContext(), WebViewMapActivity::class.java)
+            intent.putExtra(Constants.INTENT_NAME_LOCATION, shortAddress)
+            startActivity(intent)
+        }
+
         // 현재 주소 조회하여 반영
         LocationUtils.getCurrentAddress(requireActivity(), onResult = { currentAddress, shortAddress ->
             // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
-            viewModel.setCurrentAddress(currentAddress, shortAddress)
+            this.shortAddress = shortAddress.split(" ").drop(1).joinToString(" ")
+            viewModel.setCurrentAddress(currentAddress, this.shortAddress)
         })
     }
 
@@ -343,12 +357,19 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun initRecyclerView() {
-        // 메뉴 카테고리 RecyclerView 초기화
+        // 식당 리스트 recyclerView 초기화
         restaurantRecyclerViewAdapter = RestaurantRecyclerViewAdapter()
+
+        val noScrollLayoutManager = object : LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false) {
+            override fun canScrollVertically(): Boolean {
+                // false 를 반환하여 세로 스크롤 이벤트 막기
+                return false
+            }
+        }
 
         binding.restaurantRecyclerView.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            layoutManager = noScrollLayoutManager
             adapter = restaurantRecyclerViewAdapter
         }
     }

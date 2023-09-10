@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.orhanobut.logger.Logger
+import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
@@ -85,6 +87,20 @@ class IngredientFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // ViewPager 여러번 전환 시 MotionLayout 이 제대로 동작하지 않는 오류가 있어
+        // MotionLayout Transition 에 대해 초기화 과정 수행 (끊겨보일 수 있음)
+        binding.motionLayout.setTransition(R.id.motionLayoutTransition)
+        binding.motionLayout.progress = 0f
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     // 재료 classification RecyclerView 초기화
     @SuppressLint("NotifyDataSetChanged")
     private fun initClassificationRecycler() {
@@ -132,15 +148,49 @@ class IngredientFragment : Fragment() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
-                    if (dy > 0) {
-                        // 아래로 스크롤 시 Bottom Bar 사라짐
-                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
-                            BOTTOM_BAR_STATUS_HIDE
-                        )
+                    if (binding.motionLayout.currentState == R.id.start) {
+                        Logger.e("START 상태")
+                    } else if (binding.motionLayout.currentState == R.id.end) {
+                        Logger.e("END 상태")
                     } else {
+                        Logger.e("모르는 상태 ${binding.motionLayout.currentState}")
+                    }
+
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+                    // 스크롤을 위로 올렸을 경우, 첫 번째 항목이 완전히 보이는지 확인 (맨 위까지 스크롤),
+                    // 버벅거림 방지를 위해 transition 상태가 확인 후,
+                    // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
+                    if (dy < 0
+                        && layoutManager.findFirstCompletelyVisibleItemPosition() == 0
+                        && binding.motionLayout.currentState == R.id.end
+                        && (binding.motionLayout.progress >= 1f
+                                || binding.motionLayout.progress <= 0f)
+                    ) {
+                        binding.motionLayout.transitionToStart()
+
+                        Logger.e("transitionStart")
+
                         // 위로 스크롤 시 Bottom Bar 나타남
                         (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
                             BOTTOM_BAR_STATUS_SHOW
+                        )
+                    }
+
+                    // 스크롤을 아래로 내렸을 경우, 버벅거림 방지를 위해 transition 상태가 확인 후,
+                    // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
+                    if (dy > 0
+                        && binding.motionLayout.currentState == R.id.start
+                        && (binding.motionLayout.progress >= 1f
+                                || binding.motionLayout.progress <= 0f)
+                    ) {
+                        binding.motionLayout.transitionToEnd()
+
+                        Logger.e("transitionEnd")
+
+                        // 아래로 스크롤 시 Bottom Bar 사라짐
+                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                            BOTTOM_BAR_STATUS_HIDE
                         )
                     }
                 }

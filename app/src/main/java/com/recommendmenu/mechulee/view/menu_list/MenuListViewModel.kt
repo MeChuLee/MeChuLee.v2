@@ -18,7 +18,7 @@ class MenuListViewModel : ViewModel() {
     }
 
     // 전체 메뉴 리스트 정보를 담고 있는 변수
-    private lateinit var totalList: ArrayList<MenuInfo>
+    private var totalList = ArrayList<MenuInfo>()
 
     // 메뉴 카테고리 정보 리스트
     val categoryList: MutableLiveData<ArrayList<String>> = MutableLiveData()
@@ -63,6 +63,7 @@ class MenuListViewModel : ViewModel() {
         if (category != null) currentCategory = category
 
         val searchList = ArrayList<MenuInfo>()
+
         totalList.forEach {
             if ((currentCategory == MENU_CATEGORY_ALL || currentCategory == it.category) && searchWord in it.name)
                 searchList.add(it)
