@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -25,14 +24,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.utils.constant.Constants
@@ -66,7 +63,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private var  restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
 
-    private var shortAddress = ""
+    private var simpleAddress = ""
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -260,16 +257,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // 지도 클릭 시 네이버 맵 webview 페이지로 전환
         naverMap.setOnMapClickListener { pointF, latLng ->
             val intent = Intent(requireContext(), WebViewMapActivity::class.java)
-            intent.putExtra(Constants.INTENT_NAME_LOCATION, shortAddress)
+            intent.putExtra(Constants.INTENT_NAME_LOCATION, simpleAddress)
             startActivity(intent)
         }
-
-        // 현재 주소 조회하여 반영
-        LocationUtils.getCurrentAddress(requireActivity(), onResult = { currentAddress, shortAddress ->
-            // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
-            this.shortAddress = shortAddress.split(" ").drop(1).joinToString(" ")
-            viewModel.setCurrentAddress(currentAddress, this.shortAddress)
-        })
     }
 
     // 위치 권한 요청 선언
@@ -312,6 +302,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 }
 
             mapFragment.getMapAsync(this)
+
+            // 주소 요청]
+            requestAddress()
         } else {
             // 사용자가 위치 서비스를 키도록 AlertDialog 를 사용하여 유도
             showAlertDialog(
@@ -372,5 +365,15 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             layoutManager = noScrollLayoutManager
             adapter = restaurantRecyclerViewAdapter
         }
+    }
+
+    // 현재 주소 요청하여 반영하기 (onResume 에서 권한 체크 후 사용, 권한 미허용 상태 시 허용할 경우 사용)
+    private fun requestAddress() {
+        // 현재 주소 조회하여 반영
+        LocationUtils.getCurrentAddress(requireActivity(), onResult = { simpleAddress ->
+            // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
+            this.simpleAddress = simpleAddress
+            viewModel.setCurrentAddress(simpleAddress)
+        })
     }
 }
