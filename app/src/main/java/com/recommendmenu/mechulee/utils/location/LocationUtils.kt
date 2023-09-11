@@ -12,7 +12,6 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,7 +19,7 @@ import java.io.IOException
 import java.util.Locale
 
 object LocationUtils {
-    
+
     // 현재 위치 좌표로 가져오기 -> 인자에 파라미터로 콜백 함수 실행
     fun getLocationGPS(activity: FragmentActivity, onResultLocation: (Double, Double) -> Unit) {
         // 권한 미허용 시 return
@@ -48,12 +47,23 @@ object LocationUtils {
             }
         }
 
-        // 위치 정보 요청
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10.0f, locationListener)
+        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        if (location == null) {
+            // 위치 정보 요청
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                10000,
+                10.0f,
+                locationListener
+            )
+        } else {
+            // 최근 접근한 위치가 있을 경우 그 위치 좌표 return
+            onResultLocation(location.latitude, location.longitude)
+        }
     }
 
     // 현재 주소 가져오기 (activity 가 필요하므로, Activity 나 Fragment 에서 수행)
-    fun getCurrentAddress(activity : FragmentActivity, onResult: (String, String) -> Unit) {
+    fun getCurrentAddress(activity: FragmentActivity, onResult: (String) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -71,16 +81,26 @@ object LocationUtils {
         getLocationGPS(activity, onResultLocation = { latitude, longitude ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
-                    onResult(addresses[0].getAddressLine(0), addresses[2].getAddressLine(0))
+                    val simpleAddress = getSimpleAddress(addresses)
+
+                    // 주소 조회가 가능할 경우만 UI 업데이트 실행
+                    if (simpleAddress != "")
+                        onResult(simpleAddress)
                 }
             } else {
                 // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
                 activity.lifecycleScope.launch(Dispatchers.IO) {
                     try {
-                        val addresses = geocoder.getFromLocation(latitude, longitude, 3) as List<Address>
+                        val addresses =
+                            geocoder.getFromLocation(latitude, longitude, 3) as List<Address>
 
-                        withContext(Dispatchers.Main) {
-                            onResult(addresses[0].getAddressLine(0), addresses[2].getAddressLine(0))
+                        val simpleAddress = getSimpleAddress(addresses)
+
+                        // 주소 조회가 가능할 경우만 UI 업데이트 실행
+                        if (simpleAddress != "") {
+                            withContext(Dispatchers.Main) {
+                                onResult(simpleAddress)
+                            }
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -88,5 +108,24 @@ object LocationUtils {
                 }
             }
         })
+    }
+
+    private fun getSimpleAddress(addresses: List<Address>): String {
+        addresses.forEach { address ->
+            val locality = if (address.locality != null) {
+                address.locality
+            } else {
+                address.adminArea
+            }
+
+            val subLocality = address.subLocality
+            val thoroughfare = address.thoroughfare
+
+            if (subLocality != null && thoroughfare != null) {
+                return "$locality $subLocality $thoroughfare"
+            }
+        }
+
+        return ""
     }
 }

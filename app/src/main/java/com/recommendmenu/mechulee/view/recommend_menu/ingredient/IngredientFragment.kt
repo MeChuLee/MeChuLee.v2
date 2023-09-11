@@ -1,5 +1,7 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -83,6 +85,13 @@ class IngredientFragment : Fragment() {
             startActivity(intent)
         }
 
+        binding.circleSelectButton.setOnClickListener {
+            val resultMenu = MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식")
+            val intent = Intent(activity, IngredientRecommendResultActivity::class.java)
+            intent.putExtra("object", resultMenu)
+            startActivity(intent)
+        }
+
         return binding.root
     }
 
@@ -122,6 +131,38 @@ class IngredientFragment : Fragment() {
 
     // 선택할 재료를 보여주는 RecyclerView
     private fun initIngredientsRecycler() {
+        // 버튼을 서서히 사라지게 하는 애니메이션
+        val fadeOut = ObjectAnimator.ofFloat(binding.circleSelectButton, "alpha", 1f, 0f).apply {
+            duration = 1000 // 애니메이션 지속 시간 설정 (1초)
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {
+                    binding.circleSelectButton.isEnabled = false
+                }
+
+                override fun onAnimationEnd(animation: Animator) {}
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+        }
+
+        // 버튼을 다시 나타나게 하는 애니메이션
+        val fadeIn = ObjectAnimator.ofFloat(binding.circleSelectButton, "alpha", 0f, 1f).apply {
+            duration = 1000 // 애니메이션 지속 시간 설정 (1초)
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {}
+
+                override fun onAnimationEnd(animation: Animator) {
+                    binding.circleSelectButton.isEnabled = true // 애니메이션이 끝나면 버튼 클릭 가능
+                }
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+        }
+
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.recyclerMain.apply {
@@ -144,6 +185,8 @@ class IngredientFragment : Fragment() {
                         && (binding.motionLayout.progress >= 1f
                                 || binding.motionLayout.progress <= 0f)
                     ) {
+                        fadeIn.start()
+
                         binding.motionLayout.transitionToStart()
 
                         // 위로 스크롤 시 Bottom Bar 나타남
@@ -159,6 +202,8 @@ class IngredientFragment : Fragment() {
                         && (binding.motionLayout.progress >= 1f
                                 || binding.motionLayout.progress <= 0f)
                     ) {
+                        fadeOut.start()
+
                         binding.motionLayout.transitionToEnd()
 
                         // 아래로 스크롤 시 Bottom Bar 사라짐
