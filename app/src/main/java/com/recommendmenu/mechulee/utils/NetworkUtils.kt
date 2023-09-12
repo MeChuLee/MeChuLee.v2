@@ -1,12 +1,12 @@
-package com.recommendmenu.mechulee.utils.network
+package com.recommendmenu.mechulee.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.recommendmenu.mechulee.utils.constant.Constants.URL_TYPE_INGREDIENT
-import com.recommendmenu.mechulee.utils.constant.Constants.URL_TYPE_MENU
+import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_INGREDIENT
+import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_MENU
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -15,6 +15,7 @@ object NetworkUtils {
     // 에뮬레이터 : http://10.0.2.2:8000/
     const val MY_SERVER_BASE_URL = "http://10.0.2.2:8000/"
     const val NAVER_SEARCH_BASE_URL = "https://openapi.naver.com/"
+    const val WEATHER_BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
 
     private const val ADD_MENU_URL = "static/menu/"
     private const val ADD_INGREDIENT_URL = "static/ingredient/"

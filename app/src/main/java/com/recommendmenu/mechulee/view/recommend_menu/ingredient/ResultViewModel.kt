@@ -1,6 +1,5 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 
-import android.view.Menu
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,8 +8,8 @@ import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
 import com.recommendmenu.mechulee.model.network.menu.MenuService
-import com.recommendmenu.mechulee.utils.data.DataStoreUtils
-import com.recommendmenu.mechulee.utils.network.NetworkUtils
+import com.recommendmenu.mechulee.utils.DataStoreUtils
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import retrofit2.Call

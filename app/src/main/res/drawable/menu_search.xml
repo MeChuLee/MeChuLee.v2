@@ -8,7 +8,7 @@
         <shape android:shape="rectangle">
             <stroke
                 android:width="2dp"
-                android:color="@color/clicked" />
+                android:color="@color/secondFragment" />
 
             <solid android:color="#FFF" />
         </shape>

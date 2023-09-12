@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.RecyclerViewMenuTypeGridBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
-import com.recommendmenu.mechulee.utils.constant.Constants
-import com.recommendmenu.mechulee.utils.network.NetworkUtils
+import com.recommendmenu.mechulee.utils.Constants
+import com.recommendmenu.mechulee.utils.NetworkUtils
 
 class MenuGridAdapter : RecyclerView.Adapter<MenuGridAdapter.MyViewHolder>() {
 

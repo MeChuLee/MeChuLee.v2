@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.IngredientData
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
-import com.recommendmenu.mechulee.utils.data.DataStoreUtils
+import com.recommendmenu.mechulee.utils.DataStoreUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 

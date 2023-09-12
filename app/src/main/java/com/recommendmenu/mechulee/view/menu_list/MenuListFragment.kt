@@ -15,10 +15,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.databinding.FragmentMenuListBinding
-import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
-import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
+import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_HIDE
+import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_SHOW
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuCategoryAdapter
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuGridAdapter

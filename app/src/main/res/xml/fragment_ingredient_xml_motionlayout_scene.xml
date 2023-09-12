@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        android:id="@+id/motionLayoutTransition"
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="500">
+        <KeyFrameSet>
+            <KeyAttribute
+                motion:framePosition="50"
+                motion:motionTarget="@id/classificationRecyclerView">
+
+                <CustomAttribute
+                    motion:attributeName="alpha"
+                    motion:customFloatValue="1" />
+            </KeyAttribute>
+
+            <KeyAttribute
+                motion:framePosition="100"
+                motion:motionTarget="@id/classificationRecyclerView">
+
+                <CustomAttribute
+                    motion:attributeName="alpha"
+                    motion:customFloatValue="0" />
+            </KeyAttribute>
+
+            <KeyAttribute
+                motion:framePosition="50"
+                motion:motionTarget="@id/selectButton">
+
+                <CustomAttribute
+                    motion:attributeName="alpha"
+                    motion:customFloatValue="0" />
+            </KeyAttribute>
+
+            <KeyAttribute
+                motion:framePosition="100"
+                motion:motionTarget="@id/selectButton">
+
+                <CustomAttribute
+                    motion:attributeName="alpha"
+                    motion:customFloatValue="1" />
+            </KeyAttribute>
+        </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/noticeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/classificationRecyclerView" />
+        <Constraint
+            android:id="@+id/selectButton"
+            android:layout_width="0.1dp"
+            android:layout_height="0.1dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+        <Constraint
+            android:id="@+id/classificationRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/noticeTextView"
+            android:layout_width="0.1dp"
+            android:layout_height="0.1dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/classificationRecyclerView" />
+        <Constraint
+            android:id="@+id/selectButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+        <Constraint
+            android:id="@+id/classificationRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            motion:layout_constraintBottom_toTopOf="@id/noticeTextView"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+    </ConstraintSet>
+</MotionScene>

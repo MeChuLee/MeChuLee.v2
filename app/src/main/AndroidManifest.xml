@@ -40,8 +40,14 @@
             android:name=".view.recommend_menu.ai.ingredient_rate.IngredientActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".view.recommend_menu.ingredient.AIRecommendResultActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name=".view.recommend_menu.home.WebViewMapActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 

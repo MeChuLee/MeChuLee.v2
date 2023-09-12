@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.utils.weather
+package com.recommendmenu.mechulee.model.network.weather
 
 import com.recommendmenu.mechulee.BuildConfig
 import retrofit2.Call
