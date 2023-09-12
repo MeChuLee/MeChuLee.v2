@@ -14,11 +14,11 @@ import com.magicgoop.tagsphere.item.TagItem
 import com.magicgoop.tagsphere.item.TextTagItem
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentAiBinding
+import com.recommendmenu.mechulee.utils.location.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ai.util.EmojiConstants
 import kotlin.random.Random
-
 
 class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
@@ -35,11 +35,37 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
         aiViewModel = ViewModelProvider(this)[AIViewModel::class.java]
 
-        binding.temperature.text
-        binding.weatherText.text
-        binding.locationText.text
-        binding.weatherAnimation.setAnimation(R.raw.weather_cloud_rain_animation)
         // 함수로 변경해서 되는지 확인해보기
+        LocationUtils.getLocationGPS(requireActivity(), onResultLocation = { latitude, longitude ->
+            aiViewModel.setLocationXY(latitude, longitude)
+        })
+
+        // observe대상을 dataClass객체에서 각각의 String값으로 한 이유
+        // -> 객체로 하면 반복문 돌다가 요소 하나만나면 바로 observe함수를 비동기로 실행해버려서
+        // 객체에 완벽하게 값이 들어오지 않은 채로 UI에 반영이 됨.
+        // observe하고 있는 대상은 UI에 직접적으로 반영이 되는 대상으로 하는게 좋을 것 같음
+        // 변경을 대상 전체를 하는게 맞는 것 같다.
+        aiViewModel.weatherInfoSky.observe(requireActivity()){
+            binding.weatherText.text = it
+            val rainType = aiViewModel.weatherInfoRainType.value
+
+            if(rainType == "비" || rainType == "비/눈" || rainType == "빗방울"){
+                binding.weatherAnimation.setAnimation(R.raw.weather_cloud_rain_animation)
+                // continue 없나?
+            } else if(rainType == "눈" || rainType == "빗방울눈날림" || rainType == "눈날림"){
+                binding.weatherAnimation.setAnimation(R.raw.weather_snow_animation)
+            } else if(it == "맑음") {
+                binding.weatherAnimation.setAnimation(R.raw.weather_sun_animation)
+            } else if(it == "구름많음"){
+                binding.weatherAnimation.setAnimation(R.raw.weather_cloudcloud_animation)
+            } else if(it == "흐림") {
+                binding.weatherAnimation.setAnimation(R.raw.weather_cloud_animation)
+            }
+        }
+
+        aiViewModel.weatherInfoTemp.observe(requireActivity()){
+            binding.temperature.text = it
+        }
 
         // CustomNestedScrollView 스크롤 함수 정의 -> BottomNavigationBar 내려감
         binding.aiNestedScrollView.onBottomBarStatusChange = { status ->

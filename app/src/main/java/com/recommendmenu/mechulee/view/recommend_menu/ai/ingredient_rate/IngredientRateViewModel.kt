@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.utils.data.DataStoreUtils
+import com.recommendmenu.mechulee.utils.data.DataStoreUtils.initTotalListFromDataStore
 import com.recommendmenu.mechulee.view.menu_list.MenuListViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -40,14 +42,20 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
 
     // ViewModel이 생성될 때 데이터 초기화 작업 수행
     init {
-        // 여기서 totalList의 rating값들을 DataStore에서 가져온 rating값들로 교체한다.
-        viewModelScope.launch {
-            // DataStore에서 RatingData를 비동기적으로 가져와서 totalList 초기화
-            initTotalListFromDataStore()
+
+        // DataStore에서 RatingData를 비동기적으로 가져와서 totalList 초기화
+        DataStoreUtils.initTotalListFromDataStore(viewModelScope,dataStore, onResult = {
+            val updatedTotalList = ArrayList<IngredientInfo>()
+            for (info in totalList) {
+                val matchingRating = it.getOrElse(totalList.indexOf(info)) { 0.0f }
+                updatedTotalList.add(info.copy(rating = matchingRating))
+            }
+            totalList = updatedTotalList
 
             // 초기화된 totalList를 menuList에 설정
             menuList.value = totalList
-        }
+        })
+
     }
 
     fun showMenuList(selectedItem: String, searchWord: String) {
@@ -71,19 +79,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         // 값만 바꿔도 menuList가 MutableLiveData이기 때문에 변경이 감지됨
     }
 
-    private suspend fun initTotalListFromDataStore() {
-        val storedRatingData = dataStore.data.firstOrNull()
 
-        // RatingData가 null이 아닐 경우, totalList의 rating 값을 업데이트한다.
-        storedRatingData?.let {
-            val updatedTotalList = ArrayList<IngredientInfo>()
-            for (info in totalList) {
-                val matchingRating = it.ratingList.getOrElse(totalList.indexOf(info)) { 0.0f }
-                updatedTotalList.add(info.copy(rating = matchingRating))
-            }
-            totalList = updatedTotalList
-        }
-    }
 
     fun storeRatingDataFromTotalList() {
         viewModelScope.launch {
@@ -98,16 +94,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
             val menuItems = totalList
             val ratingList = menuItems.map { it.rating }
 
-            val ratingData = RatingData.newBuilder()
-                .addAllRating(ratingList)
-                .build()
-
-            dataStore.updateData {
-                ratingData.toBuilder()
-                    .clearRating()
-                    .addAllRating(ratingData.ratingList)
-                    .build()
-            }
+            DataStoreUtils.updateDataStoreToRatingList(ratingList, dataStore)
         }
     }
 
