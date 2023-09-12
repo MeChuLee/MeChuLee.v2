@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.widget.NestedScrollView
-import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
-import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
+import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_HIDE
+import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_SHOW
 
 class CustomNestedScrollView(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
 

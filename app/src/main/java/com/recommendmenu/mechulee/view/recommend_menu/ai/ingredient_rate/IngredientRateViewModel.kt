@@ -8,9 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
-import com.recommendmenu.mechulee.utils.data.DataStoreUtils
-import com.recommendmenu.mechulee.utils.data.DataStoreUtils.initTotalListFromDataStore
-import com.recommendmenu.mechulee.view.menu_list.MenuListViewModel
+import com.recommendmenu.mechulee.utils.DataStoreUtils
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -44,7 +44,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
     init {
 
         // DataStore에서 RatingData를 비동기적으로 가져와서 totalList 초기화
-        DataStoreUtils.initTotalListFromDataStore(viewModelScope,dataStore, onResult = {
+        DataStoreUtils.initTotalListFromDataStore(viewModelScope, dataStore, onResult = {
             val updatedTotalList = ArrayList<IngredientInfo>()
             for (info in totalList) {
                 val matchingRating = it.getOrElse(totalList.indexOf(info)) { 0.0f }
@@ -80,25 +80,24 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
     }
 
 
-
+    @OptIn(DelicateCoroutinesApi::class)
     fun storeRatingDataFromTotalList() {
-        viewModelScope.launch {
-            // totalList의 요소 중 menuList와 title이 같은 것들만 교체
-            for (menuItem in totalList) {
-                val matchingTotalItem = menuList.value?.find { it.title == menuItem.title }
-                if (matchingTotalItem != null) {
-                    menuItem.rating = matchingTotalItem.rating
-                }
+        // totalList의 요소 중 menuList와 title이 같은 것들만 교체
+        for (menuItem in totalList) {
+            val matchingTotalItem = menuList.value?.find { it.title == menuItem.title }
+            if (matchingTotalItem != null) {
+                menuItem.rating = matchingTotalItem.rating
             }
-
-            val menuItems = totalList
-            val ratingList = menuItems.map { it.rating }
-
-            DataStoreUtils.updateDataStoreToRatingList(ratingList, dataStore)
         }
+
+        val menuItems = totalList
+        val ratingList = menuItems.map { it.rating }
+
+        DataStoreUtils.updateDataStoreToRatingList(GlobalScope, dataStore, ratingList)
     }
 
-    fun showRatingDataStrore() {
+    // 나중에 지우면 됨
+    fun showRatingDataStore() {
         viewModelScope.launch {
             // DataStore에 저장된 ratingList 값을 읽어와서 로그로 출력합니다.
             val storedRatingData = dataStore.data.firstOrNull()
@@ -121,7 +120,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
     fun changeItemFromItemList(item: IngredientInfo) {
         menuList.value?.let { menuItems ->
             for (ingredientInfo in menuItems) {
-                if(ingredientInfo.title == item.title){
+                if (ingredientInfo.title == item.title) {
                     ingredientInfo.rating = item.rating
                 }
             }

@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.utils.location
+package com.recommendmenu.mechulee.utils
 
 import android.Manifest
 import android.content.Context

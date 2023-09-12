@@ -32,9 +32,9 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
-import com.recommendmenu.mechulee.utils.constant.Constants
-import com.recommendmenu.mechulee.utils.location.LocationUtils
-import com.recommendmenu.mechulee.utils.network.NetworkUtils
+import com.recommendmenu.mechulee.utils.Constants
+import com.recommendmenu.mechulee.utils.LocationUtils
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.RestaurantRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter

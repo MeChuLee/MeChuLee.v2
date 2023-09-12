@@ -7,7 +7,7 @@ import com.recommendmenu.mechulee.BuildConfig
 import com.recommendmenu.mechulee.model.network.search.Item
 import com.recommendmenu.mechulee.model.network.search.SearchDto
 import com.recommendmenu.mechulee.model.network.search.SearchService
-import com.recommendmenu.mechulee.utils.network.NetworkUtils
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

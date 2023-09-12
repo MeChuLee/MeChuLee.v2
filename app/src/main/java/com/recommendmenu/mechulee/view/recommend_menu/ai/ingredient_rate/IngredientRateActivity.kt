@@ -83,7 +83,7 @@ class IngredientActivity : AppCompatActivity() {
             viewModel.storeRatingDataFromTotalList()
 
             // DataStore에 저장된 rating값들을 보여준다
-            viewModel.showRatingDataStrore()
+            viewModel.showRatingDataStore()
 
             // 현재 menuList정보 출력해서 확인
             viewModel.menuList.value?.forEach { ingredientInfo ->

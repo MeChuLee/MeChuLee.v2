@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.utils.weather
+package com.recommendmenu.mechulee.model.network.weather
 
 import com.google.gson.annotations.SerializedName
 

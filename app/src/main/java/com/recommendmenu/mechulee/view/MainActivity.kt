@@ -9,8 +9,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityMainBinding
-import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_HIDE
-import com.recommendmenu.mechulee.utils.constant.Constants.BOTTOM_BAR_STATUS_SHOW
+import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_HIDE
+import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_SHOW
 import com.recommendmenu.mechulee.view.like_menu.LikeFragment
 import com.recommendmenu.mechulee.view.menu_list.MenuListFragment
 import com.recommendmenu.mechulee.view.recommend_menu.RecommendFragment

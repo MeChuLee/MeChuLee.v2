@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.utils.constant
+package com.recommendmenu.mechulee.utils
 
 object Constants {
     const val BOTTOM_BAR_STATUS_SHOW = 0
