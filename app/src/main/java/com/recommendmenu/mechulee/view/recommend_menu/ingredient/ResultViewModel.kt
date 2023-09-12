@@ -6,10 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.model.network.menu.MenuDto
+import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
     private var totalList: ArrayList<MenuInfo> = arrayListOf(
@@ -27,6 +32,8 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
         MenuInfo("리조또", "김치, 두부, 파, 양파, 고추", "양식"),
     )
 
+//    private lateinit var totalList: ArrayList<MenuInfo>
+
     private var myStoredMenu = ArrayList<String>()
     val likedMenuList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
@@ -34,8 +41,30 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
     val ingredientList = ArrayList<String>()
     val otherList = ArrayList<String>()
 
+
+    fun ready() {
+        val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
+
+        val service = retrofit.create(MenuService::class.java)
+
+        service.getAllIngredient()
+            .enqueue(object : Callback<MenuDto> {
+                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
+                    if (response.isSuccessful.not()) {
+                        return
+                    }
+                    response.body()?.let { menuDto ->
+                        val tempMenuList = menuDto.menuList
+
+                        totalList = tempMenuList.toCollection(ArrayList())
+                    }
+                }
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) { }
+            })
+    }
+
     init {
-        DataStoreUtils.loadFromLikeData(viewModelScope, dataStore, onResult = {
+        DataStoreUtils.loadFromLikeMenuData(viewModelScope, dataStore, onResult = {
             myStoredMenu.addAll(it)
             likedMenuList.value = myStoredMenu
         })
@@ -64,7 +93,9 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
         }
     }
 
-    fun checkLikedMenu(clickedData: String) {
+    // viewModel에 있는 likedMenuList에 추가하거나 제거하는 메소드
+    // 저장되지 않은 메뉴는 추가, 있는 메뉴는 제거
+    fun checkLikeMenu(clickedData: String) {
         val tempList = ArrayList<String>(likedMenuList.value?.toList() ?: ArrayList())
         if (clickedData in tempList) {
             tempList.remove(clickedData)
@@ -74,17 +105,13 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
         likedMenuList.value = tempList
     }
 
-
+    // 좋아요 클릭한 메뉴 DataStore에 저장하는 메소드
     @OptIn(DelicateCoroutinesApi::class)
     fun storeLikeMenu() {
-        val tempList = ArrayList<String>(likedMenuList.value?.toList() ?: ArrayList())
-        GlobalScope.launch {
-            dataStore.updateData { MenuData ->
-                MenuData.toBuilder()
-                    .clearLikedMenu()
-                    .addAllLikedMenu(tempList)
-                    .build()
-            }
-        }
+        DataStoreUtils.updateLikeMenuData(
+            GlobalScope,
+            dataStore,
+            ArrayList<String>(likedMenuList.value?.toList() ?: ArrayList())
+        )
     }
 }

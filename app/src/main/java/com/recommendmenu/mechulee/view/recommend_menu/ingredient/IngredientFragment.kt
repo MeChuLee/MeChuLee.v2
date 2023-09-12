@@ -41,7 +41,7 @@ class IngredientFragment : Fragment() {
     private var ingredientOuterAdapter: IngredientOuterAdapter? =
         IngredientOuterAdapter(object : IngredientOuterAdapter.IngredientOuterListener {
             override fun clickIngredient(clickedIngredient: String) {
-                viewModel.checkClickedIngredient(clickedIngredient)
+                viewModel.checkSelectedIngredient(clickedIngredient)
             }
         })
 
@@ -80,14 +80,14 @@ class IngredientFragment : Fragment() {
 //            MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
 //            MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
             val resultMenu = MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식")
-            val intent = Intent(activity, IngredientRecommendResultActivity::class.java)
+            val intent = Intent(activity, AIRecommendResultActivity::class.java)
             intent.putExtra("object", resultMenu)
             startActivity(intent)
         }
 
         binding.circleSelectButton.setOnClickListener {
             val resultMenu = MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식")
-            val intent = Intent(activity, IngredientRecommendResultActivity::class.java)
+            val intent = Intent(activity, AIRecommendResultActivity::class.java)
             intent.putExtra("object", resultMenu)
             startActivity(intent)
         }

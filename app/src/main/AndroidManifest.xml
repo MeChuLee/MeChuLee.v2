@@ -42,7 +42,7 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name=".view.recommend_menu.ingredient.IngredientRecommendResultActivity"
+            android:name=".view.recommend_menu.ingredient.AIRecommendResultActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
