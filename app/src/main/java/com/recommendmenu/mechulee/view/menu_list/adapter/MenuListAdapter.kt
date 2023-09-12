@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.RecyclerViewMenuTypeListBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
-import com.recommendmenu.mechulee.utils.constant.Constants.URL_TYPE_MENU
-import com.recommendmenu.mechulee.utils.network.NetworkUtils
+import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_MENU
+import com.recommendmenu.mechulee.utils.NetworkUtils
 
 class MenuListAdapter : RecyclerView.Adapter<MenuListAdapter.MyViewHolder>() {
 
