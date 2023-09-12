@@ -7,18 +7,21 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.IngredientData
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.utils.data.DataStoreUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 
 class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : ViewModel() {
     val classificationList: MutableLiveData<ArrayList<String>> = MutableLiveData()
+
+    // 여기에 서버에서 가져온 재료들을 우선 저장 후 Map에 분류에 맞게 저장해야함
+    private lateinit var totalList: ArrayList<IngredientInfo>
+
     val selectedMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
         MutableLiveData()
-    val selectedIngredientList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     private val myStoredIngredient = ArrayList<String>()
+    val selectedIngredientList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     private var vegetableList = arrayListOf(
         IngredientInfo(R.raw.corn, "양배추", 0.0f, "야채"),
@@ -90,13 +93,13 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
     )
 
     init {
-        viewModelScope.launch {
-            classificationList.value = arrayListOf("전체", "야채", "과일", "밥/면", "고기", "생선", "소스", "기타")
-            // DataStore에 저장된 값에 대한 초기화
-            selectedMap.value = ingredientTotalMap
-            initStoredIngredientFromDataStore()
+        classificationList.value = arrayListOf("전체", "야채", "과일", "밥/면", "고기", "생선", "소스", "기타")
+        selectedMap.value = ingredientTotalMap
+        // DataStore에 저장된 값에 대한 초기화
+        DataStoreUtils.loadFromSelectedIngredientData(viewModelScope, dataStore, onResult = {
+            myStoredIngredient.addAll(it)
             selectedIngredientList.value = myStoredIngredient
-        }
+        })
     }
 
     // 선택한 classification에 따라 selectClassificationMap에 반영
@@ -118,36 +121,9 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
         }
     }
 
-    // DataStore에 저장된 재료들을 확인해 myStoredIngredient에 넣고 그 값을 selectedIngredientList에 적용시킨다.
-    private suspend fun initStoredIngredientFromDataStore() {
-        val storedCheckedData = dataStore.data.firstOrNull()
-        storedCheckedData?.let {
-            ingredientTotalMap.forEach { nowMap ->
-                nowMap.value.forEach { nowIngredient ->
-                    if (nowIngredient.title in it.selectedIngredientList) {
-                        myStoredIngredient.add(nowIngredient.title)
-                    }
-                }
-            }
-        }
-    }
-
-    // 입력받은 리스트의 값들을 모두 DataStore에 저장하는 메소드
-    @OptIn(DelicateCoroutinesApi::class)
-    fun storeSelectedIngredient() {
-        GlobalScope.launch {
-            dataStore.updateData { ingredientData ->
-                ingredientData.toBuilder()
-                    .clearSelectedIngredient()
-                    .addAllSelectedIngredient(selectedIngredientList.value)
-                    .build()
-            }
-        }
-    }
-
     // ViewModel에 있는 selectedIngredientList(선택된 재료들)에 추가하거나 제거하는 메소드
-    // 없는 재료면 추가해주고, 있는 재료면 제거해준다.
-    fun checkClickedIngredient(clickedData: String) {
+    // 없는 재료는 추가, 있는 재료는 제거.
+    fun checkSelectedIngredient(clickedData: String) {
         val tempList = ArrayList<String>(selectedIngredientList.value?.toList() ?: ArrayList())
         if (clickedData in tempList) {
             tempList.remove(clickedData)
@@ -155,5 +131,15 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
             tempList.add(clickedData)
         }
         selectedIngredientList.value = tempList
+    }
+
+    // 선택한 재료 모두 DataStore에 저장하는 메소드
+    @OptIn(DelicateCoroutinesApi::class)
+    fun storeSelectedIngredient() {
+        DataStoreUtils.updateSelectedIngredientData(
+            GlobalScope,
+            dataStore,
+            ArrayList<String>(selectedIngredientList.value?.toList() ?: ArrayList())
+        )
     }
 }

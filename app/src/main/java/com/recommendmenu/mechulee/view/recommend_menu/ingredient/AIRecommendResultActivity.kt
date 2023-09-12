@@ -10,12 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.recommendmenu.mechulee.R
-import com.recommendmenu.mechulee.databinding.ActivityIngredientRecommendResultBinding
+import com.recommendmenu.mechulee.databinding.ActivityAiRecommendResultBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.proto.likedMenuDataStore
 
-class IngredientRecommendResultActivity : AppCompatActivity() {
-    private var _binding: ActivityIngredientRecommendResultBinding? = null
+class AIRecommendResultActivity : AppCompatActivity() {
+    private var _binding: ActivityAiRecommendResultBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewModel: ResultViewModel
@@ -26,7 +26,7 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding =
-            DataBindingUtil.setContentView(this, R.layout.activity_ingredient_recommend_result)
+            DataBindingUtil.setContentView(this, R.layout.activity_ai_recommend_result)
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
 
@@ -41,7 +41,7 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
 
         binding.heartIcon.setOnClickListener {
             isLiked = !isLiked
-            viewModel.checkLikedMenu(result)
+            viewModel.checkLikeMenu(result)
             animateHeart(isLiked)
         }
 
@@ -106,9 +106,13 @@ class IngredientRecommendResultActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.storeLikeMenu()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.storeLikeMenu()
         _binding = null
     }
 }
