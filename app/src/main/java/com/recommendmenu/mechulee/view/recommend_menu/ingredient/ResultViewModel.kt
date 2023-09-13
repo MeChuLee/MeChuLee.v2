@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
-import com.recommendmenu.mechulee.model.network.menu.MenuService
+import com.recommendmenu.mechulee.model.network.menu.OtherMenuService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -17,37 +17,21 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
-    private var totalList: ArrayList<MenuInfo> = arrayListOf(
-        MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
-        MenuInfo("바지락칼국수", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("닭볶음탕", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("비빔밥", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("돼지불고기", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("돼지갈비찜", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("닭갈비", "김치, 두부, 파, 양파, 고추", "한식"),
-        MenuInfo("햄버거", "빵, 돼지고기, 양파, 토마토, 양상추, 마요네즈, 김치, 김치, 김치, 김치, 김치", "양식"),
-        MenuInfo("피자", "김치, 두부, 파, 양파, 고추", "양식"),
-        MenuInfo("치킨", "김치, 두부, 파, 양파, 고추", "양식"),
-        MenuInfo("리조또", "김치, 두부, 파, 양파, 고추", "양식"),
-    )
-
-//    private lateinit var totalList: ArrayList<MenuInfo>
+    private var totalList = ArrayList<MenuInfo>()
 
     private var myStoredMenu = ArrayList<String>()
     val likedMenuList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     lateinit var nowResult: MenuInfo
     val ingredientList = ArrayList<String>()
-    val otherList = ArrayList<String>()
-
+    val otherList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     fun ready() {
         val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
 
-        val service = retrofit.create(MenuService::class.java)
+        val service = retrofit.create(OtherMenuService::class.java)
 
-        service.getAllIngredient()
+        service.getOtherMenuList(nowResult)
             .enqueue(object : Callback<MenuDto> {
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                     if (response.isSuccessful.not()) {
@@ -55,11 +39,16 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
                     }
                     response.body()?.let { menuDto ->
                         val tempMenuList = menuDto.menuList
-
                         totalList = tempMenuList.toCollection(ArrayList())
                     }
+                    val tempList = ArrayList<String>()
+                    totalList.forEach {
+                        tempList.add(it.name)
+                    }
+                    otherList.value = tempList
                 }
-                override fun onFailure(call: Call<MenuDto>, t: Throwable) { }
+
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
             })
     }
 
@@ -70,10 +59,10 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
         })
     }
 
+    // TODO 정리가 필요해보임.. 불필요한 메소드로 나눈 느낌
     fun showResult(nowMenu: MenuInfo) {
         nowResult = nowMenu.copy()
         showIngredient(nowMenu)
-        showOthers(nowMenu)
     }
 
     // 결과 메뉴의 재료 보여주는 메소드
@@ -81,15 +70,6 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
         val tempSplit = nowMenu.ingredients.split(", ")
         tempSplit.forEach {
             ingredientList.add(it)
-        }
-    }
-
-    // 비슷한 메뉴가 보여주는 메소드 (지금은 같은 category인 경우만 고려)
-    private fun showOthers(nowMenu: MenuInfo) {
-        totalList.forEach {
-            if (it.category == nowMenu.category && it.name != nowMenu.name) {
-                otherList.add(it.name)
-            }
         }
     }
 

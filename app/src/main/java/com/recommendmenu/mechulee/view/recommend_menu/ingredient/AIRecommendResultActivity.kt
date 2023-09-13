@@ -51,6 +51,7 @@ class AIRecommendResultActivity : AppCompatActivity() {
             viewModel.nowResult.let {
                 result = it.name
                 binding.resultMenuName.text = result
+                viewModel.ready()
             }
 
             // DataStore에 저장된 메뉴인지 확인
@@ -80,7 +81,7 @@ class AIRecommendResultActivity : AppCompatActivity() {
             }
 
             // 비슷한 메뉴 연결
-            viewModel.otherList.let {
+            viewModel.otherList.observe(this) {
                 val resultOtherMenuAdapter = ResultOtherMenuAdapter()
                 it.forEach { otherMenu ->
                     resultOtherMenuAdapter.datas.add(otherMenu)
