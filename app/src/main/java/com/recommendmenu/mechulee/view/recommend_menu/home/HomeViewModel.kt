@@ -16,6 +16,10 @@ class HomeViewModel : ViewModel() {
 
     val currentAddress = MutableLiveData<String>()
     val restaurantList = MutableLiveData<ArrayList<Item>>()
+    val isMapAndRestaurantReady = MutableLiveData<Boolean>()
+
+    private var isMapReady = false
+    private var isRestaurantReady = false
 
     // Activity 에서 사용한 Coroutine 에서 CallBack 을 받았기 때문에 현재 Background Thread 상태
     // Background Thread 에서는 ViewModel 의 LiveData 값을 변경할 때, setValue() 대신 postValue() 사용
@@ -56,5 +60,19 @@ class HomeViewModel : ViewModel() {
                 Logger.e(t.message.toString())
             }
         })
+    }
+
+    fun mapReady() {
+        isMapReady = true
+        if (isRestaurantReady) {
+            isMapAndRestaurantReady.value = true
+        }
+    }
+
+    fun restaurantReady() {
+        isRestaurantReady = true
+        if (isMapReady) {
+            isMapAndRestaurantReady.value = true
+        }
     }
 }
