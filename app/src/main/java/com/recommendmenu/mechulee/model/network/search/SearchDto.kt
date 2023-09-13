@@ -19,4 +19,6 @@ data class Item(
     @SerializedName("category") val category: String,
     @SerializedName("description") val description: String,
     @SerializedName("roadAddress") val roadAddress: String?,
+    @SerializedName("mapx") val mapx: String?,
+    @SerializedName("mapy") val mapy: String?,
 )

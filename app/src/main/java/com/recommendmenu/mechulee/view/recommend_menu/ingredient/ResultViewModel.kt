@@ -47,7 +47,7 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
 
         val service = retrofit.create(MenuService::class.java)
 
-        service.getAllIngredient()
+        service.getAllMenu()
             .enqueue(object : Callback<MenuDto> {
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                     if (response.isSuccessful.not()) {
