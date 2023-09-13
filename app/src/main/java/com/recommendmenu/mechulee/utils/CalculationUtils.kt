@@ -67,4 +67,8 @@ object CalculationUtils {
 
         return Point(x, y)
     }
+
+    fun convertStringToDoubleWithMap(x: String): Double {
+        return (x.dropLast(7) + "." + x.takeLast(7)).toDouble()
+    }
 }

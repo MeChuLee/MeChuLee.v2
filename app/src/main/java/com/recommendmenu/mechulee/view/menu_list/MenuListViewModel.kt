@@ -35,7 +35,7 @@ class MenuListViewModel : ViewModel() {
         val service = retrofit.create(MenuService::class.java)
 
         // retrofit 실행
-        service.getAllIngredient()
+        service.getAllMenu()
             .enqueue(object : Callback<MenuDto> {
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                     if (response.isSuccessful.not()) {
