@@ -5,5 +5,5 @@ import retrofit2.http.GET
 
 interface MenuService {
     @GET("/allmenu")
-    fun getAllIngredient(): Call<MenuDto>
+    fun getAllMenu(): Call<MenuDto>
 }

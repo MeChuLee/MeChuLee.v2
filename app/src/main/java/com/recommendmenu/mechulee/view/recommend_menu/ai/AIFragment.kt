@@ -19,8 +19,6 @@ import com.recommendmenu.mechulee.utils.EmojiConstantUtils
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
-import com.recommendmenu.mechulee.view.recommend_menu.ai.util.EmojiConstants
-import kotlin.random.Random
 
 class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
