@@ -1,6 +1,9 @@
 package com.recommendmenu.mechulee.view.recommend_menu.home
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
@@ -27,11 +30,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
@@ -109,7 +115,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     val nx = CalculationUtils.convertStringToDoubleWithMap(it.mapx)
                     val ny = CalculationUtils.convertStringToDoubleWithMap(it.mapy)
 
-                    Logger.d("$ny $nx")
                     marker.position = LatLng(ny, nx)
                     marker.width = 50
                     marker.height = 80
@@ -391,8 +396,27 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private fun initRecyclerView() {
         // 식당 리스트 recyclerView 초기화
         restaurantRecyclerViewAdapter = RestaurantRecyclerViewAdapter(object: RestaurantRecyclerViewAdapter.RestaurantClickListener {
-            override fun restaurantClick(restaurantName: String) {
+            override fun restaurantClick(x: Double, y: Double) {
+                // 스크롤 뷰에서 스크롤할 목적지 Y 좌표 구하기
+                val targetScrollY = binding.mapFragment.top - (binding.nestedScrollView.height - binding.mapFragment.height) / 2
 
+                // 애니메이션 동작으로 스크롤 하기 (0.5초 동안 스크롤 + 0.5초 딜레이 + 네이버 지도에서 좌표 이동 1초)
+                ObjectAnimator.ofInt(binding.nestedScrollView, "scrollY", targetScrollY).apply {
+                    duration = 500
+                    addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+
+                            // 스크롤 뷰 스크롤 애니메이션이 완료되었을 경우, 코루틴을 사용하여 0.5초 딜레이 후 지도 좌표 이동 애니메이션 동작
+                            lifecycleScope.launch {
+                                delay(500) // 딜레이 시간 설정(밀리초 단위)
+                                val cameraUpdate = CameraUpdate.scrollTo(LatLng(y, x)).animate(CameraAnimation.Fly, 1000)
+                                naverMap.moveCamera(cameraUpdate)
+                            }
+                        }
+                    })
+                    start()
+                }
             }
         })
 
