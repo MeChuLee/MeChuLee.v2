@@ -12,8 +12,10 @@ import com.magicgoop.tagsphere.OnTagLongPressedListener
 import com.magicgoop.tagsphere.OnTagTapListener
 import com.magicgoop.tagsphere.item.TagItem
 import com.magicgoop.tagsphere.item.TextTagItem
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentAiBinding
+import com.recommendmenu.mechulee.utils.EmojiConstantUtils
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
@@ -89,16 +91,18 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
     }
 
     private fun initTagView() {
-        val samples = EmojiConstants.emojiCodePoints.size - 1
-        (0..120).map {
-            TextTagItem(
-                text = String(
-                    Character.toChars(EmojiConstants.emojiCodePoints[Random.nextInt(samples)])
-                )
-            )
-        }.toList().let {
-            binding.tagView.addTagList(it)
+
+        val tagList = mutableListOf<TextTagItem>()
+
+        Logger.d(EmojiConstantUtils.emojiCodePoints.size)
+        for (i in 0 until EmojiConstantUtils.emojiCodePoints.size) {
+            val emoji = String(Character.toChars(EmojiConstantUtils.emojiCodePoints[i]))
+            val textTagItem = TextTagItem(text = emoji)
+            tagList.add(textTagItem)
         }
+
+        binding.tagView.addTagList(tagList)
+
         binding.tagView.setTextPaint(
             TextPaint().apply {
                 isAntiAlias = true
