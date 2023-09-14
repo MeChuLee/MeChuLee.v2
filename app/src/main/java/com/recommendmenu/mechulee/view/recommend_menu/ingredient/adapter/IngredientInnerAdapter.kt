@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_INGREDIENT
+import com.recommendmenu.mechulee.utils.NetworkUtils
 
 class IngredientInnerAdapter(private val ingredientInnerListener: IngredientInnerListener) :
     RecyclerView.Adapter<IngredientInnerAdapter.ViewHolder>() {
@@ -29,8 +31,13 @@ class IngredientInnerAdapter(private val ingredientInnerListener: IngredientInne
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = innerIngredientList[position]
 
-        holder.imageView.setImageResource(item.imageResId)
         holder.textView.text = item.title
+        NetworkUtils.loadImage( // 서버에서 재료 이미지 불러오기
+            holder.itemView.context,
+            holder.imageView,
+            "${item.title}.png",
+            URL_TYPE_INGREDIENT
+        )
 
         // innerSelectedIngredeintList에 들어있는 재료들은 선택한 표시를 반영
         innerSelectedIngredientList.let {
