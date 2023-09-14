@@ -58,6 +58,11 @@ class IngredientFragment : Fragment() {
         // 재료 classification 보여주는 RecyclerView
         initClassificationRecycler()
 
+        // 재료 보여주는 RecyclerView
+        initIngredientsRecycler()
+
+        viewModel.ready()
+
         // classification 선택으로 변경을 감지 시 선택한 classification의 재료를 RecyclerView에 반영
         viewModel.selectedMap.observe(requireActivity()) { nowMap ->
             ingredientOuterAdapter?.outerMap = nowMap.toMutableMap()
@@ -71,8 +76,6 @@ class IngredientFragment : Fragment() {
             ingredientOuterAdapter?.notifyDataSetChanged()
 
         }
-        // 재료 보여주는 RecyclerView
-        initIngredientsRecycler()
 
         // 추천 받기 버튼 누르면 결과 화면으로 이동
         binding.selectButton.setOnClickListener {
