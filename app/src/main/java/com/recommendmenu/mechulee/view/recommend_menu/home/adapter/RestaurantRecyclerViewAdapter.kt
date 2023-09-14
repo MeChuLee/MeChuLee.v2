@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.RecyclerViewRestaurantBinding
 import com.recommendmenu.mechulee.model.network.search.Item
+import com.recommendmenu.mechulee.utils.CalculationUtils
 
-class RestaurantRecyclerViewAdapter : RecyclerView.Adapter<RestaurantRecyclerViewAdapter.MyViewHolder>() {
+class RestaurantRecyclerViewAdapter(
+    private val restaurantClickListener: RestaurantClickListener
+) : RecyclerView.Adapter<RestaurantRecyclerViewAdapter.MyViewHolder>() {
 
     lateinit var binding: RecyclerViewRestaurantBinding
 
@@ -29,7 +32,23 @@ class RestaurantRecyclerViewAdapter : RecyclerView.Adapter<RestaurantRecyclerVie
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.onBind(restaurantList[position])
+
+        // 식당 목록 클릭 이벤트
+        holder.itemView.setOnClickListener {
+            val restaurantInfo = restaurantList[position]
+
+            if (restaurantInfo.mapx != null && restaurantInfo.mapy != null) {
+                val x = CalculationUtils.convertStringToDoubleWithMap(restaurantInfo.mapx)
+                val y = CalculationUtils.convertStringToDoubleWithMap(restaurantInfo.mapy)
+
+                restaurantClickListener.restaurantClick(x, y)
+            }
+        }
     }
 
     override fun getItemCount(): Int = restaurantList.size
+
+    interface RestaurantClickListener {
+        fun restaurantClick(x: Double, y: Double)
+    }
 }

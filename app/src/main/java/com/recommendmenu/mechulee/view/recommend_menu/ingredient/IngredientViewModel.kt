@@ -5,96 +5,92 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.IngredientData
-import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
+import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : ViewModel() {
+
+    companion object {
+        private val INGREDIENT_CLASSIFICATION_LIST =
+            arrayListOf("전체", "야채", "과일", "밥/면", "고기", "생선", "소스", "기타", "면")
+    }
+
     val classificationList: MutableLiveData<ArrayList<String>> = MutableLiveData()
-
-    // 여기에 서버에서 가져온 재료들을 우선 저장 후 Map에 분류에 맞게 저장해야함
-    private lateinit var totalList: ArrayList<IngredientInfo>
-
-    val selectedMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
-        MutableLiveData()
 
     private val myStoredIngredient = ArrayList<String>()
     val selectedIngredientList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
-    private var vegetableList = arrayListOf(
-        IngredientInfo(R.raw.corn, "양배추", 0.0f, "야채"),
-        IngredientInfo(R.raw.corn, "오이", 0.0f, "야채"),
-        IngredientInfo(R.raw.corn, "시금치", 0.0f, "야채"),
-        IngredientInfo(R.raw.corn, "토마토", 0.0f, "야채"),
-        IngredientInfo(R.raw.corn, "고구마", 0.0f, "야채"),
-        IngredientInfo(R.raw.corn, "단호박", 0.0f, "야채"),
-        IngredientInfo(R.raw.corn, "시래기", 0.0f, "야채"),
-        IngredientInfo(R.raw.corn, "파", 0.0f, "야채"),
-    )
+    // 여기에 서버에서 가져온 재료들을 우선 저장 후 Map에 분류에 맞게 저장해야함
+    private var totalList = ArrayList<IngredientInfo>()
+    private var ingredientTotalMap = mapOf<String, ArrayList<IngredientInfo>>()
 
-    private var fruitList = arrayListOf(
-        IngredientInfo(R.raw.corn, "사과", 0.0f, "과일"),
-        IngredientInfo(R.raw.corn, "대추", 0.0f, "과일"),
-    )
+    private var vegetableList = ArrayList<IngredientInfo>()
+    private var fruitList = ArrayList<IngredientInfo>()
+    private var riceAndNoodleList = ArrayList<IngredientInfo>()
+    private var meatList = ArrayList<IngredientInfo>()
+    private var fishList = ArrayList<IngredientInfo>()
+    private var sauceList = ArrayList<IngredientInfo>()
+    private var otherList = ArrayList<IngredientInfo>()
+    private var noodleList = ArrayList<IngredientInfo>()
 
-    private var riceAndNoodleList = arrayListOf(
-        IngredientInfo(R.raw.corn, "쌀", 0.0f, "밥/면"),
-        IngredientInfo(R.raw.corn, "쌀국수", 0.0f, "밥/면"),
-        IngredientInfo(R.raw.corn, "스파게티", 0.0f, "밥/면"),
-        IngredientInfo(R.raw.corn, "당면", 0.0f, "밥/면"),
-    )
+    val selectedMap: MutableLiveData<Map<String, ArrayList<IngredientInfo>>> =
+        MutableLiveData()
 
-    private var meatList = arrayListOf(
-        IngredientInfo(R.raw.corn, "소고기", 0.0f, "고기"),
-        IngredientInfo(R.raw.corn, "양갈비", 0.0f, "고기"),
-        IngredientInfo(R.raw.corn, "소시지", 0.0f, "고기"),
-        IngredientInfo(R.raw.corn, "삼겹살", 0.0f, "고기"),
-        IngredientInfo(R.raw.corn, "오리고기", 0.0f, "고기"),
-        IngredientInfo(R.raw.corn, "달고기", 0.0f, "고기"),
-    )
+    fun ready() {
+        val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
 
-    private var fishList = arrayListOf(
-        IngredientInfo(R.raw.corn, "생선", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "오징어", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "새우", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "조기", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "멸치", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "쭈꾸미", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "고등어", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "어묵", 0.0f, "생선"),
-        IngredientInfo(R.raw.corn, "아귀", 0.0f, "생선"),
-    )
+        val service = retrofit.create(IngredientService::class.java)
 
-    private var sauceList = arrayListOf(
-        IngredientInfo(R.raw.corn, "케첩", 0.0f, "소스"),
-        IngredientInfo(R.raw.corn, "고추장", 0.0f, "소스"),
-        IngredientInfo(R.raw.corn, "생크림", 0.0f, "소스"),
-        IngredientInfo(R.raw.corn, "버터", 0.0f, "소스"),
-    )
+        service.getAllIngredient()
+            .enqueue(object : Callback<IngredientDto> {
+                override fun onResponse(
+                    call: Call<IngredientDto>,
+                    response: Response<IngredientDto>
+                ) {
+                    if (response.isSuccessful.not()) {
+                        return
+                    }
+                    response.body()?.let { ingredientDto ->
+                        val tempIngredientList = ingredientDto.ingredientList
+                        totalList = tempIngredientList.toCollection(ArrayList())
+                    }
+                    totalList.map {
+                        when (it.classification) {
+                            "야채" -> vegetableList.add(it)
+                            "소스" -> sauceList.add(it)
+                            "고기" -> meatList.add(it)
+                            "기타" -> otherList.add(it)
+                            "생선" -> fishList.add(it)
+                            "과일" -> fruitList.add(it)
+                            "밥/면" -> riceAndNoodleList.add(it)
+                            "면" -> noodleList.add(it)
+                            else -> {}
+                        }
+                    }
+                    ingredientTotalMap = mapOf(
+                        "야채" to vegetableList,
+                        "과일" to fruitList,
+                        "밥/면" to riceAndNoodleList,
+                        "고기" to meatList,
+                        "생선" to fishList,
+                        "소스" to sauceList,
+                        "기타" to otherList,
+                        "면" to noodleList,
+                    )
+                    selectedMap.value = ingredientTotalMap
+                }
 
-    private var otherList = arrayListOf(
-        IngredientInfo(R.raw.corn, "우유", 0.0f, "기타"),
-        IngredientInfo(R.raw.corn, "김치", 0.0f, "기타"),
-        IngredientInfo(R.raw.corn, "두부", 0.0f, "기타"),
-        IngredientInfo(R.raw.corn, "치즈", 0.0f, "기타"),
-        IngredientInfo(R.raw.corn, "빵", 0.0f, "기타"),
-    )
-
-    private var ingredientTotalMap = mapOf(
-        "야채" to vegetableList,
-        "과일" to fruitList,
-        "밥/면" to riceAndNoodleList,
-        "고기" to meatList,
-        "생선" to fishList,
-        "소스" to sauceList,
-        "기타" to otherList,
-    )
-
-    init {
-        classificationList.value = arrayListOf("전체", "야채", "과일", "밥/면", "고기", "생선", "소스", "기타")
-        selectedMap.value = ingredientTotalMap
+                override fun onFailure(call: Call<IngredientDto>, t: Throwable) {}
+            })
+        classificationList.value = INGREDIENT_CLASSIFICATION_LIST
         // DataStore에 저장된 값에 대한 초기화
         DataStoreUtils.loadFromSelectedIngredientData(viewModelScope, dataStore, onResult = {
             myStoredIngredient.addAll(it)
@@ -116,6 +112,7 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
                 "생선" -> tempMap = mapOf(classification to fishList)
                 "소스" -> tempMap = mapOf(classification to sauceList)
                 "기타" -> tempMap = mapOf(classification to otherList)
+                "면" -> tempMap = mapOf(classification to noodleList)
             }
             selectedMap.value = tempMap
         }
