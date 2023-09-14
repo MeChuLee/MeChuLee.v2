@@ -5,14 +5,21 @@ import androidx.datastore.core.DataStore
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
+import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : ViewModel() {
 
@@ -51,11 +58,41 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
                 updatedTotalList.add(info.copy(rating = matchingRating))
             }
             totalList = updatedTotalList
-
+            getIngredients()
             // 초기화된 totalList를 menuList에 설정
             menuList.value = totalList
         })
 
+    }
+
+    // 쟤료 정보 요청 함수
+    private fun getIngredients() {
+
+        // URL 주소 문제 발생 서버가 잘못됐나?
+        val call = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL).create(
+            IngredientService::class.java).getAllIngredient()
+
+        call.enqueue(object : Callback<IngredientDto> {
+            override fun onResponse(call: Call<IngredientDto>, response: Response<IngredientDto>) {
+                if (response.isSuccessful.not()) {  // API 요청 실패 시
+                    Logger.e("not isSuccessful")
+                    return
+                }
+
+                response.body()?.let { ingredientDto ->
+                    totalList = ingredientDto.ingredientList.toCollection(ArrayList())
+
+                    Logger.d(totalList)
+                    Logger.d(totalList.size)
+                }
+            }
+
+            override fun onFailure(call: Call<IngredientDto>, t: Throwable) {
+                // 네트워크 오류 등의 실패 시 처리
+                Logger.d("통신 실패${t.message.toString()}")
+            }
+        }
+        )
     }
 
     fun showMenuList(selectedItem: String, searchWord: String) {
