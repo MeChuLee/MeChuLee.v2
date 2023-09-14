@@ -71,7 +71,7 @@ class AIViewModel : ViewModel() {
 
                     val totalCount = response.body()!!.response.body.totalCount - 1 // 59
 
-                    val tempWeather = WeatherInfo() // 임시변수를 만들어서 넣는다.
+                    val tempWeather = WeatherInfo("", "", "") // 임시변수를 만들어서 넣는다.
 
                     for (i in 0..totalCount) { // 0..totalCount 0부터 59까지 60번 반복
                         if (i % 6 == 0) { // 카테고리가 6개 단위로 바뀌고 각 Item의 첫번째 것이 가장 빠른 예보시간에 접근가능

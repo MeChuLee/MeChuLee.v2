@@ -15,10 +15,18 @@ import com.magicgoop.tagsphere.item.TextTagItem
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentAiBinding
+import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
+import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
 import com.recommendmenu.mechulee.utils.EmojiConstantUtils
 import com.recommendmenu.mechulee.utils.LocationUtils
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
@@ -40,19 +48,12 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
             aiViewModel.setLocationXY(latitude, longitude)
         })
 
-        // observe대상을 dataClass객체에서 각각의 String값으로 한 이유
-        // -> 객체로 하면 반복문 돌다가 요소 하나만나면 바로 observe함수를 비동기로 실행해버려서
-        // 객체에 완벽하게 값이 들어오지 않은 채로 UI에 반영이 됨.
-        // observe하고 있는 대상은 UI에 직접적으로 반영이 되는 대상으로 하는게 좋을 것 같음
-        // 변경을 대상 전체를 하는게 맞는 것 같다.
-
         aiViewModel.weatherInfo.observe(requireActivity()){
             binding.weatherText.text = it.sky
             val rainType = it.rainType
 
             if(rainType == "비" || rainType == "비/눈" || rainType == "빗방울"){
                 binding.weatherAnimation.setAnimation(R.raw.weather_cloud_rain_animation)
-                // continue 없나?
             } else if(rainType == "눈" || rainType == "빗방울눈날림" || rainType == "눈날림"){
                 binding.weatherAnimation.setAnimation(R.raw.weather_snow_animation)
             } else if(it.sky == "맑음") {
@@ -80,17 +81,11 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
         aiButtonClickEvent()
         initTagView()
-        // ViewModel에 있는 강수형태, 하늘상태, 기온에 따라 Weather카드의 text요소가 변경되는 함수
-        initWeatherCardContents()
-    }
-
-    private fun initWeatherCardContents() {
-
     }
 
     private fun initTagView() {
 
-        val tagList = mutableListOf<TextTagItem>()
+        val tagList = ArrayList<TextTagItem>()
 
         Logger.d(EmojiConstantUtils.emojiCodePoints.size)
         for (i in 0 until EmojiConstantUtils.emojiCodePoints.size) {
@@ -120,10 +115,6 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         }
     }
 
-    override fun onLongPressed(tagItem: TagItem) {
-
-    }
-
     override fun onTap(tagItem: TagItem) {
         val intent = Intent(activity, IngredientActivity::class.java)
         startActivity(intent) // 액티비티로 전환
@@ -144,5 +135,8 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         _binding = null
     }
 
-
+    override fun onLongPressed(tagItem: TagItem) {
+        TODO("Not yet implemented")
+    }
 }
+
