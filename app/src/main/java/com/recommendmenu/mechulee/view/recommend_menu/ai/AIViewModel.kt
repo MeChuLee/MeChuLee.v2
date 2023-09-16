@@ -48,7 +48,7 @@ class AIViewModel : ViewModel() {
             baseDate = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time)
         }
 
-        Logger.d("날짜: $baseDate  시간: $baseTime 좌표: $nx  $ny")
+        //Logger.d("날짜: $baseDate  시간: $baseTime 좌표: $nx  $ny")
 
         // 날씨 정보 가져오기
         // (한 페이지 결과 수 = 60, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
@@ -67,7 +67,6 @@ class AIViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     // 날씨 정보 가져오기
                     val weatherData = response.body()!!.response.body.items.item
-                    Logger.d(weatherData) // 전체 카테고리별 item 출력
 
                     val totalCount = response.body()!!.response.body.totalCount - 1 // 59
 

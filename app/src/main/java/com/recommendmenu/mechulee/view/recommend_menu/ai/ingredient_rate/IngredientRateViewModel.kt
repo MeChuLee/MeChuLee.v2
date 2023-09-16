@@ -54,9 +54,6 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
                 response.body()?.let { ingredientDto ->
                     totalList = ingredientDto.ingredientList.toCollection(ArrayList())
 
-                    Logger.d(totalList)
-                    Logger.d(totalList.size)
-
                     // DataStore에서 가져온 rating값들을 totalList의 각각의 요소에 적용한다.
                     DataStoreUtils.initTotalListFromDataStore(viewModelScope, dataStore, onResult = {
                             for (i in 0 until totalList.size) {
