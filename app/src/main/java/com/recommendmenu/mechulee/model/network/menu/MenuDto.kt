@@ -5,5 +5,8 @@ import com.recommendmenu.mechulee.model.data.MenuInfo
 
 data class MenuDto(
     @SerializedName("menuList")
-    val menuList: List<MenuInfo>
+    val menuList: List<MenuInfo>,
+
+    @SerializedName("menuInfo")
+    val menuInfo: MenuInfo
 )

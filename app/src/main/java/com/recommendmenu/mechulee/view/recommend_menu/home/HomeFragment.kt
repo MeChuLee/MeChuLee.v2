@@ -14,7 +14,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -37,22 +36,21 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
+import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.CalculationUtils
-import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.RestaurantRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter
+import com.recommendmenu.mechulee.view.recommend_menu.ingredient.AIRecommendResultActivity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -95,9 +93,15 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(status)
         }
 
-        initViewPager()
         initRecyclerView()
+        initButton()
 
+        // 오늘의 메뉴 결과 응답 감지 시 viewpager 에 반영
+        viewModel.todayMenuList.observe(requireActivity()) { todayMenuList ->
+            initViewPager(todayMenuList)
+        }
+
+        // 식당 정보 결과 응답 감지 시 recyclerview 에 반영
         viewModel.restaurantList.observe(requireActivity()) { restaurantList ->
             restaurantRecyclerViewAdapter?.restaurantList?.clear()
             restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
@@ -107,8 +111,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             viewModel.restaurantReady()
         }
 
+        // 식당 정보와 지도가 모두 준비되었음을 감지 시 지도에 식당 정보 마크 찍기
         viewModel.isMapAndRestaurantReady.observe(requireActivity()) {
-            // 식당 정보와 지도가 모두 준비되었음을 감지하여 지도에 식당 정보 마크 찍기
             restaurantRecyclerViewAdapter?.restaurantList?.forEach {
                 val marker = Marker()
                 if (it.mapx != null && it.mapy != null) {
@@ -122,6 +126,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     marker.map = naverMap
                 }
             }
+        }
+
+        viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
+            val intent = Intent(activity, AIRecommendResultActivity::class.java)
+            intent.putExtra("object", menuInfo)
+            Logger.d(menuInfo)
+            startActivity(intent)
         }
 
         return binding.root
@@ -171,14 +182,24 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         restaurantRecyclerViewAdapter = null
     }
 
-    private fun initViewPager() {
-        // viewPager 엥서 사용하는 adapter
-        val todayMenuViewPagerAdapter = TodayMenuViewPagerAdapter().apply {
-            todayMenuList = ArrayList()
-            todayMenuList.add("one")
-            todayMenuList.add("two")
-            todayMenuList.add("three")
+    private fun initButton() {
+        binding.randomCardView.setOnClickListener {
+            viewModel.requestRecommendRandomMenu()
         }
+    }
+
+    private fun initViewPager(todayMenuList: ArrayList<MenuInfo>) {
+        // viewPager 엥서 사용하는 adapter
+        val todayMenuViewPagerAdapter = TodayMenuViewPagerAdapter(
+            todayMenuList,
+            object: TodayMenuViewPagerAdapter.TodayMenuClickListener {
+                override fun todayMenuClick(menuInfo: MenuInfo) {
+                    // 오늘의 추천 메뉴 클릭 시 메뉴 정보 보는 화면으로 이동
+                    val intent = Intent(activity, AIRecommendResultActivity::class.java)
+                    intent.putExtra("object", menuInfo)
+                    startActivity(intent)
+                }
+        })
 
         // 현재 banner 가 가리키고 있는 position 초기화
         bannerPosition =

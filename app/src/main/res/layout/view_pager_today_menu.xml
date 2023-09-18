@@ -26,8 +26,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/menuName"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@raw/example_menu" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/menuName"
@@ -35,8 +34,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
                     android:paddingHorizontal="20dp"
-                    android:text="김치찌개"
-                    android:textSize="20sp"
+                    android:autoSizeMaxTextSize="24sp"
+                    android:autoSizeMinTextSize="14sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:autoSizeTextType="uniform"
+                    android:maxLines="1"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/mainIngredientLabel"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -50,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="20dp"
                     android:text="주요재료"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/mainIngredient"
                     app:layout_constraintEnd_toEndOf="@id/menuName"
@@ -62,7 +65,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="20dp"
-                    android:text="김치, 두부, 파, 양파, 고추"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@id/menuName"
