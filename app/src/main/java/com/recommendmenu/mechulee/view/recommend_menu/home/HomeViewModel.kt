@@ -4,6 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.BuildConfig
+import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.model.network.menu.MenuDto
+import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.model.network.search.Item
 import com.recommendmenu.mechulee.model.network.search.SearchDto
 import com.recommendmenu.mechulee.model.network.search.SearchService
@@ -17,9 +20,14 @@ class HomeViewModel : ViewModel() {
     val currentAddress = MutableLiveData<String>()
     val restaurantList = MutableLiveData<ArrayList<Item>>()
     val isMapAndRestaurantReady = MutableLiveData<Boolean>()
+    val todayMenuList = MutableLiveData<ArrayList<MenuInfo>>()
 
     private var isMapReady = false
     private var isRestaurantReady = false
+
+    init {
+        readTodayMenuListWithRetrofit()
+    }
 
     // Activity 에서 사용한 Coroutine 에서 CallBack 을 받았기 때문에 현재 Background Thread 상태
     // Background Thread 에서는 ViewModel 의 LiveData 값을 변경할 때, setValue() 대신 postValue() 사용
@@ -74,5 +82,25 @@ class HomeViewModel : ViewModel() {
         if (isMapReady) {
             isMapAndRestaurantReady.value = true
         }
+    }
+
+    private fun readTodayMenuListWithRetrofit() {
+        val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
+
+        val service = retrofit.create(MenuService::class.java)
+
+        service.getRecommendToday()
+            .enqueue(object : Callback<MenuDto> {
+                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
+                    if (response.isSuccessful.not()) {
+                        return
+                    }
+                    response.body()?.let { menuDto ->
+                        todayMenuList.value = menuDto.menuList.toCollection(ArrayList())
+                    }
+                }
+
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
+            })
     }
 }

@@ -6,4 +6,7 @@ import retrofit2.http.GET
 interface MenuService {
     @GET("/allmenu")
     fun getAllMenu(): Call<MenuDto>
+
+    @GET("/recommend/today")
+    fun getRecommendToday(): Call<MenuDto>
 }
