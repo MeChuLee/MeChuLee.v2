@@ -12,7 +12,7 @@ import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.willy.ratingbar.RotationRatingBar
 
-class IngredientRateRecyclerViewAdapter(val ingredientRateListener : IngredientRateListener) :
+class IngredientRateRecyclerViewAdapter(private val ingredientRateListener : IngredientRateListener) :
     RecyclerView.Adapter<IngredientRateRecyclerViewAdapter.ViewHolder>() {
 
     var itemList = ArrayList<IngredientInfo>()
@@ -37,7 +37,8 @@ class IngredientRateRecyclerViewAdapter(val ingredientRateListener : IngredientR
         holder.textView.text = item.title
 
         // 레이팅바의 리스너를 설정하여 평가 값이 변경되었을 때 평가 값 갱신
-        holder.rotationRatingBar.setOnRatingChangeListener { ratingBar, rating, fromUser ->
+        // ratingBar, rating, fromUser
+        holder.rotationRatingBar.setOnRatingChangeListener { _, rating, fromUser ->
             item.rating = rating // 평가 값 갱신
 
             // fromUser값 판별(유저로 부터 받은 입력일때) -> false, true
