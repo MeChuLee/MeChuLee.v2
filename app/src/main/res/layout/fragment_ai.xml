@@ -1,27 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
 
     <com.recommendmenu.mechulee.view.CustomNestedScrollView
         android:id="@+id/aiNestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/ai_noticeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/info_round_background"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="15dp"
+                android:gravity="center"
+                android:text="@string/ai_text_notice"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                app:drawableLeftCompat="@drawable/info_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/weatherCard"/>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/weatherCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="30dp"
                 app:cardBackgroundColor="#5B9FFA"
                 app:cardCornerRadius="20dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ai_noticeTextView"
+                app:layout_constraintBottom_toTopOf="@id/ratingText">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/weatherConstraint"
@@ -35,7 +56,7 @@
                         android:textColor="@color/white"
                         android:textSize="60sp"
                         android:textStyle="bold"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/celsiusSign"
@@ -62,7 +83,7 @@
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginLeft="30dp"
+                        android:layout_marginStart="30dp"
                         app:layout_constraintTop_toBottomOf="@+id/temperature"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintBottom_toTopOf="@id/locationText"/>
@@ -71,18 +92,18 @@
                         android:id="@+id/locationText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="28dp"
+                        android:layout_marginBottom="30dp"
+                        android:drawableStart="@drawable/baseline_location_on_24"
                         android:text=" 대전시 궁동"
+                        android:textAlignment="textStart"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginBottom="30dp"
-                        app:layout_constraintTop_toBottomOf="@id/weatherText"
-                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
 
-                        android:textAlignment="textStart"
-                        android:drawableStart="@drawable/baseline_location_on_24"/>
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/weatherText" />
 
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/weatherAnimation"
@@ -103,18 +124,30 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ratingText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
                 android:layout_marginBottom="10dp"
-                android:text="평가 목록"
+                android:text="평가하러 가기"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:layout_marginStart="35dp"
                 app:layout_constraintBottom_toTopOf="@id/tagView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintEnd_toStartOf="@id/rightArrowIcon"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/weatherCard" />
+                app:layout_constraintTop_toBottomOf="@id/weatherCard"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/rightArrowIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/ratingText"
+                app:layout_constraintTop_toTopOf="@id/ratingText"
+                app:layout_constraintBottom_toBottomOf="@id/ratingText"
+                app:srcCompat="@drawable/right_arrow_icon" />
 
             <com.magicgoop.tagsphere.TagSphereView
                 android:id="@+id/tagView"

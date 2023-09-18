@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
-import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
@@ -28,49 +27,22 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
 
     // 두 개의 리스트를 나눠서 사용하는 이유는 개념적으로 UI에 표시되는 데이터와
     // 비즈니스 로직에 의해 가공되는 데이터를 분리하여 관리하기 위함
-    private var totalList: ArrayList<IngredientInfo> = arrayListOf(
-        IngredientInfo(R.raw.pork_icon, "돼지고기", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "소고기", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "양상추", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "양갈비", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "소시지", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "삼겹살", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "양배추", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "오이", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "떡", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "오리고기", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "골뱅이", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "시금치", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "카레가루", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "오징어", 0.0f, ""),
-        IngredientInfo(R.raw.pork_icon, "토마토", 0.0f, ""),
-        IngredientInfo(R.raw.beef_icon, "라자냐", 0.0f, ""),
-    )
+    private var totalList: ArrayList<IngredientInfo> = arrayListOf()
 
     // ViewModel이 생성될 때 데이터 초기화 작업 수행
     init {
 
         // DataStore에서 RatingData를 비동기적으로 가져와서 totalList 초기화
-        DataStoreUtils.initTotalListFromDataStore(viewModelScope, dataStore, onResult = {
-            val updatedTotalList = ArrayList<IngredientInfo>()
-            for (info in totalList) {
-                val matchingRating = it.getOrElse(totalList.indexOf(info)) { 0.0f }
-                updatedTotalList.add(info.copy(rating = matchingRating))
-            }
-            totalList = updatedTotalList
-            getIngredients()
-            // 초기화된 totalList를 menuList에 설정
-            menuList.value = totalList
-        })
+        getIngredients() // 서버에서 먼저 totalList 교체
 
     }
 
     // 쟤료 정보 요청 함수
     private fun getIngredients() {
 
-        // URL 주소 문제 발생 서버가 잘못됐나?
         val call = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL).create(
-            IngredientService::class.java).getAllIngredient()
+            IngredientService::class.java
+        ).getAllIngredient()
 
         call.enqueue(object : Callback<IngredientDto> {
             override fun onResponse(call: Call<IngredientDto>, response: Response<IngredientDto>) {
@@ -78,12 +50,20 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
                     Logger.e("not isSuccessful")
                     return
                 }
-
+                // flask서버에서 재료 정보 먼저 받아와서 totalList에 넣는다.
                 response.body()?.let { ingredientDto ->
                     totalList = ingredientDto.ingredientList.toCollection(ArrayList())
 
-                    Logger.d(totalList)
-                    Logger.d(totalList.size)
+                    // DataStore에서 가져온 rating값들을 totalList의 각각의 요소에 적용한다.
+                    DataStoreUtils.initTotalListFromDataStore(viewModelScope, dataStore, onResult = {
+                            for (i in 0 until totalList.size) {
+                                val matchingRating = it.getOrElse(i) { 0.0f }
+
+                                totalList[i].rating = matchingRating
+                            }
+                            menuList.value = totalList
+                        }
+                    )
                 }
             }
 

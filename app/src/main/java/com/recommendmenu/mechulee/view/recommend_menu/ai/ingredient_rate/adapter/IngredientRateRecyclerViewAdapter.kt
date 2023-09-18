@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.utils.Constants
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.willy.ratingbar.RotationRatingBar
 
 class IngredientRateRecyclerViewAdapter(private val ingredientRateListener : IngredientRateListener) :
@@ -51,6 +53,13 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener : Ing
         // RotationRating에 적용을 안시켜서 값이 적용이 안됐던 것임.
         // 레이팅 값을 적용하는 부분을 따로 작성해야한다.
         holder.rotationRatingBar.rating = item.rating
+
+        NetworkUtils.loadImage( // 서버에서 재료 이미지 불러오기
+            holder.itemView.context,
+            holder.imageView,
+            "${item.title}.png",
+            Constants.URL_TYPE_INGREDIENT
+        )
 
         // recyclerview animation 효과 추가
         val animation: Animation =

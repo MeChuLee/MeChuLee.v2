@@ -12,21 +12,12 @@ import com.magicgoop.tagsphere.OnTagLongPressedListener
 import com.magicgoop.tagsphere.OnTagTapListener
 import com.magicgoop.tagsphere.item.TagItem
 import com.magicgoop.tagsphere.item.TextTagItem
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentAiBinding
-import com.recommendmenu.mechulee.model.data.IngredientInfo
-import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
-import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
 import com.recommendmenu.mechulee.utils.EmojiConstantUtils
 import com.recommendmenu.mechulee.utils.LocationUtils
-import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-
 
 class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
@@ -79,7 +70,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        aiButtonClickEvent()
+        aiButtonRightArrowClickEvent()
         initTagView()
     }
 
@@ -87,7 +78,6 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
         val tagList = ArrayList<TextTagItem>()
 
-        Logger.d(EmojiConstantUtils.emojiCodePoints.size)
         for (i in 0 until EmojiConstantUtils.emojiCodePoints.size) {
             val emoji = String(Character.toChars(EmojiConstantUtils.emojiCodePoints[i]))
             val textTagItem = TextTagItem(text = emoji)
@@ -106,9 +96,15 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         binding.tagView.setOnTagTapListener(this)
     }
 
-    private fun aiButtonClickEvent(){
+    private fun aiButtonRightArrowClickEvent(){
         // 버튼 클릭 리스너 설정
         binding.tagView.setOnClickListener {
+            // 액티비티로 전환하는 Intent 생성
+            val intent = Intent(activity, IngredientActivity::class.java)
+            startActivity(intent) // 액티비티로 전환
+        }
+
+        binding.rightArrowIcon.setOnClickListener {
             // 액티비티로 전환하는 Intent 생성
             val intent = Intent(activity, IngredientActivity::class.java)
             startActivity(intent) // 액티비티로 전환
