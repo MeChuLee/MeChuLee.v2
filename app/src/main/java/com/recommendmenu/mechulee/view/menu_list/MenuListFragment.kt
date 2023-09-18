@@ -2,6 +2,7 @@ package com.recommendmenu.mechulee.view.menu_list
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,12 +17,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.databinding.FragmentMenuListBinding
+import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_HIDE
 import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_SHOW
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuCategoryAdapter
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuGridAdapter
 import com.recommendmenu.mechulee.view.menu_list.adapter.MenuListAdapter
+import com.recommendmenu.mechulee.view.recommend_menu.ingredient.AIRecommendResultActivity
 
 class MenuListFragment : Fragment() {
 
@@ -102,8 +105,16 @@ class MenuListFragment : Fragment() {
         }
 
         // 메뉴 리스트 RecyclerView 초기화
-        menuListRecyclerViewAdapter = MenuListAdapter()
-        menuGridRecyclerViewAdapter = MenuGridAdapter()
+        menuListRecyclerViewAdapter = MenuListAdapter(object: MenuListAdapter.MenuListClickListener {
+            override fun menuListClick(menuInfo: MenuInfo) {
+                startMenuResultActivity(menuInfo)
+            }
+        })
+        menuGridRecyclerViewAdapter = MenuGridAdapter(object: MenuGridAdapter.MenuGridClickListener {
+            override fun menuGridClick(menuInfo: MenuInfo) {
+                startMenuResultActivity(menuInfo)
+            }
+        })
 
         binding.menuListRecyclerView.apply {
             setHasFixedSize(true)
@@ -165,5 +176,11 @@ class MenuListFragment : Fragment() {
             }
             handled
         }
+    }
+
+    private fun startMenuResultActivity(menuInfo: MenuInfo) {
+        val intent = Intent(activity, AIRecommendResultActivity::class.java)
+        intent.putExtra("object", menuInfo)
+        startActivity(intent)
     }
 }
