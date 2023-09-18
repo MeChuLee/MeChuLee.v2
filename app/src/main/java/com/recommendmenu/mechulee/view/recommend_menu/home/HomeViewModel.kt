@@ -21,6 +21,7 @@ class HomeViewModel : ViewModel() {
     val restaurantList = MutableLiveData<ArrayList<Item>>()
     val isMapAndRestaurantReady = MutableLiveData<Boolean>()
     val todayMenuList = MutableLiveData<ArrayList<MenuInfo>>()
+    val randomMenuResult = MutableLiveData<MenuInfo>()
 
     private var isMapReady = false
     private var isRestaurantReady = false
@@ -97,6 +98,26 @@ class HomeViewModel : ViewModel() {
                     }
                     response.body()?.let { menuDto ->
                         todayMenuList.value = menuDto.menuList.toCollection(ArrayList())
+                    }
+                }
+
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
+            })
+    }
+
+    fun requestRecommendRandomMenu() {
+        val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
+
+        val service = retrofit.create(MenuService::class.java)
+
+        service.getRecommendRandom()
+            .enqueue(object : Callback<MenuDto> {
+                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
+                    if (response.isSuccessful.not()) {
+                        return
+                    }
+                    response.body()?.let { menuDto ->
+                        randomMenuResult.value = menuDto.menuInfo
                     }
                 }
 

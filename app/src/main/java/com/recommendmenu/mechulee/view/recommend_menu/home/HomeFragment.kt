@@ -37,6 +37,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
@@ -93,11 +94,14 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         initRecyclerView()
+        initButton()
 
+        // 오늘의 메뉴 결과 응답 감지 시 viewpager 에 반영
         viewModel.todayMenuList.observe(requireActivity()) { todayMenuList ->
             initViewPager(todayMenuList)
         }
 
+        // 식당 정보 결과 응답 감지 시 recyclerview 에 반영
         viewModel.restaurantList.observe(requireActivity()) { restaurantList ->
             restaurantRecyclerViewAdapter?.restaurantList?.clear()
             restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
@@ -107,8 +111,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             viewModel.restaurantReady()
         }
 
+        // 식당 정보와 지도가 모두 준비되었음을 감지 시 지도에 식당 정보 마크 찍기
         viewModel.isMapAndRestaurantReady.observe(requireActivity()) {
-            // 식당 정보와 지도가 모두 준비되었음을 감지하여 지도에 식당 정보 마크 찍기
             restaurantRecyclerViewAdapter?.restaurantList?.forEach {
                 val marker = Marker()
                 if (it.mapx != null && it.mapy != null) {
@@ -122,6 +126,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     marker.map = naverMap
                 }
             }
+        }
+
+        viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
+            val intent = Intent(activity, AIRecommendResultActivity::class.java)
+            intent.putExtra("object", menuInfo)
+            Logger.d(menuInfo)
+            startActivity(intent)
         }
 
         return binding.root
@@ -169,6 +180,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         super.onDestroyView()
         _binding = null
         restaurantRecyclerViewAdapter = null
+    }
+
+    private fun initButton() {
+        binding.randomCardView.setOnClickListener {
+            viewModel.requestRecommendRandomMenu()
+        }
     }
 
     private fun initViewPager(todayMenuList: ArrayList<MenuInfo>) {
