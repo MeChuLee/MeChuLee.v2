@@ -180,7 +180,6 @@ class IngredientFragment : Fragment() {
                     // 버벅거림 방지를 위해 transition 상태가 확인 후,
                     // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
                     if (dy < 0
-                        && layoutManager.findFirstCompletelyVisibleItemPosition() == 0
                         && binding.motionLayout.currentState == R.id.end
                         && (binding.motionLayout.progress >= 1f
                                 || binding.motionLayout.progress <= 0f)
@@ -223,6 +222,8 @@ class IngredientFragment : Fragment() {
         // MotionLayout Transition 에 대해 초기화 과정 수행 (끊겨보일 수 있음)
         binding.motionLayout.setTransition(R.id.motionLayoutTransition)
         binding.motionLayout.progress = 0f
+        binding.circleSelectButton.alpha = 1f
+        binding.circleSelectButton.isEnabled = true
     }
 
     // onPause시에 DataStore에 저장
