@@ -11,7 +11,9 @@ import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_MENU
 import com.recommendmenu.mechulee.utils.NetworkUtils
 
-class MenuListAdapter : RecyclerView.Adapter<MenuListAdapter.MyViewHolder>() {
+class MenuListAdapter(
+    private var menuListClickListener: MenuListClickListener
+) : RecyclerView.Adapter<MenuListAdapter.MyViewHolder>() {
 
     var menuList = ArrayList<MenuInfo>()
 
@@ -46,9 +48,17 @@ class MenuListAdapter : RecyclerView.Adapter<MenuListAdapter.MyViewHolder>() {
             "$menuName.jpg",
             URL_TYPE_MENU
         )
+
+        holder.itemView.setOnClickListener {
+            menuListClickListener.menuListClick(menuList[position])
+        }
     }
 
     override fun getItemCount(): Int {
         return menuList.size
+    }
+
+    interface MenuListClickListener {
+        fun menuListClick(menuInfo: MenuInfo)
     }
 }
