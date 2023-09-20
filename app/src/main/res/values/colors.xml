@@ -25,4 +25,6 @@
     <color name="clickedIngredient">#FFB958</color>
     <color name="lineColor">#FFE0B5</color>
 
+    <color name="likeCardView">#F8F8F8</color>
+
 </resources>
