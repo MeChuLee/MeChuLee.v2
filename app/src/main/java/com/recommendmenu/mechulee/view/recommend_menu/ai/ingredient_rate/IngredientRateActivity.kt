@@ -2,6 +2,7 @@ package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,6 +21,7 @@ import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.proto.ratingDataStore
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.CustomSpinnerAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.IngredientRateRecyclerViewAdapter
+import com.recommendmenu.mechulee.view.recommend_menu.ingredient.AIRecommendResultActivity
 
 
 class IngredientActivity : AppCompatActivity() {
@@ -51,9 +53,9 @@ class IngredientActivity : AppCompatActivity() {
         val ingredientRateRecyclerViewAdapter = IngredientRateRecyclerViewAdapter(object :
             IngredientRateRecyclerViewAdapter.IngredientRateListener {
             // Listener 내부 함수 정의
-            override fun changeCurrentItem(item: IngredientInfo) {
+            override fun changeCurrentItem(itemList: IngredientInfo) {
                 // 카테고리 버튼을 클릭하여 현재 카테고리 변경 시
-                viewModel.changeItemFromItemList(item)
+                viewModel.changeItemFromItemList(itemList)
             }
         })
 
@@ -63,7 +65,8 @@ class IngredientActivity : AppCompatActivity() {
 
         // menuList 정보 변경 감지 시 RecyclerView 갱신
         viewModel.menuList.observe(this) { newMenuList ->
-            ingredientRateRecyclerViewAdapter.itemList = newMenuList.mapTo(ArrayList()) { it.copy() }
+            ingredientRateRecyclerViewAdapter.itemList =
+                newMenuList.mapTo(ArrayList()) { it.copy() }
             ingredientRateRecyclerViewAdapter.notifyDataSetChanged()
         }
 
@@ -90,7 +93,7 @@ class IngredientActivity : AppCompatActivity() {
                 println("Ingredient: ${ingredientInfo.title}, Rating: ${ingredientInfo.rating}")
             }
 
-            finish()
+            completeButtonClickEvent()
         }
 
         initEditText()
@@ -98,6 +101,13 @@ class IngredientActivity : AppCompatActivity() {
 
     }
 
+    private fun completeButtonClickEvent() {
+        // 액티비티로 전환하는 Intent 생성
+        val intent = Intent(this, AIRecommendResultActivity::class.java)
+
+        //intent.putExtra("object", resultMenu) -> Intent로 사용할 정보 옮겨준다.
+        startActivity(intent) // 액티비티로 전환
+    }
 
     private fun initSpinnerIngredientList() {
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -111,7 +121,7 @@ class IngredientActivity : AppCompatActivity() {
                 val searchText = binding.menuSearchEditText.text.toString()
 
                 viewModel.changeMenuListToTotalList()
-                viewModel.showMenuList(selectedItem,searchText)
+                viewModel.showMenuList(selectedItem, searchText)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
