@@ -3,6 +3,7 @@ package com.recommendmenu.mechulee.view.splash
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -25,10 +26,30 @@ class SplashActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[SplashViewModel::class.java]
 
         lifecycleScope.launch {
-            delay(3500)
-            viewModel.allComplete.observe(this@SplashActivity) {
-                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+            // 10초 동안 로딩 미완료 시 종료
+            val job = launch {
+                delay(10000)
+                Toast.makeText(this@SplashActivity, "오류가 발생하였습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                delay(1000)
                 finish()
+            }
+
+            delay(3500)
+
+            viewModel.allComplete.observe(this@SplashActivity) { allComoplete ->
+                if (allComoplete) {
+                    // 통신 완료 시 메인 화면 시작
+                    job.cancel()
+                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                    finish()
+                } else {
+                    // 서버와 통신 실패 시 종료
+                    launch {
+                        Toast.makeText(this@SplashActivity, "오류가 발생하였습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                        delay(1000)
+                        finish()
+                    }
+                }
             }
         }
 

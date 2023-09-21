@@ -41,7 +41,7 @@ class TodayMenuViewPagerAdapter(
             Constants.URL_TYPE_MENU
         )
 
-        holder.itemView.setOnClickListener {
+        binding.cardView.setOnClickListener {
             todayMenuClickListener.todayMenuClick(todayMenuList[position % todayMenuList.size])
         }
     }

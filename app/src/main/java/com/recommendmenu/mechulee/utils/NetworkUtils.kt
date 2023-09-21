@@ -86,7 +86,7 @@ object NetworkUtils {
     }
 
     // 모든 재료 정보 요청
-    fun requestAllIngredient(onResult: () -> Unit) {
+    fun requestAllIngredient(onResult: (isSuccess: Boolean) -> Unit) {
         val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
 
         val service = retrofit.create(IngredientService::class.java)
@@ -98,6 +98,7 @@ object NetworkUtils {
                     response: Response<IngredientDto>
                 ) {
                     if (response.isSuccessful.not()) {
+                        onResult(false)
                         return
                     }
                     response.body()?.let { ingredientDto ->
@@ -128,14 +129,16 @@ object NetworkUtils {
                         "면" to noodleList,
                     )
 
-                    onResult()
+                    onResult(true)
                 }
 
-                override fun onFailure(call: Call<IngredientDto>, t: Throwable) {}
+                override fun onFailure(call: Call<IngredientDto>, t: Throwable) {
+                    onResult(false)
+                }
             })
     }
 
-    fun requestAllMenu(onResult: () -> Unit) {
+    fun requestAllMenu(onResult: (isSuccess: Boolean) -> Unit) {
         // retrofit instance 획득
         val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
 
@@ -146,6 +149,7 @@ object NetworkUtils {
             .enqueue(object : Callback<MenuDto> {
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                     if (response.isSuccessful.not()) {
+                        onResult(false)
                         return
                     }
                     // 성공 시, response.body 에 있는 데이터(응답 데이터) 가져오기
@@ -155,11 +159,13 @@ object NetworkUtils {
 
                         totalMenuList = resultMenuList.toCollection(ArrayList())
 
-                        onResult()
+                        onResult(true)
                     }
                 }
 
-                override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) {
+                    onResult(false)
+                }
             })
     }
 }

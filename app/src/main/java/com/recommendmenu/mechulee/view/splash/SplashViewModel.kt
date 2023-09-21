@@ -17,18 +17,26 @@ class SplashViewModel: ViewModel() {
     }
 
     private fun requestAllIngredient() {
-        NetworkUtils.requestAllIngredient(onResult = {
-            completeGetIngredient = true
+        NetworkUtils.requestAllIngredient(onResult = { isSuccess ->
+            if (isSuccess) {
+                completeGetIngredient = true
 
-            if (completeGetMenu) allComplete.value = true
+                if (completeGetMenu) allComplete.value = true
+            } else {
+                allComplete.value = false
+            }
         })
     }
 
     private fun requestAllMenu() {
-        NetworkUtils.requestAllMenu(onResult = {
-            completeGetMenu = true
+        NetworkUtils.requestAllMenu(onResult = { isSuccess ->
+            if (isSuccess) {
+                completeGetMenu = true
 
-            if (completeGetIngredient) allComplete.value = true
+                if (completeGetIngredient) allComplete.value = true
+            } else {
+                allComplete.value = false
+            }
         })
     }
 }
