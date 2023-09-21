@@ -16,6 +16,9 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -51,6 +54,7 @@ import com.recommendmenu.mechulee.view.recommend_menu.ingredient.AIRecommendResu
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -111,6 +115,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             viewModel.restaurantReady()
         }
 
+        binding.nestedScrollView.visibility = View.INVISIBLE
+
         // 식당 정보와 지도가 모두 준비되었음을 감지 시 지도에 식당 정보 마크 찍기
         viewModel.isMapAndRestaurantReady.observe(requireActivity()) {
             restaurantRecyclerViewAdapter?.restaurantList?.forEach {
@@ -126,12 +132,24 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     marker.map = naverMap
                 }
             }
+
+            // 2초 후 VIEW Animation VISIBLE
+            //@TODO Progress Indicator 삭제
+            lifecycleScope.launch {
+                delay(1000)
+
+                binding.circularProgressIndicator.visibility = View.GONE
+
+                val animation: Animation =
+                    AnimationUtils.loadAnimation(requireContext(), R.anim.item_anim)
+                binding.nestedScrollView.visibility = View.VISIBLE
+                binding.nestedScrollView.animation = animation
+            }
         }
 
         viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
             val intent = Intent(activity, AIRecommendResultActivity::class.java)
             intent.putExtra("object", menuInfo)
-            Logger.d(menuInfo)
             startActivity(intent)
         }
 
