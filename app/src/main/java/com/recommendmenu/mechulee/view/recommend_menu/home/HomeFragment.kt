@@ -16,7 +16,6 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -40,7 +39,6 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
@@ -48,6 +46,7 @@ import com.recommendmenu.mechulee.utils.CalculationUtils
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
+import com.recommendmenu.mechulee.view.dialog.LoadingDialog
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.RestaurantRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.AIRecommendResultActivity
@@ -75,9 +74,11 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
 
-    private var  restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
+    private var restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
 
     private var simpleAddress = ""
+
+    private lateinit var loadingDialog: LoadingDialog
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -96,6 +97,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         binding.nestedScrollView.onBottomBarStatusChange = { status ->
             (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(status)
         }
+
+        loadingDialog = LoadingDialog(requireContext())
 
         initRecyclerView()
         initButton()
@@ -148,6 +151,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
+            loadingDialog.dismiss()
+
             val intent = Intent(activity, AIRecommendResultActivity::class.java)
             intent.putExtra("object", menuInfo)
             startActivity(intent)
@@ -202,6 +207,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private fun initButton() {
         binding.randomCardView.setOnClickListener {
+            loadingDialog.show()
             viewModel.requestRecommendRandomMenu()
         }
     }
@@ -210,14 +216,14 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // viewPager 엥서 사용하는 adapter
         val todayMenuViewPagerAdapter = TodayMenuViewPagerAdapter(
             todayMenuList,
-            object: TodayMenuViewPagerAdapter.TodayMenuClickListener {
+            object : TodayMenuViewPagerAdapter.TodayMenuClickListener {
                 override fun todayMenuClick(menuInfo: MenuInfo) {
                     // 오늘의 추천 메뉴 클릭 시 메뉴 정보 보는 화면으로 이동
                     val intent = Intent(activity, AIRecommendResultActivity::class.java)
                     intent.putExtra("object", menuInfo)
                     startActivity(intent)
                 }
-        })
+            })
 
         // 현재 banner 가 가리키고 있는 position 초기화
         bannerPosition =
@@ -351,7 +357,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     ) { permissions ->
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) ||
-            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 // 위치 권한 허용 시 네이버 지도 초기화
                 initMap()
             }
@@ -415,7 +421,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     // 사용자가 관련 서비스를 키도록 AlertDialog 를 사용하여 유도
-    private fun showAlertDialog(title: String, message: String, positiveIntentName: String, negativeMessage: String) {
+    private fun showAlertDialog(
+        title: String,
+        message: String,
+        positiveIntentName: String,
+        negativeMessage: String
+    ) {
         AlertDialog.Builder(requireContext()).apply {
             setTitle(title)
             setMessage(message)
@@ -434,10 +445,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private fun initRecyclerView() {
         // 식당 리스트 recyclerView 초기화
-        restaurantRecyclerViewAdapter = RestaurantRecyclerViewAdapter(object: RestaurantRecyclerViewAdapter.RestaurantClickListener {
+        restaurantRecyclerViewAdapter = RestaurantRecyclerViewAdapter(object :
+            RestaurantRecyclerViewAdapter.RestaurantClickListener {
             override fun restaurantClick(x: Double, y: Double) {
                 // 스크롤 뷰에서 스크롤할 목적지 Y 좌표 구하기
-                val targetScrollY = binding.mapFragment.top - (binding.nestedScrollView.height - binding.mapFragment.height) / 2
+                val targetScrollY =
+                    binding.mapFragment.top - (binding.nestedScrollView.height - binding.mapFragment.height) / 2
 
                 // 애니메이션 동작으로 스크롤 하기 (0.5초 동안 스크롤 + 0.5초 딜레이 + 네이버 지도에서 좌표 이동 1초)
                 ObjectAnimator.ofInt(binding.nestedScrollView, "scrollY", targetScrollY).apply {
@@ -449,7 +462,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                             // 스크롤 뷰 스크롤 애니메이션이 완료되었을 경우, 코루틴을 사용하여 0.5초 딜레이 후 지도 좌표 이동 애니메이션 동작
                             lifecycleScope.launch {
                                 delay(500) // 딜레이 시간 설정(밀리초 단위)
-                                val cameraUpdate = CameraUpdate.scrollTo(LatLng(y, x)).animate(CameraAnimation.Fly, 1000)
+                                val cameraUpdate = CameraUpdate.scrollTo(LatLng(y, x))
+                                    .animate(CameraAnimation.Fly, 1000)
                                 naverMap.moveCamera(cameraUpdate)
                             }
                         }
@@ -459,12 +473,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
         })
 
-        val noScrollLayoutManager = object : LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false) {
-            override fun canScrollVertically(): Boolean {
-                // false 를 반환하여 세로 스크롤 이벤트 막기
-                return false
+        val noScrollLayoutManager =
+            object : LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false) {
+                override fun canScrollVertically(): Boolean {
+                    // false 를 반환하여 세로 스크롤 이벤트 막기
+                    return false
+                }
             }
-        }
 
         binding.restaurantRecyclerView.apply {
             setHasFixedSize(true)
