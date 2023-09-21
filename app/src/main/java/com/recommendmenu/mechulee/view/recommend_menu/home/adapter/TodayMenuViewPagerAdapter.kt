@@ -26,11 +26,24 @@ class TodayMenuViewPagerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         binding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.view_pager_today_menu, parent, false)
-        return MyViewHolder(binding)
+
+        val holder = MyViewHolder(binding)
+
+        // CardView 클릭 시 메뉴 정보 화면으로 전환할 수 있도록 HomeFragment 에 이벤트 전달
+        binding.cardView.setOnClickListener {
+            val position = holder.absoluteAdapterPosition % todayMenuList.size
+            val todayMenu = todayMenuList[position]
+
+            todayMenuClickListener.todayMenuClick(todayMenu)
+        }
+
+        return holder
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.onBind(todayMenuList[position % todayMenuList.size])
+        val todayMenu = todayMenuList[position % todayMenuList.size]
+
+        holder.onBind(todayMenu)
 
         // 메뉴 이미지는 테스트 이미지로 설정
         val menuName = (position % 20) + 1
@@ -40,13 +53,9 @@ class TodayMenuViewPagerAdapter(
             "$menuName.jpg",
             Constants.URL_TYPE_MENU
         )
-
-        holder.itemView.setOnClickListener {
-            todayMenuClickListener.todayMenuClick(todayMenuList[position % todayMenuList.size])
-        }
     }
 
-    override fun getItemCount(): Int = Int.MAX_VALUE
+    override fun getItemCount(): Int = 20
 
     interface TodayMenuClickListener {
         fun todayMenuClick(menuInfo: MenuInfo)

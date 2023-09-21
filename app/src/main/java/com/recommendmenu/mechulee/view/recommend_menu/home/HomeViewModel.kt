@@ -73,14 +73,14 @@ class HomeViewModel : ViewModel() {
 
     fun mapReady() {
         isMapReady = true
-        if (isRestaurantReady) {
+        if (isMapAndRestaurantReady.value == null && isRestaurantReady) {
             isMapAndRestaurantReady.value = true
         }
     }
 
     fun restaurantReady() {
         isRestaurantReady = true
-        if (isMapReady) {
+        if (isMapAndRestaurantReady.value == null && isMapReady) {
             isMapAndRestaurantReady.value = true
         }
     }

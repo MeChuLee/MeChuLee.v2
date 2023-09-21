@@ -8,177 +8,199 @@
             type="com.recommendmenu.mechulee.view.recommend_menu.home.HomeViewModel" />
     </data>
 
-    <com.recommendmenu.mechulee.view.CustomNestedScrollView
-        android:id="@+id/nestedScrollView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/circularProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:indeterminate="true"
+            app:indicatorColor="@color/clicked"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.recommendmenu.mechulee.view.CustomNestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/todayMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:text="오늘의 추천"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.recommendmenu.mechulee.view.recommend_menu.home.NestedScrollableHost
-                android:id="@+id/todayMenuViewPagerScrollableHost"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="10dp"
-                app:layout_constraintDimensionRatio="2:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/todayMenu">
+                android:layout_height="match_parent">
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/todayMenuViewPager"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/todayMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:text="오늘의 추천"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.recommendmenu.mechulee.view.recommend_menu.home.NestedScrollableHost
+                    android:id="@+id/todayMenuViewPagerScrollableHost"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintDimensionRatio="2:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/todayMenu">
 
-            </com.recommendmenu.mechulee.view.recommend_menu.home.NestedScrollableHost>
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/todayMenuViewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
-            <LinearLayout
-                android:id="@+id/layoutIndicators"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingBottom="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/todayMenuViewPagerScrollableHost" />
+                </com.recommendmenu.mechulee.view.recommend_menu.home.NestedScrollableHost>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/randomCardView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:elevation="10dp"
-                app:cardCornerRadius="20dp"
-                app:layout_constraintDimensionRatio="5:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutIndicators">
+                <LinearLayout
+                    android:id="@+id/layoutIndicators"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/todayMenuViewPagerScrollableHost" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/randomCardView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="30dp"
+                    android:elevation="10dp"
+                    app:cardCornerRadius="20dp"
+                    app:layout_constraintDimensionRatio="5:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutIndicators">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp">
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:id="@+id/animationView"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/recommendRandom"
+                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/random_animation" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/recommendRandom"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="랜덤으로 추천받기"
+                            android:textAlignment="textStart"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_weight="2"
+                            app:layout_constraintStart_toEndOf="@id/animationView"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/searchRestaurant"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="50dp"
+                    android:text="주변 식당 찾기"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/currentLocation"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/randomCardView" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/currentLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="30dp"
+                    android:autoSizeMaxTextSize="14sp"
+                    android:autoSizeMinTextSize="6sp"
+                    android:autoSizeStepGranularity="1sp"
+                    android:autoSizeTextType="uniform"
+                    android:maxLines="1"
+                    android:text="@{homeViewModel.currentAddress}"
+                    android:textAlignment="textEnd"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@id/searchRestaurant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_weight="2"
+                    app:layout_constraintStart_toEndOf="@id/searchRestaurant"
+                    app:layout_constraintTop_toTopOf="@id/searchRestaurant" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/mapFragment"
+                    android:name="com.naver.maps.map.MapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp">
+                    android:layout_height="200dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="30dp"
+                    app:layout_constraintDimensionRatio="2:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/searchRestaurant" />
 
-                    <com.airbnb.lottie.LottieAnimationView
-                        android:id="@+id/animationView"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/recommendRandom"
-                        app:layout_constraintHorizontal_weight="1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:lottie_autoPlay="true"
-                        app:lottie_loop="true"
-                        app:lottie_rawRes="@raw/random_animation" />
+                <View
+                    android:id="@+id/line"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:background="@color/gray"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/restaurantRecyclerView" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/recommendRandom"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="랜덤으로 추천받기"
-                        android:textAlignment="textStart"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_weight="2"
-                        app:layout_constraintStart_toEndOf="@id/animationView"
-                        app:layout_constraintTop_toTopOf="parent" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/restaurantRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="50dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mapFragment" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </androidx.cardview.widget.CardView>
+        </com.recommendmenu.mechulee.view.CustomNestedScrollView>
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/searchRestaurant"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="50dp"
-                android:text="주변 식당 찾기"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/currentLocation"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/randomCardView" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/currentLocation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="30dp"
-                android:autoSizeMaxTextSize="14sp"
-                android:autoSizeMinTextSize="6sp"
-                android:autoSizeStepGranularity="1sp"
-                android:autoSizeTextType="uniform"
-                android:maxLines="1"
-                android:text="@{homeViewModel.currentAddress}"
-                android:textAlignment="textEnd"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@id/searchRestaurant"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_weight="2"
-                app:layout_constraintStart_toEndOf="@id/searchRestaurant"
-                app:layout_constraintTop_toTopOf="@id/searchRestaurant" />
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/mapFragment"
-                android:name="com.naver.maps.map.MapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="30dp"
-                app:layout_constraintDimensionRatio="2:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/searchRestaurant" />
-
-            <View
-                android:id="@+id/line"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="20dp"
-                android:background="@color/gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/restaurantRecyclerView" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/restaurantRecyclerView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mapFragment" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.recommendmenu.mechulee.view.CustomNestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
