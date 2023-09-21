@@ -48,6 +48,6 @@ class WebViewMapActivity : AppCompatActivity() {
         url?.let { binding.webView.loadUrl(url) }
 
         // statusBar 색 웹페이지 테마 색으로 맞게 변경
-        window.statusBarColor = ContextCompat.getColor(this, R.color.green)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.white)
     }
 }
