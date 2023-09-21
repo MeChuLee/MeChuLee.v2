@@ -7,6 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
+import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_INGREDIENT
+import com.recommendmenu.mechulee.utils.NetworkUtils
 
 class ResultIngredientAdapter : RecyclerView.Adapter<ResultIngredientAdapter.ViewHolder>() {
     var ingredientList = ArrayList<String>()
@@ -27,7 +29,12 @@ class ResultIngredientAdapter : RecyclerView.Adapter<ResultIngredientAdapter.Vie
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = ingredientList[position]
         holder.textView.text = item
-        holder.imageView.setImageResource(R.drawable.example_result_ingredient)
+        NetworkUtils.loadImage(
+            holder.itemView.context,
+            holder.imageView,
+            "${item}.png",
+            URL_TYPE_INGREDIENT
+        )
     }
 
     override fun getItemCount(): Int {
