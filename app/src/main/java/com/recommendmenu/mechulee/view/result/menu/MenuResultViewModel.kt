@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.view.recommend_menu.ingredient
+package com.recommendmenu.mechulee.view.result.menu
 
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
-import com.recommendmenu.mechulee.model.network.menu.OtherMenuService
+import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -16,7 +16,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
+class MenuResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
     private var totalList = ArrayList<MenuInfo>()
 
     private var myStoredMenu = ArrayList<String>()
@@ -29,7 +29,7 @@ class ResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() 
     fun ready() {
         val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
 
-        val service = retrofit.create(OtherMenuService::class.java)
+        val service = retrofit.create(MenuService::class.java)
 
         service.getOtherMenuList(nowResult)
             .enqueue(object : Callback<MenuDto> {

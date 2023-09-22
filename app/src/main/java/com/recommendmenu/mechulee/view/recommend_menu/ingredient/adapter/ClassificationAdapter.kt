@@ -51,7 +51,7 @@ class ClassificationAdapter(val classificationListener: ClassificationListener) 
         holder.classificationBtn.setOnClickListener {
             // 선택한 재료 classification click event 처리 부분
             notifyItemChanged(nowIndex)
-            nowIndex = position
+            nowIndex = holder.absoluteAdapterPosition
             notifyItemChanged(nowIndex)
 
             // classification이 변경되었음을 알림

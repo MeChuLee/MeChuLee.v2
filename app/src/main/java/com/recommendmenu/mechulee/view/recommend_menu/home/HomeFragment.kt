@@ -44,13 +44,14 @@ import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.CalculationUtils
 import com.recommendmenu.mechulee.utils.Constants
+import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.dialog.LoadingDialog
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.RestaurantRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.TodayMenuViewPagerAdapter
-import com.recommendmenu.mechulee.view.recommend_menu.ingredient.AIRecommendResultActivity
+import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -155,8 +156,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
             loadingDialog.dismiss()
 
-            val intent = Intent(activity, AIRecommendResultActivity::class.java)
-            intent.putExtra("object", menuInfo)
+            val intent = Intent(activity, MenuResultActivity::class.java)
+            intent.putExtra(INTENT_NAME_RESULT, menuInfo)
             startActivity(intent)
         }
 
@@ -221,8 +222,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             object : TodayMenuViewPagerAdapter.TodayMenuClickListener {
                 override fun todayMenuClick(menuInfo: MenuInfo) {
                     // 오늘의 추천 메뉴 클릭 시 메뉴 정보 보는 화면으로 이동
-                    val intent = Intent(activity, AIRecommendResultActivity::class.java)
-                    intent.putExtra("object", menuInfo)
+                    val intent = Intent(activity, MenuResultActivity::class.java)
+                    intent.putExtra(INTENT_NAME_RESULT, menuInfo)
                     startActivity(intent)
                 }
             })

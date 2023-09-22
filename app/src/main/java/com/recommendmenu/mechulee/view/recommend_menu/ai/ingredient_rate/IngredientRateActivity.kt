@@ -19,9 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.recommendmenu.mechulee.databinding.ActivityIngredientRateBinding
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.proto.ratingDataStore
+import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.CustomSpinnerAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.IngredientRateRecyclerViewAdapter
-import com.recommendmenu.mechulee.view.recommend_menu.ingredient.AIRecommendResultActivity
+import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 
 
 class IngredientActivity : AppCompatActivity() {
@@ -103,9 +104,9 @@ class IngredientActivity : AppCompatActivity() {
 
     private fun completeButtonClickEvent() {
         // 액티비티로 전환하는 Intent 생성
-        val intent = Intent(this, AIRecommendResultActivity::class.java)
+        val intent = Intent(this, MenuResultActivity::class.java)
 
-        //intent.putExtra("object", resultMenu) -> Intent로 사용할 정보 옮겨준다.
+        //intent.putExtra(INTENT_NAME_RESULT, resultMenu) -> Intent로 사용할 정보 옮겨준다.
         startActivity(intent) // 액티비티로 전환
     }
 

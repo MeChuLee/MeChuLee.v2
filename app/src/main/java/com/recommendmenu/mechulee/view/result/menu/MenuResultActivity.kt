@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.view.recommend_menu.ingredient
+package com.recommendmenu.mechulee.view.result.menu
 
 import android.os.Build
 import android.os.Bundle
@@ -10,15 +10,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.recommendmenu.mechulee.R
-import com.recommendmenu.mechulee.databinding.ActivityAiRecommendResultBinding
+import com.recommendmenu.mechulee.databinding.ActivityMenuResultBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.proto.likedMenuDataStore
+import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.view.result.menu.adapter.MenuResultIngredientAdapter
+import com.recommendmenu.mechulee.view.result.menu.adapter.MenuResultOtherMenuAdapter
 
-class AIRecommendResultActivity : AppCompatActivity() {
-    private var _binding: ActivityAiRecommendResultBinding? = null
+class MenuResultActivity : AppCompatActivity() {
+    private var _binding: ActivityMenuResultBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: ResultViewModel
+    private lateinit var viewModel: MenuResultViewModel
     private lateinit var result: String
     private val storedDataList = ArrayList<String>()
     private var isLiked = false
@@ -26,17 +29,17 @@ class AIRecommendResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding =
-            DataBindingUtil.setContentView(this, R.layout.activity_ai_recommend_result)
+            DataBindingUtil.setContentView(this, R.layout.activity_menu_result)
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
 
-        val resultViewModelFactory = ResultViewModelFactory(likedMenuDataStore)
-        viewModel = ViewModelProvider(this, resultViewModelFactory)[ResultViewModel::class.java]
+        val resultViewModelFactory = MenuResultViewModelFactory(likedMenuDataStore)
+        viewModel = ViewModelProvider(this, resultViewModelFactory)[MenuResultViewModel::class.java]
 
         val resultMenu: MenuInfo? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra("object", MenuInfo::class.java)
+            intent.getSerializableExtra(INTENT_NAME_RESULT, MenuInfo::class.java)
         } else {
-            intent.getSerializableExtra("object") as MenuInfo?
+            intent.getSerializableExtra(INTENT_NAME_RESULT) as MenuInfo?
         }
 
         binding.heartIcon.setOnClickListener {
@@ -69,12 +72,12 @@ class AIRecommendResultActivity : AppCompatActivity() {
 
             // 재료 리스트 연결
             viewModel.ingredientList.let {
-                val resultIngredientAdapter = ResultIngredientAdapter()
+                val menuResultIngredientAdapter = MenuResultIngredientAdapter()
                 it.forEach { myIngredient ->
-                    resultIngredientAdapter.ingredientList.add(myIngredient)
+                    menuResultIngredientAdapter.ingredientList.add(myIngredient)
                 }
                 binding.ingredientList.apply {
-                    adapter = resultIngredientAdapter
+                    adapter = menuResultIngredientAdapter
                     layoutManager = GridLayoutManager(context, 5)
                     setHasFixedSize(true)
                 }
@@ -82,13 +85,13 @@ class AIRecommendResultActivity : AppCompatActivity() {
 
             // 비슷한 메뉴 연결
             viewModel.otherList.observe(this) {
-                val resultOtherMenuAdapter = ResultOtherMenuAdapter()
+                val menuResultOtherMenuAdapter = MenuResultOtherMenuAdapter()
                 it.forEach { otherMenu ->
-                    resultOtherMenuAdapter.datas.add(otherMenu)
+                    menuResultOtherMenuAdapter.datas.add(otherMenu)
                 }
                 binding.otherMenuRecycler.apply {
                     setHasFixedSize(true)
-                    adapter = resultOtherMenuAdapter
+                    adapter = menuResultOtherMenuAdapter
                     layoutManager =
                         LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
                 }

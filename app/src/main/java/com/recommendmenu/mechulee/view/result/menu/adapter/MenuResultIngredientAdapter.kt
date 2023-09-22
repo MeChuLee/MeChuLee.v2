@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.view.recommend_menu.ingredient
+package com.recommendmenu.mechulee.view.result.menu.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +10,7 @@ import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_INGREDIENT
 import com.recommendmenu.mechulee.utils.NetworkUtils
 
-class ResultIngredientAdapter : RecyclerView.Adapter<ResultIngredientAdapter.ViewHolder>() {
+class MenuResultIngredientAdapter : RecyclerView.Adapter<MenuResultIngredientAdapter.ViewHolder>() {
     var ingredientList = ArrayList<String>()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

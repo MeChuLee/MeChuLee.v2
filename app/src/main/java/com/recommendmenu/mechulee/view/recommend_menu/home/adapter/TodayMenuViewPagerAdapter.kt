@@ -41,12 +41,12 @@ class TodayMenuViewPagerAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val todayMenu = todayMenuList[position % todayMenuList.size]
+        val todayMenu = todayMenuList[holder.absoluteAdapterPosition % todayMenuList.size]
 
         holder.onBind(todayMenu)
 
         // 메뉴 이미지는 테스트 이미지로 설정
-        val menuName = (position % 20) + 1
+        val menuName = (holder.absoluteAdapterPosition % 20) + 1
         NetworkUtils.loadImage(
             holder.itemView.context,
             holder.binding.menuImage,

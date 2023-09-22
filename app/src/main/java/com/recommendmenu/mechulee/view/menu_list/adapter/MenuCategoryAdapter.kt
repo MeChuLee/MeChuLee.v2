@@ -41,7 +41,7 @@ class MenuCategoryAdapter(private val menuCategoryListener : MenuCategoryListene
         holder.categoryButton.setOnClickListener {
             // notifyItemChanged 는 대기열에 추가 되기 때문에 onClickListener 가 끝나고 한 번에 실행
             notifyItemChanged(currentClickIdx)
-            currentClickIdx = position
+            currentClickIdx = holder.absoluteAdapterPosition
             notifyItemChanged(currentClickIdx)
 
             // 카테고리가 변경되었음을 알림
