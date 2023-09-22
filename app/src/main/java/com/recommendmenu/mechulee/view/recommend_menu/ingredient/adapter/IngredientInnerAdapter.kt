@@ -48,7 +48,7 @@ class IngredientInnerAdapter(private val ingredientInnerListener: IngredientInne
 
         holder.itemView.setOnClickListener {
             ingredientInnerListener.clickIngredient(item.title)
-            notifyItemChanged(position)
+            notifyItemChanged(holder.absoluteAdapterPosition)
         }
     }
 

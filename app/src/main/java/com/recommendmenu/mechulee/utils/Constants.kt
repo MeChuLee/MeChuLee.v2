@@ -8,4 +8,6 @@ object Constants {
     const val URL_TYPE_INGREDIENT = 1
 
     const val INTENT_NAME_WEB_URL = "webUrl"
+
+    const val INTENT_NAME_RESULT = "object"
 }

@@ -22,6 +22,8 @@ import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.ClassificationAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.IngredientOuterAdapter
 import com.recommendmenu.mechulee.proto.checkedIngredientDataStore
+import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 
 class IngredientFragment : Fragment() {
     private var _binding: FragmentIngredientBinding? = null
@@ -83,15 +85,15 @@ class IngredientFragment : Fragment() {
 //            MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
 //            MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
             val resultMenu = MenuInfo("바질페스토파스타", "김치, 두부, 파, 양파, 고추", "양식")
-            val intent = Intent(activity, AIRecommendResultActivity::class.java)
-            intent.putExtra("object", resultMenu)
+            val intent = Intent(activity, MenuResultActivity::class.java)
+            intent.putExtra(INTENT_NAME_RESULT, resultMenu)
             startActivity(intent)
         }
 
         binding.circleSelectButton.setOnClickListener {
             val resultMenu = MenuInfo("바질페스토파스타", "김치, 두부, 파, 양파, 고추", "양식")
-            val intent = Intent(activity, AIRecommendResultActivity::class.java)
-            intent.putExtra("object", resultMenu)
+            val intent = Intent(activity, MenuResultActivity::class.java)
+            intent.putExtra(INTENT_NAME_RESULT, resultMenu)
             startActivity(intent)
         }
 

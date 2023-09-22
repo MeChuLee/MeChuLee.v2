@@ -50,7 +50,7 @@ class MenuGridAdapter(
         )
 
         holder.itemView.setOnClickListener {
-            menuGridClickListener.menuGridClick(menuList[position])
+            menuGridClickListener.menuGridClick(menuList[holder.absoluteAdapterPosition])
         }
     }
 

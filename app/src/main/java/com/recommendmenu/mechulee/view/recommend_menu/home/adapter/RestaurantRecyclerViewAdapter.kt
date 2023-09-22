@@ -31,11 +31,11 @@ class RestaurantRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.onBind(restaurantList[position])
+        holder.onBind(restaurantList[holder.absoluteAdapterPosition])
 
         // 식당 목록 클릭 이벤트
         holder.itemView.setOnClickListener {
-            val restaurantInfo = restaurantList[position]
+            val restaurantInfo = restaurantList[holder.absoluteAdapterPosition]
 
             if (restaurantInfo.mapx != null && restaurantInfo.mapy != null) {
                 val x = CalculationUtils.convertStringToDoubleWithMap(restaurantInfo.mapx)

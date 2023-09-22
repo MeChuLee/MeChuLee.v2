@@ -1,4 +1,4 @@
-package com.recommendmenu.mechulee.view.recommend_menu.ingredient
+package com.recommendmenu.mechulee.view.result.menu.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 
-class ResultOtherMenuAdapter : RecyclerView.Adapter<ResultOtherMenuAdapter.ViewHolder>() {
+class MenuResultOtherMenuAdapter : RecyclerView.Adapter<MenuResultOtherMenuAdapter.ViewHolder>() {
     var datas = ArrayList<String>()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

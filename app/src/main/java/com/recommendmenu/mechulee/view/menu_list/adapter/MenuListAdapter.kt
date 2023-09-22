@@ -50,7 +50,7 @@ class MenuListAdapter(
         )
 
         holder.itemView.setOnClickListener {
-            menuListClickListener.menuListClick(menuList[position])
+            menuListClickListener.menuListClick(menuList[holder.absoluteAdapterPosition])
         }
     }
 
