@@ -11,7 +11,9 @@ import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.NetworkUtils
 
-class IngredientMenuRecyclerViewAdapter : RecyclerView.Adapter<IngredientMenuRecyclerViewAdapter.MyViewHolder>() {
+class IngredientMenuRecyclerViewAdapter(
+    private var ingredientMenuClickListener: IngredientMenuClickListener
+) : RecyclerView.Adapter<IngredientMenuRecyclerViewAdapter.MyViewHolder>() {
 
     lateinit var binding: RecyclerViewIngredientRecommendResultBinding
 
@@ -19,8 +21,10 @@ class IngredientMenuRecyclerViewAdapter : RecyclerView.Adapter<IngredientMenuRec
 
     class MyViewHolder(val binding: RecyclerViewIngredientRecommendResultBinding) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(menuInfo: Pair<MenuInfo, ArrayList<Int>>) {
+            // 메뉴 이름 등록
             binding.menuName.text = menuInfo.first.name
 
+            // 메뉴 재료 RecyclerView 등록
             val recommendResultIngredientsAdapter = RecommendResultIngredientsAdapter()
             val ingredientList = menuInfo.first.ingredients.split(", ")
             recommendResultIngredientsAdapter.ingredientList.addAll(ingredientList)
@@ -45,10 +49,19 @@ class IngredientMenuRecyclerViewAdapter : RecyclerView.Adapter<IngredientMenuRec
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.onBind(menuList[holder.absoluteAdapterPosition])
 
+        // 클릭 시 메뉴 정보 결과 화면으로 전환하기 위한 클릭 이벤트
+        binding.cardView.setOnClickListener {
+            ingredientMenuClickListener.menuClick(menuList[holder.absoluteAdapterPosition].first)
+        }
+
         // 테스트 메뉴 이미지
         val imageName = (position % 20) + 1
         NetworkUtils.loadImage(holder.itemView.context, binding.menuImage, "$imageName.jpg", Constants.URL_TYPE_MENU)
     }
 
     override fun getItemCount(): Int = menuList.size
+
+    interface IngredientMenuClickListener {
+        fun menuClick(menu: MenuInfo)
+    }
 }
