@@ -3,12 +3,7 @@ package com.recommendmenu.mechulee.view.menu_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.recommendmenu.mechulee.model.data.MenuInfo
-import com.recommendmenu.mechulee.model.network.menu.MenuDto
-import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.utils.NetworkUtils
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MenuListViewModel : ViewModel() {
 
@@ -29,30 +24,8 @@ class MenuListViewModel : ViewModel() {
     private var currentCategory = MENU_CATEGORY_ALL
 
     fun create() {
-        // retrofit instance 획득
-        val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
-
-        val service = retrofit.create(MenuService::class.java)
-
-        // retrofit 실행
-        service.getAllMenu()
-            .enqueue(object : Callback<MenuDto> {
-                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
-                    if (response.isSuccessful.not()) {
-                        return
-                    }
-                    // 성공 시, response.body 에 있는 데이터(응답 데이터) 가져오기
-                    response.body()?.let { menuDto ->
-                        // 응답으로 온 메뉴 데이터를 viewModel data 에 반영 ( 분류 순 정렬 )
-                        val resultMenuList = menuDto.menuList.sortedWith(compareBy { it.category })
-
-                        totalList = resultMenuList.toCollection(ArrayList())
-                        menuList.value = resultMenuList.toCollection(ArrayList())
-                    }
-                }
-
-                override fun onFailure(call: Call<MenuDto>, t: Throwable) { }
-            })
+        totalList = NetworkUtils.totalMenuList
+        menuList.value = NetworkUtils.totalMenuList
 
         // 메뉴 카테고리 정보 초기화
         categoryList.value = MENU_CATEGORY_LIST

@@ -55,7 +55,7 @@ class TodayMenuViewPagerAdapter(
         )
     }
 
-    override fun getItemCount(): Int = 20
+    override fun getItemCount(): Int = Int.MAX_VALUE
 
     interface TodayMenuClickListener {
         fun todayMenuClick(menuInfo: MenuInfo)

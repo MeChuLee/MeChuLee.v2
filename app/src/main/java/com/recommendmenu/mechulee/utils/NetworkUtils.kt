@@ -71,7 +71,7 @@ object NetworkUtils {
             .into(imageView)
     }
 
-    // 모든 재료 정보 요청
+    // 서버에 모든 재료 정보 요청
     fun requestAllIngredient(onResult: (isSuccess: Boolean) -> Unit) {
         val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
 
@@ -101,6 +101,7 @@ object NetworkUtils {
             })
     }
 
+    // 서버에 모든 메뉴 정보 요청
     fun requestAllMenu(onResult: (isSuccess: Boolean) -> Unit) {
         // retrofit instance 획득
         val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)

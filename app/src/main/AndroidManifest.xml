@@ -64,6 +64,10 @@
             android:name=".view.recommend_menu.home.WebViewMapActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".view.result.ingredient.IngredientResultActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
     </application>
 
 </manifest>
