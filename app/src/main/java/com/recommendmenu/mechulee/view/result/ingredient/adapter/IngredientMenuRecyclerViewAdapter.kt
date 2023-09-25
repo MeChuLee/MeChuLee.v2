@@ -15,15 +15,16 @@ class IngredientMenuRecyclerViewAdapter : RecyclerView.Adapter<IngredientMenuRec
 
     lateinit var binding: RecyclerViewIngredientRecommendResultBinding
 
-    var menuList = ArrayList<MenuInfo>()
+    var menuList = ArrayList<Pair<MenuInfo, ArrayList<Int>>>()
 
     class MyViewHolder(val binding: RecyclerViewIngredientRecommendResultBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(menu: MenuInfo) {
-            binding.menuName.text = menu.name
+        fun onBind(menuInfo: Pair<MenuInfo, ArrayList<Int>>) {
+            binding.menuName.text = menuInfo.first.name
 
             val recommendResultIngredientsAdapter = RecommendResultIngredientsAdapter()
-            val ingredientList = menu.ingredients.split(", ")
+            val ingredientList = menuInfo.first.ingredients.split(", ")
             recommendResultIngredientsAdapter.ingredientList.addAll(ingredientList)
+            recommendResultIngredientsAdapter.noIngredientIndexList.addAll(menuInfo.second)
 
             binding.ingredientsRecyclerView.apply {
                 adapter = recommendResultIngredientsAdapter

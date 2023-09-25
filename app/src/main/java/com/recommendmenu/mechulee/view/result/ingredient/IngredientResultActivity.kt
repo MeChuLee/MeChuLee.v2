@@ -3,15 +3,19 @@ package com.recommendmenu.mechulee.view.result.ingredient
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityIngredientResultBinding
+import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.proto.checkedIngredientDataStore
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.result.ingredient.adapter.IngredientMenuRecyclerViewAdapter
 
 class IngredientResultActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityIngredientResultBinding
+    private lateinit var viewModel: IngredientResultViewModel
 
     private lateinit var ingredientMenuRecyclerViewAdapter: IngredientMenuRecyclerViewAdapter
 
@@ -21,21 +25,19 @@ class IngredientResultActivity: AppCompatActivity() {
         binding = ActivityIngredientResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initRecyclerView()
+        viewModel = ViewModelProvider(this)[IngredientResultViewModel::class.java]
+        viewModel.create(checkedIngredientDataStore)
+
+        viewModel.recommendResultList.observe(this) { recommendResultList ->
+            initRecyclerView(recommendResultList)
+        }
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
     }
 
-    private fun initRecyclerView() {
+    private fun initRecyclerView(recommendResultList: ArrayList<Pair<MenuInfo, ArrayList<Int>>>) {
         ingredientMenuRecyclerViewAdapter = IngredientMenuRecyclerViewAdapter()
-        ingredientMenuRecyclerViewAdapter.menuList = ArrayList()
-        ingredientMenuRecyclerViewAdapter.menuList.apply {
-            add(NetworkUtils.totalMenuList[0])
-            add(NetworkUtils.totalMenuList[1])
-            add(NetworkUtils.totalMenuList[2])
-            add(NetworkUtils.totalMenuList[3])
-            add(NetworkUtils.totalMenuList[4])
-        }
+        ingredientMenuRecyclerViewAdapter.menuList = recommendResultList
 
         binding.ingredientMenuRecyclerView.apply {
             setHasFixedSize(true)

@@ -95,13 +95,7 @@ class IngredientFragment : Fragment() {
 
         // 추천 받기 버튼 누르면 결과 화면으로 이동
         binding.selectButton.setOnClickListener {
-            // 밑에 2줄 중 원하는 MenuInfo로 선택해서 하드코딩으로 넣기
-//            MenuInfo("된장찌개", "김치, 두부, 파, 양파, 고추", "한식"),
-//            MenuInfo("바질 페스토 파스타", "김치, 두부, 파, 양파, 고추", "양식"),
-            val resultMenu = MenuInfo("바질페스토파스타", "김치, 두부, 파, 양파, 고추", "양식")
-            val intent = Intent(activity, MenuResultActivity::class.java)
-            intent.putExtra(INTENT_NAME_RESULT, resultMenu)
-            startActivity(intent)
+            startActivity(Intent(requireContext(), IngredientResultActivity::class.java))
         }
 
         binding.circleSelectButton.setOnClickListener {
