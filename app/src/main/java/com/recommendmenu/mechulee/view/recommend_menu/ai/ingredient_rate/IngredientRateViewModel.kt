@@ -8,8 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
+import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
+import com.recommendmenu.mechulee.model.network.menu.MenuDto
+import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -24,6 +27,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
 
     // 데이터의 변경을 관찰 가능한 형태로 만들어준다.
     val menuList: MutableLiveData<ArrayList<IngredientInfo>> = MutableLiveData()
+    val resultMenu: MutableLiveData<MenuInfo> = MutableLiveData()
 
     // 두 개의 리스트를 나눠서 사용하는 이유는 개념적으로 UI에 표시되는 데이터와
     // 비즈니스 로직에 의해 가공되는 데이터를 분리하여 관리하기 위함
@@ -36,6 +40,8 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         getIngredients() // 서버에서 먼저 totalList 교체
 
     }
+
+
 
     // 쟤료 정보 요청 함수
     private fun getIngredients() {
@@ -111,6 +117,14 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         val ratingList = menuItems.map { it.rating }
 
         DataStoreUtils.updateDataStoreToRatingList(GlobalScope, dataStore, ratingList)
+
+        // viewModel에 있는 MenuList를 flask서버로 보내고 Ai추천결과메뉴를 받아오는 함수 실행
+        // 실행해서 viewModel에 있는 resultMenu가 변경될 시 감지해서 Intent로 resultMenu를
+        // MenuResultActivity로 보낸다.
+        // MenuList는 보여지는 view에 적용이 되는 것이고 결국 점수를 저장한 뒤의 값들로 결과를
+        // 도출하는 것이기 때문에 점수를 totallList에 저장한 직후에 getResultMenu()함수를 호춯
+        // 하는 것이 적합
+        getResultMenuFromServer()
     }
 
     // 나중에 지우면 됨
@@ -123,6 +137,35 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
                 Log.d("DataStoreTest", "Stored Rating List: $storedRatingList")
             }
         }
+    }
+
+    private fun getResultMenuFromServer() {
+        val call = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL).create(
+            MenuService::class.java
+        ).getRecommendAi(totalList) // 서버에 totalList를 보낸다.
+
+        call.enqueue(object : Callback<MenuDto> {  // MenuDto의 형태로 서버에서 메뉴 결과를 받아온다.
+            override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
+                if (response.isSuccessful.not()) {  // API 요청 실패 시
+                    Logger.e("not isSuccessful")
+                    return
+                }
+                response.body()?.let { menuDto ->
+                    // 여기서 메뉴결과가 안들어옴.
+                    val menuInfo = menuDto.recommendAiResult // 메뉴 결과를 가져옴
+                    Logger.d(menuInfo) // 무슨 메뉴가 나왔는지 확인
+
+                    resultMenu.value = menuDto.recommendAiResult
+                }
+
+            }
+
+            override fun onFailure(call: Call<MenuDto>, t: Throwable) {
+                // 네트워크 오류 등의 실패 시 처리
+                Logger.d("통신 실패${t.message.toString()}")
+            }
+        }
+        )
     }
 
     fun changeMenuListToTotalList() {

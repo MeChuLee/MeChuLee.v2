@@ -1,5 +1,6 @@
 package com.recommendmenu.mechulee.model.network.menu
 
+import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import retrofit2.Call
 import retrofit2.http.Body
@@ -18,4 +19,7 @@ interface MenuService {
 
     @POST("/recommend/similar")
     fun getOtherMenuList(@Body menu: MenuInfo): Call<MenuDto>
+
+    @POST("/recommend/ai")
+    fun getRecommendAi(@Body ingredientList: ArrayList<IngredientInfo>): Call<MenuDto>
 }
