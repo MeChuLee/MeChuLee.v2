@@ -11,6 +11,7 @@ import com.recommendmenu.mechulee.model.network.search.Item
 import com.recommendmenu.mechulee.model.network.search.SearchDto
 import com.recommendmenu.mechulee.model.network.search.SearchService
 import com.recommendmenu.mechulee.utils.NetworkUtils
+import com.recommendmenu.mechulee.utils.RecommendUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,6 +72,7 @@ class HomeViewModel : ViewModel() {
         })
     }
 
+    // 지도 준비 완료 시 상태 표시
     fun mapReady() {
         isMapReady = true
         if (isMapAndRestaurantReady.value == null && isRestaurantReady) {
@@ -78,6 +80,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    // 식당 정보 준비 완료 시 상태 표시
     fun restaurantReady() {
         isRestaurantReady = true
         if (isMapAndRestaurantReady.value == null && isMapReady) {
@@ -85,6 +88,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    // 오늘의 추천 메뉴 조회
     private fun readTodayMenuListWithRetrofit() {
         val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
 
@@ -105,23 +109,8 @@ class HomeViewModel : ViewModel() {
             })
     }
 
+    // 메뉴 랜덤 추천
     fun requestRecommendRandomMenu() {
-        val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
-
-        val service = retrofit.create(MenuService::class.java)
-
-        service.getRecommendRandom()
-            .enqueue(object : Callback<MenuDto> {
-                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
-                    if (response.isSuccessful.not()) {
-                        return
-                    }
-                    response.body()?.let { menuDto ->
-                        randomMenuResult.value = menuDto.menuInfo
-                    }
-                }
-
-                override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
-            })
+        randomMenuResult.value = RecommendUtils.recommendRandom()
     }
 }
