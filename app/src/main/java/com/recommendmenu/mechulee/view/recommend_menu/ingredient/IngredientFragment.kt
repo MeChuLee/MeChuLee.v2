@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
@@ -32,20 +33,32 @@ class IngredientFragment : Fragment() {
     private lateinit var viewModel: IngredientViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
 
+    // 재료 분류 어댑터
     private var classificationAdapter: ClassificationAdapter? =
         ClassificationAdapter(object : ClassificationAdapter.ClassificationListener {
             override fun changeCurrentClassification(classification: String) {
                 // classification 버튼을 클릭하여 현재 classification 변경 시
                 viewModel.selectClassification(classification)
+
+                // 재료 RecyclerView 의 스크롤 이벤트 추가 및 삭제
+                if (classification == "전체") {
+                    binding.recyclerMain.addOnScrollListener(scrollListener)
+                } else {
+                    binding.recyclerMain.removeOnScrollListener(scrollListener)
+                }
             }
         })
 
+    // 재료 분류별 RecyclerView 어댑터
     private var ingredientOuterAdapter: IngredientOuterAdapter? =
         IngredientOuterAdapter(object : IngredientOuterAdapter.IngredientOuterListener {
             override fun clickIngredient(clickedIngredient: String) {
                 viewModel.checkSelectedIngredient(clickedIngredient)
             }
         })
+
+    // RecyclerView Scroll Listener
+    private lateinit var scrollListener: OnScrollListener
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -168,55 +181,57 @@ class IngredientFragment : Fragment() {
             })
         }
 
+        // Scroll 이벤트 추가
+        // 1. MainActivity Bottom Bar 를 컨트롤하기 위해 MainActivity 에 Listener 로 알림
+        // 2. 스크롤 시 상단 에 '추천 받기' 버튼 생성 및 제거
+        // 3. 스크롤 시 우측 상단에 엄지 모양 '추천' 버튼 생성 및 제거
+        scrollListener = object : OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                // 스크롤을 위로 올렸을 경우, 첫 번째 항목이 완전히 보이는지 확인 (맨 위까지 스크롤),
+                // 버벅거림 방지를 위해 transition 상태가 확인 후,
+                // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
+                if (dy < 0
+                    && binding.motionLayout.currentState == R.id.end
+                    && (binding.motionLayout.progress >= 1f
+                            || binding.motionLayout.progress <= 0f)
+                ) {
+                    fadeIn.start()
+
+                    binding.motionLayout.transitionToStart()
+
+                    // 위로 스크롤 시 Bottom Bar 나타남
+                    (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                        BOTTOM_BAR_STATUS_SHOW
+                    )
+                }
+
+                // 스크롤을 아래로 내렸을 경우, 버벅거림 방지를 위해 transition 상태가 확인 후,
+                // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
+                if (dy > 0
+                    && binding.motionLayout.currentState == R.id.start
+                    && (binding.motionLayout.progress >= 1f
+                            || binding.motionLayout.progress <= 0f)
+                ) {
+                    fadeOut.start()
+
+                    binding.motionLayout.transitionToEnd()
+
+                    // 아래로 스크롤 시 Bottom Bar 사라짐
+                    (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                        BOTTOM_BAR_STATUS_HIDE
+                    )
+                }
+            }
+        }
+
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.recyclerMain.apply {
             adapter = ingredientOuterAdapter
             layoutManager = linearLayoutManager
-
-            // Scroll 이벤트 추가 -> MainActivity Bottom Bar 를 컨트롤하기 위해 MainActivity 에 Listener 로 알림
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-
-                    // 스크롤을 위로 올렸을 경우, 첫 번째 항목이 완전히 보이는지 확인 (맨 위까지 스크롤),
-                    // 버벅거림 방지를 위해 transition 상태가 확인 후,
-                    // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
-                    if (dy < 0
-                        && binding.motionLayout.currentState == R.id.end
-                        && (binding.motionLayout.progress >= 1f
-                                || binding.motionLayout.progress <= 0f)
-                    ) {
-                        fadeIn.start()
-
-                        binding.motionLayout.transitionToStart()
-
-                        // 위로 스크롤 시 Bottom Bar 나타남
-                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
-                            BOTTOM_BAR_STATUS_SHOW
-                        )
-                    }
-
-                    // 스크롤을 아래로 내렸을 경우, 버벅거림 방지를 위해 transition 상태가 확인 후,
-                    // 현재 애니메이션이 진행되고 있지 않다면 motion transition 수행
-                    if (dy > 0
-                        && binding.motionLayout.currentState == R.id.start
-                        && (binding.motionLayout.progress >= 1f
-                                || binding.motionLayout.progress <= 0f)
-                    ) {
-                        fadeOut.start()
-
-                        binding.motionLayout.transitionToEnd()
-
-                        // 아래로 스크롤 시 Bottom Bar 사라짐
-                        (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
-                            BOTTOM_BAR_STATUS_HIDE
-                        )
-                    }
-                }
-            })
+            addOnScrollListener(scrollListener)
         }
     }
 
