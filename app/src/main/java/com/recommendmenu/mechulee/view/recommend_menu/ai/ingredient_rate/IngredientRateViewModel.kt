@@ -29,54 +29,24 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
     val menuList: MutableLiveData<ArrayList<IngredientInfo>> = MutableLiveData()
     val resultMenu: MutableLiveData<MenuInfo> = MutableLiveData()
 
-    // 두 개의 리스트를 나눠서 사용하는 이유는 개념적으로 UI에 표시되는 데이터와
-    // 비즈니스 로직에 의해 가공되는 데이터를 분리하여 관리하기 위함
-    private var totalList: ArrayList<IngredientInfo> = arrayListOf()
+    // 앱 시작 로딩화면에서 미리 받아놓은 전체 재료리스트로 totalList초기화
+    private var totalList = NetworkUtils.totalIngredientList
 
     // ViewModel이 생성될 때 데이터 초기화 작업 수행
     init {
-
         // DataStore에서 RatingData를 비동기적으로 가져와서 totalList 초기화
-        getIngredients() // 서버에서 먼저 totalList 교체
-
+        initTotalListFromDataStore()
     }
 
+    private fun initTotalListFromDataStore() {
+        // DataStore에서 가져온 rating값들을 totalList의 각각의 요소에 적용한다.
+        DataStoreUtils.initTotalListFromDataStore(viewModelScope, dataStore, onResult = {
+            for (i in 0 until totalList.size) {
+                val matchingRating = it.getOrElse(i) { 0.0f }
 
-
-    // 쟤료 정보 요청 함수
-    private fun getIngredients() {
-
-        val call = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL).create(
-            IngredientService::class.java
-        ).getAllIngredient()
-
-        call.enqueue(object : Callback<IngredientDto> {
-            override fun onResponse(call: Call<IngredientDto>, response: Response<IngredientDto>) {
-                if (response.isSuccessful.not()) {  // API 요청 실패 시
-                    Logger.e("not isSuccessful")
-                    return
-                }
-                // flask서버에서 재료 정보 먼저 받아와서 totalList에 넣는다.
-                response.body()?.let { ingredientDto ->
-                    totalList = ingredientDto.ingredientList.toCollection(ArrayList())
-
-                    // DataStore에서 가져온 rating값들을 totalList의 각각의 요소에 적용한다.
-                    DataStoreUtils.initTotalListFromDataStore(viewModelScope, dataStore, onResult = {
-                            for (i in 0 until totalList.size) {
-                                val matchingRating = it.getOrElse(i) { 0.0f }
-
-                                totalList[i].rating = matchingRating
-                            }
-                            menuList.value = totalList
-                        }
-                    )
-                }
+                totalList[i].rating = matchingRating
             }
-
-            override fun onFailure(call: Call<IngredientDto>, t: Throwable) {
-                // 네트워크 오류 등의 실패 시 처리
-                Logger.d("통신 실패${t.message.toString()}")
-            }
+            menuList.value = totalList
         }
         )
     }
