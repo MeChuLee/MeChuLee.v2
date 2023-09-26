@@ -6,63 +6,43 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.model.data.MenuInfo
-import com.recommendmenu.mechulee.model.network.menu.MenuDto
-import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MenuResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
+    // 전체 메뉴 리스트
     private var totalList = ArrayList<MenuInfo>()
 
-    private var myStoredMenu = ArrayList<String>()
+    // data store에 저장된 메뉴 리스트
     val likedMenuList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
-    lateinit var nowResult: MenuInfo
+    // 현재 결과 메뉴
+    var nowResult: MutableLiveData<MenuInfo> = MutableLiveData()
+
+    // 현재 결과 메뉴의 재료
     val ingredientList = ArrayList<String>()
+
+    // 현재 결과 메뉴와 비슷한 메뉴 (category 같은 메뉴 중 5개 랜덤 선택)
     val otherList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
-    fun ready() {
-        val retrofit = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL)
-
-        val service = retrofit.create(MenuService::class.java)
-
-        service.getOtherMenuList(nowResult)
-            .enqueue(object : Callback<MenuDto> {
-                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
-                    if (response.isSuccessful.not()) {
-                        return
-                    }
-                    response.body()?.let { menuDto ->
-                        val tempMenuList = menuDto.menuList
-                        totalList = tempMenuList.toCollection(ArrayList())
-                    }
-                    val tempList = ArrayList<String>()
-                    totalList.forEach {
-                        tempList.add(it.name)
-                    }
-                    otherList.value = tempList
-                }
-
-                override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
-            })
-    }
-
     init {
+        // NetworkUtils에 저장된 전체 메뉴를 불러 초기화
+        totalList.addAll(NetworkUtils.totalMenuList)
+
         DataStoreUtils.loadFromLikeMenuData(viewModelScope, dataStore, onResult = {
-            myStoredMenu.addAll(it)
-            likedMenuList.value = myStoredMenu
+            val tempList = ArrayList<String>()
+            tempList.addAll(it)
+            likedMenuList.value = tempList
         })
     }
 
-    // TODO 정리가 필요해보임.. 불필요한 메소드로 나눈 느낌
+    // 결과메뉴 세팅하는 함수
     fun showResult(nowMenu: MenuInfo) {
-        nowResult = nowMenu.copy()
+        nowResult.value = nowMenu.copy()
         showIngredient(nowMenu)
+        showOtherMenu(nowMenu)
     }
 
     // 결과 메뉴의 재료 보여주는 메소드
@@ -71,6 +51,35 @@ class MenuResultViewModel(private val dataStore: DataStore<LikeData>) : ViewMode
         tempSplit.forEach {
             ingredientList.add(it)
         }
+    }
+
+    // 비슷한 메뉼르 선택하는 메소드
+    // 카테고리가 같은 메뉴가 5개 이하면 그냥 그대로 그 갯수만큼 출력
+    // 많으면 랜덤으로 5개의 index를 뽑아 그 위치에 해당하는 메뉴 출력
+    private fun showOtherMenu(nowMenu: MenuInfo) {
+        val nowCategory = nowMenu.category
+        val sameCategoryList = ArrayList<MenuInfo>()
+        totalList.forEach {
+            if (it.category == nowCategory) {
+                sameCategoryList.add(it)
+            }
+        }
+        val numList = ArrayList<Int>()
+        if (sameCategoryList.size <= 5) {
+            numList.addAll(0 until sameCategoryList.size)
+        } else {
+            while (numList.size < 5) {
+                val intRandom = (0 until sameCategoryList.size).random()
+                if (intRandom !in numList) {
+                    numList.add(intRandom)
+                }
+            }
+        }
+        val tempOtherMenuList = ArrayList<String>()
+        for (i in numList) {
+            tempOtherMenuList.add(sameCategoryList[i].name)
+        }
+        otherList.value = tempOtherMenuList
     }
 
     // viewModel에 있는 likedMenuList에 추가하거나 제거하는 메소드
