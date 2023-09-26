@@ -48,15 +48,12 @@ class MenuResultActivity : AppCompatActivity() {
             animateHeart(isLiked)
         }
 
-        if (resultMenu != null) {
-            // nowResult에 저장
-            viewModel.showResult(resultMenu)
-            viewModel.nowResult.let {
+        resultMenu?.let { nowResult ->
+            viewModel.showResult(nowResult)
+            viewModel.nowResult.observe(this) {
                 result = it.name
                 binding.resultMenuName.text = result
-                viewModel.ready()
             }
-
             // DataStore에 저장된 메뉴인지 확인
             viewModel.likedMenuList.observe(this) {
                 storedDataList.clear()

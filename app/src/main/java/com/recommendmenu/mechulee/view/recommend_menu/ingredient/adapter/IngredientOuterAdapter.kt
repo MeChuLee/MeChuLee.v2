@@ -41,7 +41,6 @@ class IngredientOuterAdapter(private val ingredientOuterListener: IngredientOute
                 4 -> nowKey = "생선"
                 5 -> nowKey = "소스"
                 6 -> nowKey = "기타"
-                7 -> nowKey = "면"
             }
         }
         when (nowKey) {
@@ -52,7 +51,6 @@ class IngredientOuterAdapter(private val ingredientOuterListener: IngredientOute
             "생선" -> englishName = "Fish"
             "소스" -> englishName = "Sauce"
             "기타" -> englishName = "Others"
-            "면" -> englishName = "Noodle"
         }
         val classificationName = "• $nowKey $englishName"
 
