@@ -9,5 +9,5 @@
     <string name="text_notice">&#160;현재 있는 재료를 선택해 메뉴를 추천 받으세요</string>
     <string name="select_button">추천 받기</string>
 
-    <string name="ai_text_notice">&#160;날씨와 재료 평가를 통해 메뉴를 추천 받으세요</string>
+    <string name="ai_text_notice">&#160;재료 평가를 통해서 메뉴를 추천 받으세요</string>
 </resources>

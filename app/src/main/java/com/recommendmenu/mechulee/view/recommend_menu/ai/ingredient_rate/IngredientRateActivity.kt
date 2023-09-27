@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.databinding.ActivityIngredientRateBinding
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.proto.ratingDataStore
@@ -84,7 +85,7 @@ class IngredientActivity : AppCompatActivity() {
         binding.completeTextView.setOnClickListener {
 
             // 여기서 totalList의 정보들을 DataStore에 저장한다.
-            viewModel.storeRatingDataFromTotalList()
+            viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
 
             // DataStore에 저장된 rating값들을 보여준다
             viewModel.showRatingDataStore()
@@ -94,20 +95,19 @@ class IngredientActivity : AppCompatActivity() {
                 println("Ingredient: ${ingredientInfo.title}, Rating: ${ingredientInfo.rating}")
             }
 
-            completeButtonClickEvent()
+            // viewModel에 있는 resultMenu변경 시 감지 후 Intent로 넘긴다.
+            viewModel.resultMenu.observe(this) { resultMenu ->
+                Logger.d(resultMenu)
+                // 액티비티로 전환하는 Intent 생성
+                val intent = Intent(this, MenuResultActivity::class.java)
+                intent.putExtra(INTENT_NAME_RESULT, resultMenu) // Intent로 사용할 정보를 옮겨준다.
+                startActivity(intent) // 액티비티로 전환
+            }
         }
 
         initEditText()
         initSpinnerIngredientList()
 
-    }
-
-    private fun completeButtonClickEvent() {
-        // 액티비티로 전환하는 Intent 생성
-        val intent = Intent(this, MenuResultActivity::class.java)
-
-        //intent.putExtra(INTENT_NAME_RESULT, resultMenu) -> Intent로 사용할 정보 옮겨준다.
-        startActivity(intent) // 액티비티로 전환
     }
 
     private fun initSpinnerIngredientList() {
