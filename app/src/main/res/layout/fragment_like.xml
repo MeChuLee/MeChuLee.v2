@@ -49,7 +49,7 @@
             android:layout_height="70dp"
             android:layout_marginBottom="100dp"
             android:alpha="0.8"
-            android:background="@drawable/trash_layout_background"
+            android:background="@drawable/trash_layout_base_background"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,12 +59,34 @@
                 android:id="@+id/trashIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/baseline_delete_24"
+                android:src="@drawable/trash_icon_base"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/trashLayoutHover"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="100dp"
+            android:alpha="0.8"
+            android:background="@drawable/trash_layout_hover_background"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/trashIconHover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/trash_icon_hover"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

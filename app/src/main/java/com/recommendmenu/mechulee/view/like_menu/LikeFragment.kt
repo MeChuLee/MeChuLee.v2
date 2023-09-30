@@ -9,6 +9,8 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,7 +24,8 @@ class LikeFragment : Fragment() {
     private val binding get() = _binding!!
 
     var myDel = ""
-
+    private lateinit var fadeInAnim: Animation
+    private lateinit var changeAnim: Animation
     private lateinit var viewModel: LikeViewModel
 
     private var likeAdapter: LikeAdapter? =
@@ -30,9 +33,8 @@ class LikeFragment : Fragment() {
             override fun selectMenu(menu: String) {
                 myDel = menu
                 binding.trashLayout.visibility = View.VISIBLE
-                binding.likeTitle.alpha = 0.5f
-                binding.likeView.alpha = 0.5f
-                binding.likeRecyclerView.alpha = 0.5f
+                binding.trashLayout.startAnimation(fadeInAnim)
+                binding.likeRecyclerView.alpha = 0.7f
             }
         })
 
@@ -47,15 +49,31 @@ class LikeFragment : Fragment() {
         val likeViewModelFactory = LikeViewModelFactory(requireContext().likedMenuDataStore)
         viewModel = ViewModelProvider(this, likeViewModelFactory)[LikeViewModel::class.java]
 
+        fadeInAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.trash_fade_in)
+        changeAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.trash_change)
+
         val dragListen = View.OnDragListener { v, event ->
             when (event.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
 
-                DragEvent.ACTION_DRAG_ENTERED -> true
+                DragEvent.ACTION_DRAG_ENTERED -> {
+                    binding.trashLayout.visibility = View.GONE
+                    binding.trashLayoutHover.visibility = View.VISIBLE
+                    binding.trashLayoutHover.alpha = 0.8f
+                    binding.trashIconHover.alpha = 0.8f
+                    true
+                }
+
                 DragEvent.ACTION_DRAG_LOCATION -> true
-                DragEvent.ACTION_DRAG_EXITED -> true
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    binding.trashLayoutHover.visibility = View.GONE
+                    binding.trashLayout.visibility = View.VISIBLE
+                    binding.trashLayout.startAnimation(changeAnim)
+                    true
+                }
+
                 DragEvent.ACTION_DROP -> {
                     when (v) {
                         binding.trashLayout -> {
@@ -69,6 +87,7 @@ class LikeFragment : Fragment() {
                                     .show()
                                 dialog.dismiss()
                                 viewModel.removeMenu(myDel)
+                                viewModel.storeLikeMenu()
                             }
                             ad.setNegativeButton("취소") { dialog, _ ->
                                 dialog.dismiss()
@@ -89,10 +108,10 @@ class LikeFragment : Fragment() {
                         true -> Log.d("DRAGANDDROP", "Success")
                         false -> Log.d("DRAGANDDROP", "Failed")
                     }
-                    binding.trashLayout.visibility = View.GONE
-                    binding.likeTitle.alpha = 1.0f
-                    binding.likeView.alpha = 1.0f
+                    binding.trashLayoutHover.visibility = View.GONE
                     binding.likeRecyclerView.alpha = 1.0f
+
+                    binding.trashLayout.visibility = View.GONE
                     true
                 }
 
@@ -118,14 +137,14 @@ class LikeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.storeLikeMenu()
-    }
-
     override fun onResume() {
         super.onResume()
         viewModel.ready()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.storeLikeMenu()
     }
 
     override fun onDestroyView() {
