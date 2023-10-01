@@ -197,6 +197,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mapFragment" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/restaurantRecyclerViewEmptyView"
+                    app:layout_constraintTop_toTopOf="@id/restaurantRecyclerView"
+                    app:layout_constraintStart_toStartOf="@id/restaurantRecyclerView"
+                    app:layout_constraintEnd_toEndOf="@id/restaurantRecyclerView"
+                    app:layout_constraintBottom_toBottomOf="@id/restaurantRecyclerView"
+                    android:text="주변 식당 없음"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.recommendmenu.mechulee.view.CustomNestedScrollView>
