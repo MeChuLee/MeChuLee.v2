@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.IngredientData
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.DataStoreUtils
@@ -33,10 +32,23 @@ class IngredientResultViewModel: ViewModel() {
             }
 
             // 있는 재료의 수 / 전체 재료의 수 가 높을 수록
-            recommendResultList.value = ingredientResultList.sortedWith(compareBy {
+            val sortedList = ingredientResultList.sortedWith(compareBy {
                 val allIngredientSize: Double = it.first.ingredients.split(", ").size.toDouble()
-                -((allIngredientSize - it.second.size) / allIngredientSize)
+                -((allIngredientSize - it.second.size.toDouble()) / allIngredientSize)
             }).toCollection(ArrayList())
+
+            val resultList = ArrayList<Pair<MenuInfo, ArrayList<Int>>>()
+
+            sortedList.forEach {
+                val allIngredientSize: Double = it.first.ingredients.split(", ").size.toDouble()
+                if (((allIngredientSize - it.second.size) / allIngredientSize) >= 0.66) {
+                    resultList.add(it)
+                } else {
+                    return@forEach
+                }
+            }
+
+            recommendResultList.value = resultList
         })
     }
 }
