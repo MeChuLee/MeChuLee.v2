@@ -3,12 +3,14 @@ package com.recommendmenu.mechulee.view.recommend_menu.ingredient
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,16 +18,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentIngredientBinding
-import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_HIDE
 import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_SHOW
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.ClassificationAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.adapter.IngredientOuterAdapter
 import com.recommendmenu.mechulee.proto.checkedIngredientDataStore
-import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
 import com.recommendmenu.mechulee.view.result.ingredient.IngredientResultActivity
-import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 
 class IngredientFragment : Fragment() {
     private var _binding: FragmentIngredientBinding? = null
@@ -34,6 +33,9 @@ class IngredientFragment : Fragment() {
     private lateinit var viewModel: IngredientViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
 
+    private lateinit var fadeIn: ObjectAnimator
+    private lateinit var callback: OnBackPressedCallback
+
     // 재료 분류 어댑터
     private var classificationAdapter: ClassificationAdapter? =
         ClassificationAdapter(object : ClassificationAdapter.ClassificationListener {
@@ -41,12 +43,8 @@ class IngredientFragment : Fragment() {
                 // classification 버튼을 클릭하여 현재 classification 변경 시
                 viewModel.selectClassification(classification)
 
-                // 재료 RecyclerView 의 스크롤 이벤트 추가 및 삭제
-                if (classification == "전체") {
-                    binding.recyclerMain.addOnScrollListener(scrollListener)
-                } else {
-                    binding.recyclerMain.removeOnScrollListener(scrollListener)
-                }
+                // 재료 RecyclerView 의 스크롤 이벤트 추가
+                binding.recyclerMain.addOnScrollListener(scrollListener)
             }
         })
 
@@ -73,7 +71,6 @@ class IngredientFragment : Fragment() {
 
         // 재료 classification 보여주는 RecyclerView
         initClassificationRecycler()
-
         // 재료 보여주는 RecyclerView
         initIngredientsRecycler()
 
@@ -99,10 +96,6 @@ class IngredientFragment : Fragment() {
         }
 
         binding.circleSelectButton.setOnClickListener {
-//            val resultMenu = MenuInfo("바질페스토파스타", "김치, 두부, 파, 양파, 고추", "양식")
-//            val intent = Intent(activity, MenuResultActivity::class.java)
-//            intent.putExtra(INTENT_NAME_RESULT, resultMenu)
-//            startActivity(intent)
             startActivity(Intent(requireContext(), IngredientResultActivity::class.java))
         }
 
@@ -162,7 +155,7 @@ class IngredientFragment : Fragment() {
         }
 
         // 버튼을 다시 나타나게 하는 애니메이션
-        val fadeIn = ObjectAnimator.ofFloat(binding.circleSelectButton, "alpha", 0f, 1f).apply {
+        fadeIn = ObjectAnimator.ofFloat(binding.circleSelectButton, "alpha", 0f, 1f).apply {
             duration = 1000 // 애니메이션 지속 시간 설정 (1초)
             addListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(animation: Animator) {}
@@ -229,6 +222,27 @@ class IngredientFragment : Fragment() {
             layoutManager = linearLayoutManager
             addOnScrollListener(scrollListener)
         }
+    }
+
+    // 아래로 스크롤 시 생성되는 큰 추천 버튼,
+    // 사라지는 작은 추천 버튼 및 bottom navigator를 원래 상태로 복구
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                fadeIn.start()
+                binding.motionLayout.transitionToStart()
+                (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                    BOTTOM_BAR_STATUS_SHOW
+                )
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
     }
 
     override fun onResume() {
