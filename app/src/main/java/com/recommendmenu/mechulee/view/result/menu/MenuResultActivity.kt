@@ -68,7 +68,7 @@ class MenuResultActivity : AppCompatActivity() {
             }
 
             // 재료 리스트 연결
-            viewModel.ingredientList.let {
+            viewModel.ingredientList.observe(this) {
                 val menuResultIngredientAdapter = MenuResultIngredientAdapter()
                 it.forEach { myIngredient ->
                     menuResultIngredientAdapter.ingredientList.add(myIngredient)
@@ -110,6 +110,7 @@ class MenuResultActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.storeLikeMenu()
+        finish()
     }
 
     override fun onDestroy() {

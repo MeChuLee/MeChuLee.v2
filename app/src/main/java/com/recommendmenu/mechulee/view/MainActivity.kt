@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
             if (backPressedTime + 2000 > System.currentTimeMillis()) {
                 finish()
             } else {
+                binding.expandableBottomBar.show()
                 Toast.makeText(this@MainActivity, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
             }
             backPressedTime = System.currentTimeMillis()

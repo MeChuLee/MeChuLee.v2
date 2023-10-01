@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.utils.DataStoreUtils
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 
 class LikeViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
     private val totalList = ArrayList<String>()
@@ -28,11 +26,10 @@ class LikeViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
         nowList.value = tempList
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun storeLikeMenu() {
         val tempList = ArrayList<String>(nowList.value?.toList() ?: ArrayList())
         DataStoreUtils.updateLikeMenuData(
-            GlobalScope,
+            viewModelScope,
             dataStore,
             tempList
         )

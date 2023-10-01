@@ -11,8 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
-import com.recommendmenu.mechulee.model.data.MenuInfo
-import okhttp3.internal.notifyAll
 
 class LikeAdapter(private val likeListener: LikeListener) :
     RecyclerView.Adapter<LikeAdapter.ViewHolder>() {
@@ -39,18 +37,17 @@ class LikeAdapter(private val likeListener: LikeListener) :
         holder.itemView.apply {
             tag = IMAGEVIEW_TAG
             setOnLongClickListener { v: View ->
-                // TODO 추후 개선 사항 longclick시 사라지게 하는 기능
-//                v.visibility = View.INVISIBLE
                 val dragData = ClipData(
                     v.tag as? CharSequence,
                     arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
                     ClipData.Item(v.tag as? CharSequence)
                 )
                 val myShadow = View.DragShadowBuilder(v)
+                v.alpha = 0.0f
 
                 v.startDragAndDrop(dragData, myShadow, v, 0)
                 likeListener.selectMenu(datas[position])
-                return@setOnLongClickListener(true)
+                return@setOnLongClickListener (true)
             }
         }
         val dragListen = View.OnDragListener { v, event ->
@@ -58,6 +55,7 @@ class LikeAdapter(private val likeListener: LikeListener) :
                 DragEvent.ACTION_DRAG_STARTED -> {
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
+
                 DragEvent.ACTION_DRAG_ENTERED -> false
                 DragEvent.ACTION_DRAG_LOCATION -> true
                 DragEvent.ACTION_DRAG_EXITED -> true
@@ -67,8 +65,10 @@ class LikeAdapter(private val likeListener: LikeListener) :
                         true -> Log.d("DRAGANDDROP", "Success")
                         false -> Log.d("DRAGANDDROP", "Failed")
                     }
+                    v.alpha = 1.0f
                     true
                 }
+
                 else ->
                     false
             }
