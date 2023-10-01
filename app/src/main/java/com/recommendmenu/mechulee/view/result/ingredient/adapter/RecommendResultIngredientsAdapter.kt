@@ -11,13 +11,14 @@ import com.recommendmenu.mechulee.databinding.RecyclerViewIngredientRecommendIng
 import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.NetworkUtils
 
-class RecommendResultIngredientsAdapter :
-    RecyclerView.Adapter<RecommendResultIngredientsAdapter.MyViewHolder>() {
+class RecommendResultIngredientsAdapter(
+    private val itemViewClickListener: ItemViewClickListener
+) : RecyclerView.Adapter<RecommendResultIngredientsAdapter.MyViewHolder>() {
 
     lateinit var binding: RecyclerViewIngredientRecommendIngredientsBinding
 
-    var ingredientList = ArrayList<String>()
-    var noIngredientIndexList = ArrayList<Int>()
+    var colorIngredientList = ArrayList<String>()
+    var blackIngredientList = ArrayList<String>()
 
     class MyViewHolder(val binding: RecyclerViewIngredientRecommendIngredientsBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -45,17 +46,25 @@ class RecommendResultIngredientsAdapter :
             parent,
             false
         )
+
         return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        var isBlack = false
-        if (holder.absoluteAdapterPosition in noIngredientIndexList) {
-            isBlack = true
+        holder.itemView.setOnClickListener {
+            itemViewClickListener.itemClick()
         }
 
-        holder.onBind(ingredientList[holder.absoluteAdapterPosition], isBlack)
+        if (holder.absoluteAdapterPosition < colorIngredientList.size) {
+            holder.onBind(colorIngredientList[holder.absoluteAdapterPosition], false)
+        } else {
+            holder.onBind(blackIngredientList[holder.absoluteAdapterPosition - colorIngredientList.size], true)
+        }
     }
 
-    override fun getItemCount(): Int = ingredientList.size
+    override fun getItemCount(): Int = colorIngredientList.size + blackIngredientList.size
+
+    interface ItemViewClickListener {
+        fun itemClick()
+    }
 }

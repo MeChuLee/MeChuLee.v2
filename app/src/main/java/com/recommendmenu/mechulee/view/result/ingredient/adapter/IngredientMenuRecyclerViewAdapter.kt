@@ -20,15 +20,27 @@ class IngredientMenuRecyclerViewAdapter(
     var menuList = ArrayList<Pair<MenuInfo, ArrayList<Int>>>()
 
     class MyViewHolder(val binding: RecyclerViewIngredientRecommendResultBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(menuInfo: Pair<MenuInfo, ArrayList<Int>>) {
+        fun onBind(menuInfo: Pair<MenuInfo, ArrayList<Int>>, itemViewClickListener: RecommendResultIngredientsAdapter.ItemViewClickListener) {
             // 메뉴 이름 등록
             binding.menuName.text = menuInfo.first.name
 
             // 메뉴 재료 RecyclerView 등록
-            val recommendResultIngredientsAdapter = RecommendResultIngredientsAdapter()
+            val recommendResultIngredientsAdapter = RecommendResultIngredientsAdapter(itemViewClickListener)
             val ingredientList = menuInfo.first.ingredients.split(", ")
-            recommendResultIngredientsAdapter.ingredientList.addAll(ingredientList)
-            recommendResultIngredientsAdapter.noIngredientIndexList.addAll(menuInfo.second)
+
+            val colorIngredientList = ArrayList<String>()
+            val blackIngredientList = ArrayList<String>()
+
+            for (i in ingredientList.indices) {
+                if (i in menuInfo.second) {
+                    blackIngredientList.add(ingredientList[i])
+                } else {
+                    colorIngredientList.add(ingredientList[i])
+                }
+            }
+
+            recommendResultIngredientsAdapter.colorIngredientList.addAll(colorIngredientList)
+            recommendResultIngredientsAdapter.blackIngredientList.addAll(blackIngredientList)
 
             binding.ingredientsRecyclerView.apply {
                 adapter = recommendResultIngredientsAdapter
@@ -47,7 +59,11 @@ class IngredientMenuRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.onBind(menuList[holder.absoluteAdapterPosition])
+        holder.onBind(menuList[holder.absoluteAdapterPosition], object: RecommendResultIngredientsAdapter.ItemViewClickListener {
+            override fun itemClick() {
+                ingredientMenuClickListener.menuClick(menuList[holder.absoluteAdapterPosition].first)
+            }
+        })
 
         // 클릭 시 메뉴 정보 결과 화면으로 전환하기 위한 클릭 이벤트
         binding.cardView.setOnClickListener {

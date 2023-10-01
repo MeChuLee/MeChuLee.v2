@@ -113,9 +113,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
         // 식당 정보 결과 응답 감지 시 recyclerview 에 반영
         viewModel.restaurantList.observe(requireActivity()) { restaurantList ->
-            restaurantRecyclerViewAdapter?.restaurantList?.clear()
-            restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
-            restaurantRecyclerViewAdapter?.notifyDataSetChanged()
+            if (!restaurantList.isEmpty()) {
+                binding.restaurantRecyclerViewEmptyView.visibility = View.GONE
+                restaurantRecyclerViewAdapter?.restaurantList?.clear()
+                restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
+                restaurantRecyclerViewAdapter?.notifyDataSetChanged()
+            }
 
             // 식당 정보 준비 -> viewModel 에 체크
             viewModel.restaurantReady()
