@@ -10,6 +10,7 @@ import com.recommendmenu.mechulee.databinding.RecyclerViewIngredientRecommendRes
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.NetworkUtils
+import java.lang.Integer.min
 
 class IngredientMenuRecyclerViewAdapter(
     private var ingredientMenuClickListener: IngredientMenuClickListener
@@ -75,7 +76,7 @@ class IngredientMenuRecyclerViewAdapter(
         NetworkUtils.loadImage(holder.itemView.context, binding.menuImage, "$imageName.jpg", Constants.URL_TYPE_MENU)
     }
 
-    override fun getItemCount(): Int = menuList.size
+    override fun getItemCount(): Int = min(menuList.size, 10)
 
     interface IngredientMenuClickListener {
         fun menuClick(menu: MenuInfo)

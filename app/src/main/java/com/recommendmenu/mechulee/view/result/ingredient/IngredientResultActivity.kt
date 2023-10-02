@@ -2,6 +2,7 @@ package com.recommendmenu.mechulee.view.result.ingredient
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -39,6 +40,10 @@ class IngredientResultActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView(recommendResultList: ArrayList<Pair<MenuInfo, ArrayList<Int>>>) {
+        if (recommendResultList.isNotEmpty()) {
+            binding.ingredientMenuRecyclerViewEmptyView.visibility = View.GONE
+        }
+
         ingredientMenuRecyclerViewAdapter = IngredientMenuRecyclerViewAdapter(object :
             IngredientMenuRecyclerViewAdapter.IngredientMenuClickListener {
             // 메뉴 클릭 시 메뉴 결과 화면으로 전환

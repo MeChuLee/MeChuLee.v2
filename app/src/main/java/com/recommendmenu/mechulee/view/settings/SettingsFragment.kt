@@ -1,15 +1,13 @@
 package com.recommendmenu.mechulee.view.settings
 
 import android.content.Intent
-import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.naver.maps.map.app.OpenSourceLicenseActivity
 import com.recommendmenu.mechulee.databinding.FragmentSettingsBinding
-import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
+import com.recommendmenu.mechulee.utils.Constants
 
 class SettingsFragment : Fragment() {
 
@@ -22,32 +20,21 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsBinding.inflate(layoutInflater)
-        return binding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        settingClickEvent()
-    }
-
-    private fun settingClickEvent() {
+        // 각 라이센스 클릭 시 intent 타입 정보 저장 후 화면 전환
         binding.openSourceText.setOnClickListener {
-            val intent = Intent(activity, com.recommendmenu.mechulee.view.settings.OpenSourceLicenseActivity::class.java)
+            val intent = Intent(activity, LicenseActivity::class.java)
+            intent.putExtra(Constants.INTENT_NAME_LICENSE, Constants.INTENT_VALUE_LICENSE_OPENSOURCE)
             startActivity(intent)
         }
+
         binding.imageText.setOnClickListener {
-            val intent = Intent(activity, ImageLicenseActivity::class.java)
+            val intent = Intent(activity, LicenseActivity::class.java)
+            intent.putExtra(Constants.INTENT_NAME_LICENSE, Constants.INTENT_VALUE_LICENSE_IMAGE)
             startActivity(intent)
         }
-        binding.versionText.setOnClickListener {
-            val intent = Intent(activity, VersionNotationActivity::class.java)
-            startActivity(intent)
-        }
-        binding.version.setOnClickListener {
-            val intent = Intent(activity, VersionNotationActivity::class.java)
-            startActivity(intent)
-        }
+
+        return binding.root
     }
 
     override fun onDestroyView() {

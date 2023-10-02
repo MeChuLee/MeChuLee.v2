@@ -41,7 +41,7 @@ class IngredientResultViewModel: ViewModel() {
 
             sortedList.forEach {
                 val allIngredientSize: Double = it.first.ingredients.split(", ").size.toDouble()
-                if (((allIngredientSize - it.second.size) / allIngredientSize) >= 0.66) {
+                if (((allIngredientSize - it.second.size) / allIngredientSize) >= 0.5) {
                     resultList.add(it)
                 } else {
                     return@forEach
