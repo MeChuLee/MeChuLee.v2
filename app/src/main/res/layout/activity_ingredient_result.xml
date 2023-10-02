@@ -40,6 +40,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line1" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/ingredientMenuRecyclerViewEmptyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="텅"
+            android:textSize="50sp"
+            app:layout_constraintBottom_toBottomOf="@id/ingredientMenuRecyclerView"
+            app:layout_constraintEnd_toEndOf="@id/ingredientMenuRecyclerView"
+            app:layout_constraintStart_toStartOf="@id/ingredientMenuRecyclerView"
+            app:layout_constraintTop_toTopOf="@id/ingredientMenuRecyclerView" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
