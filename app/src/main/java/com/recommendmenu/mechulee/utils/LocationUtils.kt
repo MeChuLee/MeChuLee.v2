@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -96,6 +97,8 @@ object LocationUtils {
 
                         val simpleAddress = getSimpleAddress(addresses)
 
+                        Logger.e(simpleAddress)
+
                         // 주소 조회가 가능할 경우만 UI 업데이트 실행
                         if (simpleAddress != "") {
                             withContext(Dispatchers.Main) {
@@ -121,8 +124,14 @@ object LocationUtils {
             val subLocality = address.subLocality
             val thoroughfare = address.thoroughfare
 
-            if (subLocality != null && thoroughfare != null) {
-                return "$locality $subLocality $thoroughfare"
+            return if (subLocality != null && thoroughfare != null) {
+                "$locality $subLocality $thoroughfare"
+            } else if (subLocality != null && thoroughfare == null) {
+                "$locality $subLocality"
+            } else if (subLocality == null && thoroughfare != null) {
+                "$locality $thoroughfare"
+            } else {
+                "$address"
             }
         }
 
