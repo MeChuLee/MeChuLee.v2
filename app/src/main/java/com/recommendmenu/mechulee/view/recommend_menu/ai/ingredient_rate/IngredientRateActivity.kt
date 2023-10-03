@@ -87,22 +87,16 @@ class IngredientActivity : AppCompatActivity() {
             // 여기서 totalList의 정보들을 DataStore에 저장한다.
             viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
 
-            // DataStore에 저장된 rating값들을 보여준다
-            viewModel.showRatingDataStore()
+//            // DataStore에 저장된 rating값들을 보여준다
+//            viewModel.showRatingDataStore()
 
-            // 현재 menuList정보 출력해서 확인
-            viewModel.menuList.value?.forEach { ingredientInfo ->
-                println("Ingredient: ${ingredientInfo.title}, Rating: ${ingredientInfo.rating}")
-            }
-
-            // viewModel에 있는 resultMenu변경 시 감지 후 Intent로 넘긴다.
-            viewModel.resultMenu.observe(this) { resultMenu ->
-                Logger.d(resultMenu)
-                // 액티비티로 전환하는 Intent 생성
-                val intent = Intent(this, MenuResultActivity::class.java)
-                intent.putExtra(INTENT_NAME_RESULT, resultMenu) // Intent로 사용할 정보를 옮겨준다.
-                startActivity(intent) // 액티비티로 전환
-            }
+        }
+        // viewModel에 있는 resultMenu변경 시 감지 후 Intent로 넘긴다.
+        viewModel.resultMenu.observe(this) { resultMenu ->
+            // 액티비티로 전환하는 Intent 생성
+            val intent = Intent(this, MenuResultActivity::class.java)
+            intent.putExtra(INTENT_NAME_RESULT, resultMenu) // Intent로 사용할 정보를 옮겨준다.
+            startActivity(intent) // 액티비티로 전환
         }
 
         initEditText()

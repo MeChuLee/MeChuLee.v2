@@ -10,10 +10,23 @@ class SplashViewModel: ViewModel() {
 
     private var completeGetIngredient = false
     private var completeGetMenu = false
+    private var completeGetWeather = false
 
     init {
         requestAllIngredient()
         requestAllMenu()
+    }
+
+    fun requestAllWeather(coroutineScope: SplashActivity) {
+        NetworkUtils.sendLocationXYToServer(coroutineScope, onResult = { isSuccess ->
+            if (isSuccess) {
+                completeGetWeather = true
+
+                if (completeGetMenu && completeGetIngredient) allComplete.value = true
+            } else {
+                allComplete.value = false
+            }
+        })
     }
 
     private fun requestAllIngredient() {

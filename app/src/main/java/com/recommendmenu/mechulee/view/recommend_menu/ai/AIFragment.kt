@@ -36,6 +36,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
         // 함수로 변경해서 되는지 확인해보기
         LocationUtils.getLocationGPS(requireActivity(), onResultLocation = { latitude, longitude ->
+            aiViewModel.sendLocationXYToServer(latitude, longitude)
             aiViewModel.setLocationXY(latitude, longitude)
         })
 

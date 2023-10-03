@@ -3,6 +3,7 @@ package com.recommendmenu.mechulee.view.recommend_menu.ai
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.orhanobut.logger.Logger
+import com.recommendmenu.mechulee.model.network.location.LocationService
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils.WEATHER_BASE_URL
 import com.recommendmenu.mechulee.model.network.weather.WEATHER
@@ -11,6 +12,7 @@ import com.recommendmenu.mechulee.model.network.weather.WeatherService
 import com.recommendmenu.mechulee.utils.CalculationUtils.dfsXyConv
 import com.recommendmenu.mechulee.utils.CalculationUtils.getBaseTime
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -121,5 +123,29 @@ class AIViewModel : ViewModel() {
 
     fun setLocationXY(latitude: Double, longitude: Double) {
         getWeatherInfoNew(latitude.toInt(), longitude.toInt())
+    }
+
+    fun sendLocationXYToServer(latitude: Double, longitude: Double) {
+
+        val latitude = latitude.toInt().toString()
+        val longitude = longitude.toInt().toString()
+
+        val call = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL).create(
+            LocationService::class.java
+        ).sendLocation(latitude, longitude)
+
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val responseData = response.body() // 응답 데이터 처리
+                    // 여기에서 응답 데이터를 처리하세요.
+                } else {
+                    // 응답이 실패한 경우 처리
+                }
+            }
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                // 네트워크 오류 등으로 실패한 경우 처리
+            }
+        })
     }
 }

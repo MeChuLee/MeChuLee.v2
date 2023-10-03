@@ -97,17 +97,17 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         getResultMenuFromServer()
     }
 
-    // 나중에 지우면 됨
-    fun showRatingDataStore() {
-        viewModelScope.launch {
-            // DataStore에 저장된 ratingList 값을 읽어와서 로그로 출력합니다.
-            val storedRatingData = dataStore.data.firstOrNull()
-            storedRatingData?.let {
-                val storedRatingList = it.ratingList
-                Log.d("DataStoreTest", "Stored Rating List: $storedRatingList")
-            }
-        }
-    }
+//    // 나중에 지우면 됨
+//    fun showRatingDataStore() {
+//        viewModelScope.launch {
+//            // DataStore에 저장된 ratingList 값을 읽어와서 로그로 출력합니다.
+//            val storedRatingData = dataStore.data.firstOrNull()
+//            storedRatingData?.let {
+//                val storedRatingList = it.ratingList
+//                Log.d("DataStoreTest", "Stored Rating List: $storedRatingList")
+//            }
+//        }
+//    }
 
     private fun getResultMenuFromServer() {
         val call = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL).create(
