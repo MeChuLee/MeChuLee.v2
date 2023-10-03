@@ -9,10 +9,13 @@ import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
+import com.recommendmenu.mechulee.model.network.location.LocationService
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
 import com.recommendmenu.mechulee.model.network.menu.MenuService
+import com.recommendmenu.mechulee.model.network.weather.WeatherService
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_INGREDIENT
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_MENU
+import com.recommendmenu.mechulee.view.splash.SplashActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -131,5 +134,35 @@ object NetworkUtils {
                     onResult(false)
                 }
             })
+    }
+
+    // 서버에 위도 경도를 보내고 모든 날씨 정보 요청
+    fun sendLocationXYToServer(activity: SplashActivity, onResult: (isSuccess: Boolean) -> Unit) {
+
+        val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
+        val service = retrofit.create(LocationService::class.java)
+
+        // 위치 정보 찾은 뒤 서버에 위치 정보 보냄
+        LocationUtils.getLocationGPS(activity, onResultLocation = { newLatitude, newLongitude ->
+            val latitude = newLatitude.toInt().toString()
+            val longitude = newLongitude.toInt().toString()
+
+            service.sendLocation(latitude, longitude).enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.isSuccessful.not()) {
+                        onResult(false)
+                        return
+                    }
+                    // 성공 시, response.body 에 있는 데이터(응답 데이터) 가져오기
+                    response.body()?.let {
+                        // 날씨 데이터 받기
+                    }
+                }
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    onResult(false)
+                }
+            })
+
+        })
     }
 }

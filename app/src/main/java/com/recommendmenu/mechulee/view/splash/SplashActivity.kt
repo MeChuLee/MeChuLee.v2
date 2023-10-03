@@ -36,8 +36,11 @@ class SplashActivity : AppCompatActivity() {
 
             delay(3500)
 
-            viewModel.allComplete.observe(this@SplashActivity) { allComoplete ->
-                if (allComoplete) {
+            // 이런식으로 해도 되나? 다른 방법이 없나?
+            viewModel.requestAllWeather(this@SplashActivity)
+
+            viewModel.allComplete.observe(this@SplashActivity) { allComplete ->
+                if (allComplete) {
                     // 통신 완료 시 메인 화면 시작
                     job.cancel()
                     startActivity(Intent(this@SplashActivity, MainActivity::class.java))
