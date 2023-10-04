@@ -38,6 +38,8 @@ object NetworkUtils {
     // 전체 메뉴 리스트 정보를 담고 있는 변수
     var totalMenuList = ArrayList<MenuInfo>()
 
+    // 날씨 정보 저장해두기
+
     // 현재 기기에 인터넷 연결 여부 확인
     fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager =
