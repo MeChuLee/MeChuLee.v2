@@ -4,7 +4,10 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.widget.ImageView
+import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
+import com.orhanobut.logger.Logger
+import com.recommendmenu.mechulee.BuildConfig
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
@@ -12,6 +15,9 @@ import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
 import com.recommendmenu.mechulee.model.network.location.LocationService
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
 import com.recommendmenu.mechulee.model.network.menu.MenuService
+import com.recommendmenu.mechulee.model.network.search.Item
+import com.recommendmenu.mechulee.model.network.search.SearchDto
+import com.recommendmenu.mechulee.model.network.search.SearchService
 import com.recommendmenu.mechulee.model.network.weather.WeatherService
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_INGREDIENT
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_MENU
@@ -35,10 +41,16 @@ object NetworkUtils {
     // 여기에 서버에서 가져온 재료들을 우선 저장 후 Map에 분류에 맞게 저장해야함
     var totalIngredientList = ArrayList<IngredientInfo>()
 
-    // 전체 메뉴 리스트 정보를 담고 있는 변수
+    // 전체 메뉴 리스트
     var totalMenuList = ArrayList<MenuInfo>()
 
-    // 날씨 정보 저장해두기
+
+    // 주변 식당 리스트
+    val restaurantList = ArrayList<Item>()
+
+    // 오늘의 추천 메뉴 리스트
+    val todayMenuList = ArrayList<MenuInfo>()
+
 
     // 현재 기기에 인터넷 연결 여부 확인
     fun isNetworkAvailable(context: Context): Boolean {
@@ -166,5 +178,60 @@ object NetworkUtils {
             })
 
         })
+    }
+
+    // 현재 주소 기준 주변 식당 리스트 요청 후 저장
+    fun searchNearByRestaurant(address: String, onResult: (isSuccess: Boolean) -> Unit) {
+        val retrofit = getRetrofitInstance(NAVER_SEARCH_BASE_URL)
+        val service = retrofit.create(SearchService::class.java)
+
+        // retrofit 실행
+        service.getSearchRestaurant(
+            BuildConfig.NAVER_CLIENT_ID,
+            BuildConfig.NAVER_CLIENT_SECRET,
+            "$address 맛집",
+            "5",
+            "1",
+            "random"
+        ).enqueue(object : Callback<SearchDto> {
+            override fun onResponse(call: Call<SearchDto>, response: Response<SearchDto>) {
+                if (response.isSuccessful.not()) {
+                    Logger.e("not isSuccessful")
+                    return
+                }
+
+                response.body()?.let { searchDto ->
+                    restaurantList.addAll(searchDto.items)
+                    onResult(true)
+                }
+            }
+
+            override fun onFailure(call: Call<SearchDto>, t: Throwable) {
+                Logger.e(t.message.toString())
+                onResult(false)
+            }
+        })
+    }
+
+    fun readTodayMenuListWithRetrofit(onResult: (isSuccess: Boolean) -> Unit) {
+        val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
+        val service = retrofit.create(MenuService::class.java)
+
+        service.getRecommendToday()
+            .enqueue(object : Callback<MenuDto> {
+                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
+                    if (response.isSuccessful.not()) {
+                        return
+                    }
+                    response.body()?.let { menuDto ->
+                        todayMenuList.addAll(menuDto.menuList)
+                        onResult(true)
+                    }
+                }
+
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) {
+                    onResult(false)
+                }
+            })
     }
 }

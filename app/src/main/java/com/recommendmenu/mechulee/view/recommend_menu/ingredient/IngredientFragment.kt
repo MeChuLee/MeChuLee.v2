@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -33,6 +34,7 @@ class IngredientFragment : Fragment() {
     private lateinit var viewModel: IngredientViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
 
+    private var backPressedTime: Long = 0
     private lateinit var fadeIn: ObjectAnimator
     private lateinit var callback: OnBackPressedCallback
 
@@ -230,11 +232,17 @@ class IngredientFragment : Fragment() {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                fadeIn.start()
-                binding.motionLayout.transitionToStart()
-                (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
-                    BOTTOM_BAR_STATUS_SHOW
-                )
+                if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                    requireActivity().finish()
+                } else {
+                    fadeIn.start()
+                    binding.motionLayout.transitionToStart()
+                    (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(
+                        BOTTOM_BAR_STATUS_SHOW
+                    )
+                    Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                }
+                backPressedTime = System.currentTimeMillis()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)

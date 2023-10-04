@@ -79,8 +79,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private var restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
 
-    private var simpleAddress = ""
-
     private lateinit var loadingDialog: LoadingDialog
 
     @SuppressLint("NotifyDataSetChanged")
@@ -119,42 +117,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
                 restaurantRecyclerViewAdapter?.notifyDataSetChanged()
             }
-
-            // 식당 정보 준비 -> viewModel 에 체크
-            viewModel.restaurantReady()
         }
 
         binding.nestedScrollView.visibility = View.INVISIBLE
-
-        // 식당 정보와 지도가 모두 준비되었음을 감지 시 지도에 식당 정보 마크 찍기
-        viewModel.isMapAndRestaurantReady.observe(requireActivity()) {
-            restaurantRecyclerViewAdapter?.restaurantList?.forEach {
-                val marker = Marker()
-                if (it.mapx != null && it.mapy != null) {
-                    val nx = CalculationUtils.convertStringToDoubleWithMap(it.mapx)
-                    val ny = CalculationUtils.convertStringToDoubleWithMap(it.mapy)
-
-                    marker.position = LatLng(ny, nx)
-                    marker.width = 50
-                    marker.height = 80
-                    marker.captionText = it.title
-                    marker.map = naverMap
-                }
-            }
-
-            // 2초 후 VIEW Animation VISIBLE
-            //@TODO Progress Indicator 삭제
-            lifecycleScope.launch {
-                delay(1000)
-
-                binding.circularProgressIndicator.visibility = View.GONE
-
-                val animation: Animation =
-                    AnimationUtils.loadAnimation(requireContext(), R.anim.item_anim)
-                binding.nestedScrollView.visibility = View.VISIBLE
-                binding.nestedScrollView.animation = animation
-            }
-        }
 
         viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
             loadingDialog.dismiss()
@@ -341,7 +306,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // 지도 클릭 시 네이버 맵 webview 페이지로 전환
         naverMap.setOnMapClickListener { pointF, latLng ->
             val intent = Intent(requireContext(), WebViewMapActivity::class.java)
-            val encodedQuery = URLEncoder.encode("$simpleAddress 맛집", "UTF-8")
+            val encodedQuery = URLEncoder.encode(LocationUtils.simpleAddress + " 맛집", "UTF-8")
             val url = "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
             intent.putExtra(Constants.INTENT_NAME_WEB_URL, url)
             startActivity(intent)
@@ -353,8 +318,32 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         uiSettings.isZoomGesturesEnabled = true
         uiSettings.isStopGesturesEnabled = true
 
-        // viewModel 에 지도가 준비되었음을 체크
-        viewModel.mapReady()
+        // 지도에 마커 표시
+        restaurantRecyclerViewAdapter?.restaurantList?.forEach {
+            val marker = Marker()
+            if (it.mapx != null && it.mapy != null) {
+                val nx = CalculationUtils.convertStringToDoubleWithMap(it.mapx)
+                val ny = CalculationUtils.convertStringToDoubleWithMap(it.mapy)
+
+                marker.position = LatLng(ny, nx)
+                marker.width = 50
+                marker.height = 80
+                marker.captionText = it.title
+                marker.map = naverMap
+            }
+        }
+
+        // 2초 후 VIEW Animation VISIBLE
+        lifecycleScope.launch {
+            delay(1000)
+
+            binding.circularProgressIndicator.visibility = View.GONE
+
+            val animation: Animation =
+                AnimationUtils.loadAnimation(requireContext(), R.anim.item_anim)
+            binding.nestedScrollView.visibility = View.VISIBLE
+            binding.nestedScrollView.animation = animation
+        }
     }
 
     // 위치 권한 요청 선언
@@ -398,8 +387,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
             mapFragment.getMapAsync(this)
 
-            // 주소 요청
-            requestAddress()
+            // 현재 주소 조회하여 반영
+            viewModel.setCurrentAddress(LocationUtils.simpleAddress)
         } else {
             // 사용자가 위치 서비스를 키도록 AlertDialog 를 사용하여 유도
             showAlertDialog(
@@ -479,8 +468,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
         })
 
-        val noScrollLayoutManager =
-            object : LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false) {
+        val noScrollLayoutManager = object : LinearLayoutManager(requireContext(), VERTICAL, false) {
                 override fun canScrollVertically(): Boolean {
                     // false 를 반환하여 세로 스크롤 이벤트 막기
                     return false
@@ -492,15 +480,5 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             layoutManager = noScrollLayoutManager
             adapter = restaurantRecyclerViewAdapter
         }
-    }
-
-    // 현재 주소 요청하여 반영하기 (onResume 에서 권한 체크 후 사용, 권한 미허용 상태 시 허용할 경우 사용)
-    private fun requestAddress() {
-        // 현재 주소 조회하여 반영
-        LocationUtils.getCurrentAddress(requireActivity(), onResult = { simpleAddress ->
-            // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
-            this.simpleAddress = simpleAddress
-            viewModel.setCurrentAddress(simpleAddress)
-        })
     }
 }
