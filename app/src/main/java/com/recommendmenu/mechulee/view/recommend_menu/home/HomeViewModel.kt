@@ -36,7 +36,7 @@ class HomeViewModel : ViewModel() {
     fun setCurrentAddress(simpleAddress: String) {
         // retrofit 실행하여 주변 식당 검색
         startRetrofit(simpleAddress)
-        currentAddress.postValue(simpleAddress)
+        currentAddress.value = simpleAddress
     }
 
     // 현재 주소 기반으로 주변 식당 검색
