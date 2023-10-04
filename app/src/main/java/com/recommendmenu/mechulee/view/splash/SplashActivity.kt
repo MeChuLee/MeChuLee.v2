@@ -30,6 +30,8 @@ class SplashActivity : AppCompatActivity() {
         LocationUtils.getCurrentAddress(this, onResult = { simpleAddress ->
             // @TODO 여기서 simpleAddress 가지고 하고 싶은 거 하면 됨 ( 예) viewModel 함수 실행 )
 
+            // 주변 식당 검색
+            viewModel.searchNearByRestaurant(simpleAddress)
         })
 
         // 3.5 초 이후부터 observe 처리를 위한 비동기 쓰레드
