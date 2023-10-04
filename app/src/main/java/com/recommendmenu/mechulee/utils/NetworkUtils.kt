@@ -44,11 +44,13 @@ object NetworkUtils {
     // 전체 메뉴 리스트
     var totalMenuList = ArrayList<MenuInfo>()
 
+
     // 주변 식당 리스트
     val restaurantList = ArrayList<Item>()
 
     // 오늘의 추천 메뉴 리스트
     val todayMenuList = ArrayList<MenuInfo>()
+
 
     // 현재 기기에 인터넷 연결 여부 확인
     fun isNetworkAvailable(context: Context): Boolean {
