@@ -117,42 +117,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
                 restaurantRecyclerViewAdapter?.notifyDataSetChanged()
             }
-
-            // 식당 정보 준비 -> viewModel 에 체크
-            viewModel.restaurantReady()
         }
 
         binding.nestedScrollView.visibility = View.INVISIBLE
-
-        // 식당 정보와 지도가 모두 준비되었음을 감지 시 지도에 식당 정보 마크 찍기
-        viewModel.isMapAndRestaurantReady.observe(requireActivity()) {
-            restaurantRecyclerViewAdapter?.restaurantList?.forEach {
-                val marker = Marker()
-                if (it.mapx != null && it.mapy != null) {
-                    val nx = CalculationUtils.convertStringToDoubleWithMap(it.mapx)
-                    val ny = CalculationUtils.convertStringToDoubleWithMap(it.mapy)
-
-                    marker.position = LatLng(ny, nx)
-                    marker.width = 50
-                    marker.height = 80
-                    marker.captionText = it.title
-                    marker.map = naverMap
-                }
-            }
-
-            // 2초 후 VIEW Animation VISIBLE
-            //@TODO Progress Indicator 삭제
-            lifecycleScope.launch {
-                delay(1000)
-
-                binding.circularProgressIndicator.visibility = View.GONE
-
-                val animation: Animation =
-                    AnimationUtils.loadAnimation(requireContext(), R.anim.item_anim)
-                binding.nestedScrollView.visibility = View.VISIBLE
-                binding.nestedScrollView.animation = animation
-            }
-        }
 
         viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
             loadingDialog.dismiss()
@@ -351,8 +318,32 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         uiSettings.isZoomGesturesEnabled = true
         uiSettings.isStopGesturesEnabled = true
 
-        // viewModel 에 지도가 준비되었음을 체크
-        viewModel.mapReady()
+        // 지도에 마커 표시
+        restaurantRecyclerViewAdapter?.restaurantList?.forEach {
+            val marker = Marker()
+            if (it.mapx != null && it.mapy != null) {
+                val nx = CalculationUtils.convertStringToDoubleWithMap(it.mapx)
+                val ny = CalculationUtils.convertStringToDoubleWithMap(it.mapy)
+
+                marker.position = LatLng(ny, nx)
+                marker.width = 50
+                marker.height = 80
+                marker.captionText = it.title
+                marker.map = naverMap
+            }
+        }
+
+        // 2초 후 VIEW Animation VISIBLE
+        lifecycleScope.launch {
+            delay(1000)
+
+            binding.circularProgressIndicator.visibility = View.GONE
+
+            val animation: Animation =
+                AnimationUtils.loadAnimation(requireContext(), R.anim.item_anim)
+            binding.nestedScrollView.visibility = View.VISIBLE
+            binding.nestedScrollView.animation = animation
+        }
     }
 
     // 위치 권한 요청 선언
