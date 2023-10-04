@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
@@ -27,11 +28,14 @@ class SplashActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[SplashViewModel::class.java]
 
         // 현재 주소 조회하여 반영, onResult : callback 함수
-        LocationUtils.getCurrentAddress(this, onResult = { simpleAddress ->
+        LocationUtils.getCurrentAddress(this, onResult = { simpleAddress, adminArea ->
             // @TODO 여기서 simpleAddress 가지고 하고 싶은 거 하면 됨 ( 예) viewModel 함수 실행 )
 
             // 주변 식당 검색
             viewModel.searchNearByRestaurant(simpleAddress)
+
+            //@TODO adminArea -> 도 단위 정보
+            Logger.d(adminArea)
         })
 
         // 3.5 초 이후부터 observe 처리를 위한 비동기 쓰레드
@@ -59,7 +63,8 @@ class SplashActivity : AppCompatActivity() {
                 } else {
                     // 서버와 통신 실패 시 종료
                     launch {
-                        Toast.makeText(this@SplashActivity, "오류가 발생하였습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                        job.cancel()
+                        Toast.makeText(this@SplashActivity, "서버 오류가 발생하였습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                         delay(1000)
                         finish()
                     }

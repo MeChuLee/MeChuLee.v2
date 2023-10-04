@@ -36,7 +36,7 @@ class SplashViewModel : ViewModel() {
 
                 // isAllTrueCheck()
             } else {
-                allComplete.value = false
+                // allComplete.value = false
             }
         })
     }
