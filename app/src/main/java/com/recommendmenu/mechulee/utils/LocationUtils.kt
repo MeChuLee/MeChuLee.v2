@@ -12,7 +12,6 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,23 +50,24 @@ object LocationUtils {
             }
         }
 
-        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        if (location == null) {
-            // 위치 정보 요청
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                10000,
-                10.0f,
-                locationListener
-            )
-        } else {
-            // 최근 접근한 위치가 있을 경우 그 위치 좌표 return
-            onResultLocation(location.latitude, location.longitude)
-        }
+//        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        // 위치 정보 요청
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER,
+            10000,
+            10.0f,
+            locationListener
+        )
+//        if (location == null) {
+//
+//        } else {
+//            // 최근 접근한 위치가 있을 경우 그 위치 좌표 return
+//            onResultLocation(location.latitude, location.longitude)
+//        }
     }
 
     // 현재 주소 가져오기 (activity 가 필요하므로, Activity 나 Fragment 에서 수행)
-    fun getCurrentAddress(activity: FragmentActivity, onResult: (String) -> Unit) {
+    fun getCurrentAddress(activity: FragmentActivity, onResult: (String, String) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -90,7 +90,7 @@ object LocationUtils {
                     // 주소 조회가 가능할 경우만 UI 업데이트 실행
                     if (simpleAddress != "") {
                         this@LocationUtils.simpleAddress = simpleAddress
-                        onResult(simpleAddress)
+                        onResult(simpleAddress, addresses[0].adminArea)
                     }
                 }
             } else {
@@ -102,13 +102,11 @@ object LocationUtils {
 
                         val simpleAddress = getSimpleAddress(addresses)
 
-                        Logger.e(simpleAddress)
-
                         // 주소 조회가 가능할 경우만 UI 업데이트 실행
                         if (simpleAddress != "") {
                             this@LocationUtils.simpleAddress = simpleAddress
                             withContext(Dispatchers.Main) {
-                                onResult(simpleAddress)
+                                onResult(simpleAddress, addresses[0].adminArea)
                             }
                         }
                     } catch (e: IOException) {
@@ -121,23 +119,20 @@ object LocationUtils {
 
     private fun getSimpleAddress(addresses: List<Address>): String {
         addresses.forEach { address ->
-            val locality = if (address.locality != null) {
-                address.locality
-            } else {
-                address.adminArea
-            }
+            return if (address.locality == null) {
+                // 광역시
+                val adminArea = address.adminArea
+                val subLocality = address.subLocality
+                val thoroughfare = address.thoroughfare
 
-            val subLocality = address.subLocality
-            val thoroughfare = address.thoroughfare
-
-            return if (subLocality != null && thoroughfare != null) {
-                "$locality $subLocality $thoroughfare"
-            } else if (subLocality != null && thoroughfare == null) {
-                "$locality $subLocality"
-            } else if (subLocality == null && thoroughfare != null) {
-                "$locality $thoroughfare"
+                "$adminArea $subLocality $thoroughfare"
             } else {
-                "$address"
+                // 도
+                val adminArea = address.adminArea
+                val locality = address.locality
+                val thoroughfare = address.thoroughfare
+
+                "$adminArea $locality $thoroughfare"
             }
         }
 
