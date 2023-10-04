@@ -79,8 +79,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private var restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
 
-    private var simpleAddress = ""
-
     private lateinit var loadingDialog: LoadingDialog
 
     @SuppressLint("NotifyDataSetChanged")
@@ -341,7 +339,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // 지도 클릭 시 네이버 맵 webview 페이지로 전환
         naverMap.setOnMapClickListener { pointF, latLng ->
             val intent = Intent(requireContext(), WebViewMapActivity::class.java)
-            val encodedQuery = URLEncoder.encode("$simpleAddress 맛집", "UTF-8")
+            val encodedQuery = URLEncoder.encode(LocationUtils.simpleAddress + " 맛집", "UTF-8")
             val url = "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
             intent.putExtra(Constants.INTENT_NAME_WEB_URL, url)
             startActivity(intent)
@@ -398,8 +396,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
             mapFragment.getMapAsync(this)
 
-            // 주소 요청
-            requestAddress()
+            // 현재 주소 조회하여 반영
+            viewModel.setCurrentAddress(LocationUtils.simpleAddress)
         } else {
             // 사용자가 위치 서비스를 키도록 AlertDialog 를 사용하여 유도
             showAlertDialog(
@@ -479,8 +477,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
         })
 
-        val noScrollLayoutManager =
-            object : LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false) {
+        val noScrollLayoutManager = object : LinearLayoutManager(requireContext(), VERTICAL, false) {
                 override fun canScrollVertically(): Boolean {
                     // false 를 반환하여 세로 스크롤 이벤트 막기
                     return false
@@ -492,15 +489,5 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             layoutManager = noScrollLayoutManager
             adapter = restaurantRecyclerViewAdapter
         }
-    }
-
-    // 현재 주소 요청하여 반영하기 (onResume 에서 권한 체크 후 사용, 권한 미허용 상태 시 허용할 경우 사용)
-    private fun requestAddress() {
-        // 현재 주소 조회하여 반영
-        LocationUtils.getCurrentAddress(requireActivity(), onResult = { simpleAddress ->
-            // Context 관련된 작업 -> View 에서 수행 후 ViewModel 에 값 전달
-            this.simpleAddress = simpleAddress
-            viewModel.setCurrentAddress(simpleAddress)
-        })
     }
 }

@@ -21,6 +21,9 @@ import java.util.Locale
 
 object LocationUtils {
 
+    // 간단하게 표현한 주소 저장을 위한 변수 (처음 SplashActivity 에서 조회 후 저장)
+    var simpleAddress = ""
+
     // 현재 위치 좌표로 가져오기 -> 인자에 파라미터로 콜백 함수 실행
     fun getLocationGPS(activity: FragmentActivity, onResultLocation: (Double, Double) -> Unit) {
         // 권한 미허용 시 return
@@ -85,8 +88,10 @@ object LocationUtils {
                     val simpleAddress = getSimpleAddress(addresses)
 
                     // 주소 조회가 가능할 경우만 UI 업데이트 실행
-                    if (simpleAddress != "")
+                    if (simpleAddress != "") {
+                        this@LocationUtils.simpleAddress = simpleAddress
                         onResult(simpleAddress)
+                    }
                 }
             } else {
                 // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
@@ -101,6 +106,7 @@ object LocationUtils {
 
                         // 주소 조회가 가능할 경우만 UI 업데이트 실행
                         if (simpleAddress != "") {
+                            this@LocationUtils.simpleAddress = simpleAddress
                             withContext(Dispatchers.Main) {
                                 onResult(simpleAddress)
                             }
