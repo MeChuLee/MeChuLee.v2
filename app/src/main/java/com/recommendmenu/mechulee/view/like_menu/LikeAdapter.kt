@@ -2,6 +2,7 @@ package com.recommendmenu.mechulee.view.like_menu
 
 import android.content.ClipData
 import android.content.ClipDescription
+import android.content.Intent
 import android.util.Log
 import android.view.DragEvent
 import android.view.LayoutInflater
@@ -9,12 +10,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
+import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 
 class LikeAdapter(private val likeListener: LikeListener) :
     RecyclerView.Adapter<LikeAdapter.ViewHolder>() {
-    var datas = ArrayList<String>()
+    var datas = ArrayList<MenuInfo>()
     val IMAGEVIEW_TAG = "MY TAG"
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -31,7 +36,7 @@ class LikeAdapter(private val likeListener: LikeListener) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.likeMenuImage.setImageResource(R.drawable.example_result)
-        holder.likeMenuText.text = datas[position]
+        holder.likeMenuText.text = datas[position].name
         holder.itemView.visibility = View.VISIBLE
 
         holder.itemView.apply {
@@ -46,8 +51,13 @@ class LikeAdapter(private val likeListener: LikeListener) :
                 v.alpha = 0.0f
 
                 v.startDragAndDrop(dragData, myShadow, v, 0)
-                likeListener.selectMenu(datas[position])
+                likeListener.selectMenu(datas[position].name)
                 return@setOnLongClickListener (true)
+            }
+            setOnClickListener {
+                val intent = Intent(holder.itemView.context, MenuResultActivity::class.java)
+                intent.putExtra(INTENT_NAME_RESULT, datas[position])
+                ContextCompat.startActivity(holder.itemView.context, intent, null)
             }
         }
         val dragListen = View.OnDragListener { v, event ->
