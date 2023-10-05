@@ -1,7 +1,6 @@
 package com.recommendmenu.mechulee.utils
 
 import androidx.datastore.core.DataStore
-import androidx.lifecycle.viewModelScope
 import com.recommendmenu.mechulee.IngredientData
 import com.recommendmenu.mechulee.LikeData
 import com.recommendmenu.mechulee.RatingData
@@ -26,7 +25,8 @@ object DataStoreUtils {
     fun updateLikeMenuData(
         myScope: CoroutineScope,
         myStore: DataStore<LikeData>,
-        myList: List<String>
+        myList: List<String>,
+        onResult: (() -> Unit)? = null
     ) {
         myScope.launch {
             myStore.updateData { menuData ->
@@ -35,6 +35,7 @@ object DataStoreUtils {
                     .addAllLikedMenu(myList)
                     .build()
             }
+            onResult?.invoke()
         }
     }
 
@@ -66,7 +67,11 @@ object DataStoreUtils {
         }
     }
 
-    fun initTotalListFromDataStore(myScope: CoroutineScope, myStore: DataStore<RatingData>, onResult: (List<Float>) -> Unit) {
+    fun initTotalListFromDataStore(
+        myScope: CoroutineScope,
+        myStore: DataStore<RatingData>,
+        onResult: (List<Float>) -> Unit
+    ) {
         myScope.launch {
             val storedRatingData = myStore.data.firstOrNull()
 
@@ -77,7 +82,11 @@ object DataStoreUtils {
         }
     }
 
-    fun updateDataStoreToRatingList(myScope: CoroutineScope, myStore: DataStore<RatingData>, ratingList: List<Float>) {
+    fun updateDataStoreToRatingList(
+        myScope: CoroutineScope,
+        myStore: DataStore<RatingData>,
+        ratingList: List<Float>
+    ) {
         myScope.launch {
             val ratingData = RatingData.newBuilder()
                 .addAllRating(ratingList)
