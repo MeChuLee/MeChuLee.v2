@@ -44,7 +44,20 @@ class MenuResultActivity : AppCompatActivity() {
 
         binding.heartIcon.setOnClickListener {
             isLiked = !isLiked
-            viewModel.checkLikeMenu(result)
+            viewModel.updateLikeMenu(
+                isLiked,
+                result,
+                beforeFunction = {
+                    runOnUiThread {
+                        it.isEnabled = false
+                    }
+                },
+                afterFunction = {
+                    runOnUiThread {
+                        it.isEnabled = true
+                    }
+                }
+            )
             animateHeart(isLiked)
         }
 
@@ -109,7 +122,6 @@ class MenuResultActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.storeLikeMenu()
         finish()
     }
 

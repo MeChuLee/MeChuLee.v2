@@ -9,8 +9,6 @@ import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.DataStoreUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.utils.RecommendUtils
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 
 class MenuResultViewModel(private val dataStore: DataStore<LikeData>) : ViewModel() {
     // 전체 메뉴 리스트
@@ -56,25 +54,28 @@ class MenuResultViewModel(private val dataStore: DataStore<LikeData>) : ViewMode
         otherList.value = RecommendUtils.recommendOtherMenu(nowMenu)
     }
 
-    // viewModel에 있는 likedMenuList에 추가하거나 제거하는 메소드
-    // 저장되지 않은 메뉴는 추가, 있는 메뉴는 제거
-    fun checkLikeMenu(clickedData: String) {
+    // 좋아요 클릭하거나 클릭 취소한 메뉴를 업데이트하는 메소드
+    fun updateLikeMenu(
+        isAdded: Boolean,
+        clickedData: String,
+        beforeFunction: () -> Unit,
+        afterFunction: () -> Unit
+    ) {
+        beforeFunction()
         val tempList = ArrayList<String>(likedMenuList.value?.toList() ?: ArrayList())
-        if (clickedData in tempList) {
-            tempList.remove(clickedData)
-        } else {
+        if (isAdded) {
             tempList.add(clickedData)
+        } else {
+            tempList.remove(clickedData)
         }
-        likedMenuList.value = tempList
-    }
-
-    // 좋아요 클릭한 메뉴 DataStore에 저장하는 메소드
-    @OptIn(DelicateCoroutinesApi::class)
-    fun storeLikeMenu() {
         DataStoreUtils.updateLikeMenuData(
-            GlobalScope,
+            viewModelScope,
             dataStore,
-            ArrayList<String>(likedMenuList.value?.toList() ?: ArrayList())
+            tempList,
+            onResult = {
+                afterFunction()
+            }
         )
+        likedMenuList.value = tempList
     }
 }
