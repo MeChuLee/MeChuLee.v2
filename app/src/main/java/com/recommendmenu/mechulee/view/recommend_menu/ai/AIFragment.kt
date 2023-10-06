@@ -34,12 +34,6 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
         aiViewModel = ViewModelProvider(this)[AIViewModel::class.java]
 
-        // 함수로 변경해서 되는지 확인해보기
-        LocationUtils.getLocationGPS(requireActivity(), onResultLocation = { latitude, longitude ->
-            aiViewModel.sendLocationXYToServer(latitude, longitude)
-            aiViewModel.setLocationXY(latitude, longitude)
-        })
-
         aiViewModel.weatherInfo.observe(requireActivity()){
             binding.weatherText.text = it.sky
             val rainType = it.rainType
