@@ -29,18 +29,6 @@ class SplashViewModel : ViewModel() {
         requestTodayMenu()
     }
 
-    fun requestAllWeather(coroutineScope: SplashActivity) {
-        NetworkUtils.sendLocationXYToServer(coroutineScope, onResult = { isSuccess ->
-            if (isSuccess) {
-                completeGetWeather = true
-
-                // isAllTrueCheck()
-            } else {
-                // allComplete.value = false
-            }
-        })
-    }
-
     private fun requestAllIngredient() {
         NetworkUtils.requestAllIngredient(onResult = { isSuccess ->
             if (isSuccess) {
@@ -83,10 +71,22 @@ class SplashViewModel : ViewModel() {
         })
     }
 
+    // 현재 주소 기반으로 날씨 정보 조회
+    fun requestWeatherInfo(adminArea: String) {
+        NetworkUtils.requestWeatherInfo(adminArea,onResult = { isSuccess ->
+            if (isSuccess) {
+                completeGetWeather = true
+                isAllTrueCheck()
+            } else {
+                allComplete.value = false
+            }
+        })
+    }
+
     // 모든 요청 완료 확인
     private fun isAllTrueCheck() {
         //@TODO 날씨 조회는 아직 미반영
-        if (completeGetIngredient && completeGetMenu && completeGetNearByRestaurant && completeGetTodayMenuList) {
+        if (completeGetIngredient && completeGetMenu && completeGetNearByRestaurant && completeGetTodayMenuList && completeGetWeather) {
             allComplete.value = true
         }
     }

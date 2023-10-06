@@ -4,24 +4,23 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.widget.ImageView
-import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.BuildConfig
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.model.data.WeatherInfo
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
 import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
-import com.recommendmenu.mechulee.model.network.location.LocationService
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
 import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.model.network.search.Item
 import com.recommendmenu.mechulee.model.network.search.SearchDto
 import com.recommendmenu.mechulee.model.network.search.SearchService
-import com.recommendmenu.mechulee.model.network.weather.WeatherService
+import com.recommendmenu.mechulee.model.network.weather_info.WeatherInfoDto
+import com.recommendmenu.mechulee.model.network.weather_info.WeatherInfoService
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_INGREDIENT
 import com.recommendmenu.mechulee.utils.Constants.URL_TYPE_MENU
-import com.recommendmenu.mechulee.view.splash.SplashActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,6 +50,8 @@ object NetworkUtils {
     // 오늘의 추천 메뉴 리스트
     val todayMenuList = ArrayList<MenuInfo>()
 
+    // 현재 날씨 조회 정보
+    var weatherInfo = WeatherInfo("","","")
 
     // 현재 기기에 인터넷 연결 여부 확인
     fun isNetworkAvailable(context: Context): Boolean {
@@ -150,36 +151,6 @@ object NetworkUtils {
             })
     }
 
-    // 서버에 위도 경도를 보내고 모든 날씨 정보 요청
-    fun sendLocationXYToServer(activity: SplashActivity, onResult: (isSuccess: Boolean) -> Unit) {
-
-        val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
-        val service = retrofit.create(LocationService::class.java)
-
-        // 위치 정보 찾은 뒤 서버에 위치 정보 보냄
-        LocationUtils.getLocationGPS(activity, onResultLocation = { newLatitude, newLongitude ->
-            val latitude = newLatitude.toInt().toString()
-            val longitude = newLongitude.toInt().toString()
-
-            service.sendLocation(latitude, longitude).enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.isSuccessful.not()) {
-                        onResult(false)
-                        return
-                    }
-                    // 성공 시, response.body 에 있는 데이터(응답 데이터) 가져오기
-                    response.body()?.let {
-                        // 날씨 데이터 받기
-                    }
-                }
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    onResult(false)
-                }
-            })
-
-        })
-    }
-
     // 현재 주소 기준 주변 식당 리스트 요청 후 저장
     fun searchNearByRestaurant(address: String, onResult: (isSuccess: Boolean) -> Unit) {
         val retrofit = getRetrofitInstance(NAVER_SEARCH_BASE_URL)
@@ -230,6 +201,31 @@ object NetworkUtils {
                 }
 
                 override fun onFailure(call: Call<MenuDto>, t: Throwable) {
+                    onResult(false)
+                }
+            })
+    }
+
+    fun requestWeatherInfo(adminArea: String, onResult: (isSuccess: Boolean) -> Unit) {
+        val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
+        val service = retrofit.create(WeatherInfoService::class.java)
+
+        service.sendAdminArea(adminArea)
+            .enqueue(object : Callback<WeatherInfoDto> {
+                override fun onResponse(call: Call<WeatherInfoDto>, response: Response<WeatherInfoDto>) {
+                    if (response.isSuccessful.not()) {
+                        return
+                    }
+                    response.body()?.let { weatherInfoDto ->
+                        weatherInfo = weatherInfoDto.weatherInfo
+
+
+                        Logger.d(weatherInfo)
+                        onResult(true)
+                    }
+                }
+
+                override fun onFailure(call: Call<WeatherInfoDto>, t: Throwable) {
                     onResult(false)
                 }
             })

@@ -30,6 +30,8 @@ class SplashActivity : AppCompatActivity() {
         // 현재 주소 조회하여 반영, onResult : callback 함수
         LocationUtils.getCurrentAddress(this, onResult = { simpleAddress, adminArea ->
             // @TODO 여기서 simpleAddress 가지고 하고 싶은 거 하면 됨 ( 예) viewModel 함수 실행 )
+            // 시/도에 따른 날씨 조회
+            viewModel.requestWeatherInfo(adminArea)
 
             // 주변 식당 검색
             viewModel.searchNearByRestaurant(simpleAddress)
@@ -49,9 +51,6 @@ class SplashActivity : AppCompatActivity() {
             }
 
             delay(3500)
-
-            // 이런식으로 해도 되나? 다른 방법이 없나?
-            viewModel.requestAllWeather(this@SplashActivity)
 
             // 3.5초 후 부터 observe 처리위해 delay(3500) 이후 observe 실행
             viewModel.allComplete.observe(this@SplashActivity) { allComplete ->
