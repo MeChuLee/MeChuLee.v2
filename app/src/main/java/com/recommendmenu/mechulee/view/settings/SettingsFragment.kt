@@ -21,16 +21,15 @@ class SettingsFragment : Fragment() {
     ): View {
         _binding = FragmentSettingsBinding.inflate(layoutInflater)
 
-        // 각 라이센스 클릭 시 intent 타입 정보 저장 후 화면 전환
+        // 오픈소스 라이센스 화면으로 전환
         binding.openSourceText.setOnClickListener {
-            val intent = Intent(activity, LicenseActivity::class.java)
-            intent.putExtra(Constants.INTENT_NAME_LICENSE, Constants.INTENT_VALUE_LICENSE_OPENSOURCE)
+            val intent = Intent(activity, OpensourceLicenseActivity::class.java)
             startActivity(intent)
         }
 
+        // 이미지 라이센스 화면으로 전환
         binding.imageText.setOnClickListener {
-            val intent = Intent(activity, LicenseActivity::class.java)
-            intent.putExtra(Constants.INTENT_NAME_LICENSE, Constants.INTENT_VALUE_LICENSE_IMAGE)
+            val intent = Intent(activity, ImageLicenseActivity::class.java)
             startActivity(intent)
         }
 
