@@ -8,10 +8,12 @@
         android:background="@color/white">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/imageTitle"
+            android:id="@+id/menuLicenseTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
+            android:text="메뉴 라이센스"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -19,14 +21,39 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/imageLicenseRecyclerView"
+            android:id="@+id/menuLicenseRecyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toTopOf="@id/ingredientLicenseTitleTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menuLicenseTitleTextView" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/ingredientLicenseTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="재료 라이센스"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/ingredientLicenseRecyclerView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menuLicenseRecyclerView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ingredientLicenseRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageTitle" />
+            app:layout_constraintTop_toBottomOf="@id/ingredientLicenseTitleTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

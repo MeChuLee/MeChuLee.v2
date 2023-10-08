@@ -1,16 +1,8 @@
 package com.recommendmenu.mechulee.view.splash
 
-import android.net.Network
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.orhanobut.logger.Logger
-import com.recommendmenu.mechulee.BuildConfig
-import com.recommendmenu.mechulee.model.network.search.SearchDto
-import com.recommendmenu.mechulee.model.network.search.SearchService
 import com.recommendmenu.mechulee.utils.NetworkUtils
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class SplashViewModel : ViewModel() {
 
@@ -85,7 +77,6 @@ class SplashViewModel : ViewModel() {
 
     // 모든 요청 완료 확인
     private fun isAllTrueCheck() {
-        //@TODO 날씨 조회는 아직 미반영
         if (completeGetIngredient && completeGetMenu && completeGetNearByRestaurant && completeGetTodayMenuList && completeGetWeather) {
             allComplete.value = true
         }

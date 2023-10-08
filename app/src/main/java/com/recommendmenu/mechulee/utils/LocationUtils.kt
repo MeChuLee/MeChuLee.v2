@@ -125,14 +125,30 @@ object LocationUtils {
                 val subLocality = address.subLocality
                 val thoroughfare = address.thoroughfare
 
-                "$adminArea $subLocality $thoroughfare"
+                if (subLocality == null && thoroughfare == null) {
+                    adminArea
+                } else if (subLocality == null && thoroughfare != null) {
+                    "$adminArea $thoroughfare"
+                } else if (subLocality != null && thoroughfare == null) {
+                    "$adminArea $subLocality"
+                } else {
+                    "$adminArea $subLocality $thoroughfare"
+                }
             } else {
                 // 도
                 val adminArea = address.adminArea
                 val locality = address.locality
                 val thoroughfare = address.thoroughfare
 
-                "$adminArea $locality $thoroughfare"
+                if (locality == null && thoroughfare == null) {
+                    adminArea
+                } else if (locality == null && thoroughfare != null) {
+                    "$adminArea $thoroughfare"
+                } else if (locality != null && thoroughfare == null) {
+                    "$adminArea $locality"
+                } else {
+                    "$adminArea $locality $thoroughfare"
+                }
             }
         }
 

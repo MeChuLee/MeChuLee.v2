@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
@@ -29,15 +28,14 @@ class SplashActivity : AppCompatActivity() {
 
         // 현재 주소 조회하여 반영, onResult : callback 함수
         LocationUtils.getCurrentAddress(this, onResult = { simpleAddress, adminArea ->
-            // @TODO 여기서 simpleAddress 가지고 하고 싶은 거 하면 됨 ( 예) viewModel 함수 실행 )
+            // 도/광역시 단위 주소가 없을 경우 앱 종료
+            if (adminArea == "") finish()
+
             // 시/도에 따른 날씨 조회
             viewModel.requestWeatherInfo(adminArea)
 
             // 주변 식당 검색
             viewModel.searchNearByRestaurant(simpleAddress)
-
-            //@TODO adminArea -> 도 단위 정보
-            Logger.d(adminArea)
         })
 
         // 3.5 초 이후부터 observe 처리를 위한 비동기 쓰레드
