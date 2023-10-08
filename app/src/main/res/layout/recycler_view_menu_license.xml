@@ -5,13 +5,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:paddingVertical="10dp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/licenseTitleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="aaa"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/slashText"
@@ -23,7 +22,7 @@
             android:id="@+id/slashText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="  /  "
+            android:text="   /   "
             app:layout_constraintBottom_toBottomOf="@id/licenseTitleText"
             app:layout_constraintEnd_toStartOf="@id/licenseDetailText"
             app:layout_constraintStart_toEndOf="@id/licenseTitleText"
@@ -33,9 +32,7 @@
             android:id="@+id/licenseDetailText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="sss"
             app:layout_constraintBottom_toBottomOf="@id/licenseTitleText"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/slashText"
             app:layout_constraintTop_toTopOf="@id/licenseTitleText" />
 
