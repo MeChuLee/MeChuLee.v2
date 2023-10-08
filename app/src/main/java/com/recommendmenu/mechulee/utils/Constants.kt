@@ -13,10 +13,42 @@ object Constants {
     const val INTENT_NAME_RESULT = "object"
 
     val OPENSOURCE_LICENSE_LIST = arrayListOf(
-        LicenseInfo("lottie", ""),
-        LicenseInfo("circleimageview", ""),
-        LicenseInfo("expandablebottombar", ""),
-        LicenseInfo("magic-goop:tag-sphere", "")
+        LicenseInfo(
+            "Lottie\nCopyright 2017 Airbnb, Inc.\nLicensed under the Apache License 2.0",
+            "https://github.com/airbnb/lottie-android/blob/master/LICENSE"
+        ),
+        LicenseInfo(
+            "SimpleRatingBar\nCopyright (c) 2019 WilliamYu\nLicensed under the MIT License",
+            "https://github.com/williamyyu/SimpleRatingBar/blob/master/LICENSE"
+        ),
+        LicenseInfo(
+            "ExpandableBottomBar\nCopyright (c) 2019 - present, Alexander Dadukin\nLicensed under the MIT License",
+            "https://github.com/st235/ExpandableBottomBar/blob/master/LICENSE"
+        ),
+        LicenseInfo(
+            "tag-sphere\nCopyright 2020 Alexander Rychkov\nLicensed under the Apache License 2.0",
+            "https://github.com/magic-goop/tag-sphere/blob/master/LICENSE.txt"
+        ),
+        LicenseInfo(
+            "android-map-sdk\nCopyright (c) 2018-2021 NAVER Corp\nLicensed under the Apache License 2.0",
+            "https://github.com/navermaps/android-map-sdk/blob/master/LICENSE"
+        ),
+        LicenseInfo(
+            "retrofit\nCopyright 2013 Square, Inc.\nLicensed under the Apache License 2.0",
+            "https://github.com/square/retrofit/blob/master/LICENSE.txt"
+        ),
+        LicenseInfo(
+            "glide\nCopyright 2014 Google Inc\nLicensed under the BSD, Apache License 2.0, and MIT license",
+            "https://github.com/bumptech/glide/blob/master/LICENSE"
+        ),
+        LicenseInfo(
+            "logger\nCopyright 2018 Orhan Obut\nLicensed under the Apache License 2.0",
+            "https://github.com/orhanobut/logger/blob/master/LICENSE"
+        ),
+        LicenseInfo(
+            "CircleImageView\nCopyright 2014 - 2020 Henning Dodenhof\nLicensed under the Apache License 2.0",
+            "https://github.com/hdodenhof/CircleImageView/blob/master/LICENSE.txt"
+        )
     )
 
     val MENU_LICENSE_LIST = arrayListOf(
@@ -59,8 +91,7 @@ object Constants {
         LicenseInfo("간장치킨", "https://www.flickr.com/photos/97247234@N00/3547603486/") to LicenseInfo("CC BY 2.0", "https://creativecommons.org/licenses/by/2.0"),
         LicenseInfo("오므라이스", "https://www.flickr.com/photos/kanesue/50448824236/") to LicenseInfo("CC BY 2.0", "https://creativecommons.org/licenses/by/2.0"),
         LicenseInfo("돼지곱창볶음", "https://commons.wikimedia.org/wiki/File:양념곱창.JPG") to LicenseInfo("CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0"),
-        LicenseInfo("갈치조림", "http://semizzang.tistory.com/4") to LicenseInfo("CC BY 4.0", "https://creativecommons.org/licenses/by/4.0"),
-        LicenseInfo("", "") to LicenseInfo("", "")
+        LicenseInfo("갈치조림", "http://semizzang.tistory.com/4") to LicenseInfo("CC BY 4.0", "https://creativecommons.org/licenses/by/4.0")
     )
 
     val INGREDIENT_LICENSE_LIST = arrayListOf(
