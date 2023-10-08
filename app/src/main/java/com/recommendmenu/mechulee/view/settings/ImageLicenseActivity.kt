@@ -8,6 +8,7 @@ import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityImageLicenseBinding
 import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.view.settings.adapter.LicenseAdapter
+import com.recommendmenu.mechulee.view.settings.adapter.MenuLicenseAdapter
 
 class ImageLicenseActivity : AppCompatActivity() {
 
@@ -22,7 +23,7 @@ class ImageLicenseActivity : AppCompatActivity() {
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
 
         // 라이센스 목록을 표시해 줄 adpater
-        val menuLicenseAdapter = LicenseAdapter()
+        val menuLicenseAdapter = MenuLicenseAdapter()
         val ingredientLicenseAdapter = LicenseAdapter()
 
         menuLicenseAdapter.list = Constants.MENU_LICENSE_LIST
