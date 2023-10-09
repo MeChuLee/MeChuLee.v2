@@ -20,7 +20,8 @@ class MenuListAdapter(
     class MyViewHolder(val binding: RecyclerViewMenuTypeListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: MenuInfo) {
-            binding.menuInfo = item
+            binding.menuTitle.text = item.name
+            binding.menuDetail.text = item.ingredients.joinToString(", ")
         }
     }
 

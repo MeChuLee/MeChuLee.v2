@@ -46,8 +46,7 @@ class MenuResultViewModel(private val dataStore: DataStore<LikeData>) : ViewMode
 
     // 결과 메뉴의 재료 보여주는 메소드
     private fun showIngredient(nowMenu: MenuInfo) {
-        val tempSplit = nowMenu.ingredients.split(", ")
-        ingredientList.value = tempSplit.toCollection(ArrayList())
+        ingredientList.value = nowMenu.ingredients
     }
 
     private fun showOtherMenu(nowMenu: MenuInfo) {
