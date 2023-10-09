@@ -21,6 +21,7 @@ import com.recommendmenu.mechulee.databinding.ActivityIngredientRateBinding
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.proto.ratingDataStore
 import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.view.dialog.LoadingDialog
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.CustomSpinnerAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.IngredientRateRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
@@ -30,6 +31,7 @@ class IngredientActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityIngredientRateBinding
     private lateinit var viewModel: IngredientRateViewModel
+    private lateinit var loadingDialog: LoadingDialog
 
     @SuppressLint("NotifyDataSetChanged")
     // NotifyDataSetChanged가 함수가 리사이클러뷰 전체를 바꾸는 형식인데
@@ -87,12 +89,18 @@ class IngredientActivity : AppCompatActivity() {
             // 여기서 totalList의 정보들을 DataStore에 저장한다.
             viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
 
+            // 로딩 화면
+            loadingDialog = LoadingDialog(this)
+
+            loadingDialog.show()
 //            // DataStore에 저장된 rating값들을 보여준다
 //            viewModel.showRatingDataStore()
 
         }
         // viewModel에 있는 resultMenu변경 시 감지 후 Intent로 넘긴다.
         viewModel.resultMenu.observe(this) { resultMenu ->
+            loadingDialog.dismiss()
+
             // 액티비티로 전환하는 Intent 생성
             val intent = Intent(this, MenuResultActivity::class.java)
             intent.putExtra(INTENT_NAME_RESULT, resultMenu) // Intent로 사용할 정보를 옮겨준다.

@@ -54,6 +54,10 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
             binding.temperature.text = it.temp
         }
 
+        aiViewModel.location.observe(requireActivity()){
+            binding.locationText.text = it
+        }
+
         // CustomNestedScrollView 스크롤 함수 정의 -> BottomNavigationBar 내려감
         binding.aiNestedScrollView.onBottomBarStatusChange = { status ->
             (activity as? MainActivity)?.mainActivityListener?.changeBottomBarStatus(status)

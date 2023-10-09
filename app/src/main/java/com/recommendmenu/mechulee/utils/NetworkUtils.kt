@@ -219,8 +219,6 @@ object NetworkUtils {
                     response.body()?.let { weatherInfoDto ->
                         weatherInfo = weatherInfoDto.weatherInfo
 
-
-                        Logger.d(weatherInfo)
                         onResult(true)
                     }
                 }

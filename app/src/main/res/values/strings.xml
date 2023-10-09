@@ -10,4 +10,6 @@
     <string name="select_button">추천 받기</string>
 
     <string name="ai_text_notice">&#160;재료 평가를 통해서 메뉴를 추천 받으세요</string>
+
+    <string name="ai_tagSphere_notice">평가하러 가기</string>
 </resources>
