@@ -14,7 +14,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 
 class LikeAdapter(private val likeListener: LikeListener) :
@@ -35,7 +37,18 @@ class LikeAdapter(private val likeListener: LikeListener) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.likeMenuImage.setImageResource(R.drawable.example_result)
+
+        // 메뉴 테스트 이미지
+        val menuName = datas[position].name
+
+        // 메뉴 이미지 로드
+        NetworkUtils.loadImage(
+            holder.itemView.context,
+            holder.likeMenuImage,
+            "$menuName.jpg",
+            Constants.URL_TYPE_MENU
+        )
+
         holder.likeMenuText.text = datas[position].name
         holder.itemView.visibility = View.VISIBLE
 
