@@ -15,10 +15,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/resultImageView"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="1:1"
             android:layout_gravity="center" />
         <TextView
             android:layout_width="match_parent"

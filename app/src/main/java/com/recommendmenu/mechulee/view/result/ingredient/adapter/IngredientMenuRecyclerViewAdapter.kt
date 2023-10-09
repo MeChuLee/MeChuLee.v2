@@ -72,7 +72,7 @@ class IngredientMenuRecyclerViewAdapter(
         }
 
         // 테스트 메뉴 이미지
-        val imageName = (position % 20) + 1
+        val imageName = menuList[holder.absoluteAdapterPosition].first.name
         NetworkUtils.loadImage(holder.itemView.context, binding.menuImage, "$imageName.jpg", Constants.URL_TYPE_MENU)
     }
 

@@ -14,7 +14,9 @@ import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityMenuResultBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.proto.likedMenuDataStore
+import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.result.menu.adapter.MenuResultIngredientAdapter
 import com.recommendmenu.mechulee.view.result.menu.adapter.MenuResultOtherMenuAdapter
 
@@ -64,6 +66,17 @@ class MenuResultActivity : AppCompatActivity() {
         }
 
         resultMenu?.let { nowResult ->
+            // 메뉴 테스트 이미지
+            val menuName = nowResult.name
+
+            // 메뉴 이미지 로드
+            NetworkUtils.loadImage(
+                this@MenuResultActivity,
+                binding.resultMenuImage,
+                "$menuName.jpg",
+                Constants.URL_TYPE_MENU
+            )
+
             viewModel.showResult(nowResult)
             viewModel.nowResult.observe(this) {
                 result = it.name

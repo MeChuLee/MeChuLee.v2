@@ -10,7 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 
 class MenuResultOtherMenuAdapter : RecyclerView.Adapter<MenuResultOtherMenuAdapter.ViewHolder>() {
@@ -29,8 +31,18 @@ class MenuResultOtherMenuAdapter : RecyclerView.Adapter<MenuResultOtherMenuAdapt
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val myExample = R.drawable.example_result
-        holder.otherMenuImage.setImageResource(myExample)
+
+        // 메뉴 테스트 이미지
+        val menuName = datas[position].name
+
+        // 메뉴 이미지 로드
+        NetworkUtils.loadImage(
+            holder.itemView.context,
+            holder.otherMenuImage,
+            "$menuName.jpg",
+            Constants.URL_TYPE_MENU
+        )
+
         holder.otherMenuText.text = datas[position].name
 
         holder.itemView.setOnClickListener {

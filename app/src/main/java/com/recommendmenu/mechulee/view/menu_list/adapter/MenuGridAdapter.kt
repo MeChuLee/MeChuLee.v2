@@ -39,7 +39,7 @@ class MenuGridAdapter(
         holder.itemView.startAnimation(animation)
 
         // 메뉴 테스트 이미지
-        val menuName = (position % 20) + 1
+        val menuName = menuList[position].name
 
         // 메뉴 이미지 로드
         NetworkUtils.loadImage(

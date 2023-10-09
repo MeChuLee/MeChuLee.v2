@@ -46,7 +46,8 @@ class TodayMenuViewPagerAdapter(
         holder.onBind(todayMenu)
 
         // 메뉴 이미지는 테스트 이미지로 설정
-        val menuName = (holder.absoluteAdapterPosition % 20) + 1
+        val menuName = todayMenuList[position % 3].name
+
         NetworkUtils.loadImage(
             holder.itemView.context,
             holder.binding.menuImage,
