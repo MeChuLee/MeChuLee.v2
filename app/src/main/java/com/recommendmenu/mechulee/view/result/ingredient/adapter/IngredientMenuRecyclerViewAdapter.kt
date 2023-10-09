@@ -27,7 +27,8 @@ class IngredientMenuRecyclerViewAdapter(
 
             // 메뉴 재료 RecyclerView 등록
             val recommendResultIngredientsAdapter = RecommendResultIngredientsAdapter(itemViewClickListener)
-            val ingredientList = menuInfo.first.ingredients.split(", ")
+            val ingredientList = menuInfo.first.ingredients
+
 
             val colorIngredientList = ArrayList<String>()
             val blackIngredientList = ArrayList<String>()
@@ -48,9 +49,6 @@ class IngredientMenuRecyclerViewAdapter(
                 setHasFixedSize(true)
                 layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             }
-
-            //@TODO 메뉴 이미지 구해지면 이미지 로드하는 기능 아래 코드로 변경
-            //NetworkUtils.loadImage(itemView.context, binding.menuImage, menu.name, Constants.URL_TYPE_MENU)
         }
     }
 

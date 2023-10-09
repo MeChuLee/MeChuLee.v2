@@ -20,7 +20,7 @@ class TodayMenuViewPagerAdapter(
     class MyViewHolder(val binding: ViewPagerTodayMenuBinding) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(menuInfo: MenuInfo) {
             binding.menuName.text = menuInfo.name
-            binding.mainIngredient.text = menuInfo.ingredients
+            binding.mainIngredient.text = menuInfo.ingredients.joinToString(", ")
         }
     }
 

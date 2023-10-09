@@ -21,7 +21,7 @@ class IngredientResultViewModel : ViewModel() {
             dataStore,
             onResult = { selectedIngredientList ->
                 NetworkUtils.totalMenuList.forEach { menu ->
-                    val ingredientList = menu.ingredients.split(", ")
+                    val ingredientList = menu.ingredients
 
                     val pair = Pair(menu, ArrayList<Int>())
 
@@ -36,14 +36,14 @@ class IngredientResultViewModel : ViewModel() {
 
                 // 있는 재료의 수 / 전체 재료의 수 가 높을 수록
                 val sortedList = ingredientResultList.sortedWith(compareBy({
-                    val allIngredientSize: Double = it.first.ingredients.split(", ").size.toDouble()
+                    val allIngredientSize: Double = it.first.ingredients.size.toDouble()
                     -((allIngredientSize - it.second.size.toDouble()) / allIngredientSize)
-                }, { -it.first.ingredients.split(", ").size })).toCollection(ArrayList())
+                }, { -it.first.ingredients.size })).toCollection(ArrayList())
 
                 val resultList = ArrayList<Pair<MenuInfo, ArrayList<Int>>>()
 
                 sortedList.forEach {
-                    val allIngredientSize: Double = it.first.ingredients.split(", ").size.toDouble()
+                    val allIngredientSize: Double = it.first.ingredients.size.toDouble()
                     if (((allIngredientSize - it.second.size) / allIngredientSize) >= 0.5) {
                         resultList.add(it)
                     } else {

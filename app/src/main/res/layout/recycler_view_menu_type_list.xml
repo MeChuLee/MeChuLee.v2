@@ -2,13 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="menuInfo"
-            type="com.recommendmenu.mechulee.model.data.MenuInfo" />
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +31,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:hint="김치찌개"
-            android:text="@{menuInfo.name}"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/menuDetail"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +45,6 @@
             android:ellipsize="end"
             android:hint="재료"
             android:maxLines="1"
-            android:text="@{menuInfo.ingredients}"
             android:textAlignment="textStart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/menuTitle"
