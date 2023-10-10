@@ -30,7 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkUtils {
     // 기기 : http://192.168.0.72:8000/
     // 에뮬레이터 : http://10.0.2.2:8000/
-    const val MY_SERVER_BASE_URL = "http://10.0.2.2:8000/"
+    const val MY_SERVER_BASE_URL = "http://192.168.0.40:8000/"
     const val NAVER_SEARCH_BASE_URL = "https://openapi.naver.com/"
     const val WEATHER_BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
 

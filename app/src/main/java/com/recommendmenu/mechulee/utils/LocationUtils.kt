@@ -12,9 +12,14 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import com.orhanobut.logger.Logger
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.IOException
 import java.util.Locale
 
@@ -23,47 +28,44 @@ object LocationUtils {
     // 간단하게 표현한 주소 저장을 위한 변수 (처음 SplashActivity 에서 조회 후 저장)
     var simpleAddress = ""
 
-    // 현재 위치 좌표로 가져오기 -> 인자에 파라미터로 콜백 함수 실행
-    fun getLocationGPS(activity: FragmentActivity, onResultLocation: (Double, Double) -> Unit) {
-        // 권한 미허용 시 return
-        if (ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
+    // Coroutine 사용 -> 새로운 위치 정보 조회 후 return (5초 안에 조회 불가 시 최근에 조회한 위치 정보 return)
+    private fun getLocationUpdatesAsync(activity:FragmentActivity, locationManager: LocationManager, provider: String): Deferred<Location?> {
+        return activity.lifecycleScope.async {
+            val location = withTimeoutOrNull(5000) { // 5초 후에 타임아웃
+                suspendCancellableCoroutine<Location?> { continuation ->
+                    val locationListener = object : LocationListener {
+                        override fun onLocationChanged(location: Location) {
+                            continuation.resumeWith(Result.success(location))
+                            locationManager.removeUpdates(this)
+                        }
+                    }
 
-        val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                    continuation.invokeOnCancellation {
+                        locationManager.removeUpdates(locationListener)
+                    }
 
-        val locationListener = object : LocationListener {
-            override fun onLocationChanged(currentLocation: Location) {
+                    if (ActivityCompat.checkSelfPermission(
+                            activity,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                            activity,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        return@suspendCancellableCoroutine
+                    }
 
-                // CallBack 함수 실행
-                onResultLocation(currentLocation.latitude, currentLocation.longitude)
+                    // 새로운 위치 조회
+                    locationManager.requestLocationUpdates(provider, 10000, 10f, locationListener)
+                }
+            }
 
-                // 반복적 위치 업데이트를 막기 위해 업데이트 삭제
-                locationManager.removeUpdates(this)
+            // 타임아웃 발생 시 마지막 위치 가져오기
+            location ?: run {
+                val lastKnownLocation = locationManager.getLastKnownLocation(provider)
+                lastKnownLocation
             }
         }
-
-//        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        // 위치 정보 요청
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
-            10000,
-            10.0f,
-            locationListener
-        )
-//        if (location == null) {
-//
-//        } else {
-//            // 최근 접근한 위치가 있을 경우 그 위치 좌표 return
-//            onResultLocation(location.latitude, location.longitude)
-//        }
     }
 
     // 현재 주소 가져오기 (activity 가 필요하므로, Activity 나 Fragment 에서 수행)
@@ -82,41 +84,62 @@ object LocationUtils {
 
         val geocoder = Geocoder(activity, Locale.KOREA)
 
-        getLocationGPS(activity, onResultLocation = { latitude, longitude ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
-                    val simpleAddress = getSimpleAddress(addresses)
+        val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        var provider = LocationManager.GPS_PROVIDER
 
-                    // 주소 조회가 가능할 경우만 UI 업데이트 실행
-                    if (simpleAddress != "") {
-                        this@LocationUtils.simpleAddress = simpleAddress
-                        onResult(simpleAddress, addresses[0].adminArea)
-                    }
-                }
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            provider = LocationManager.GPS_PROVIDER
+        } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            provider = LocationManager.NETWORK_PROVIDER
+        }
+
+        activity.lifecycleScope.launch(Dispatchers.Main) {
+            val location = getLocationUpdatesAsync(activity, locationManager, provider).await()
+
+            if (location == null) {
+                // 위치 값이 null 일 경우, activity 에서 종료할 수 있게 "", "" 로 onResult() 실행
+                onResult("", "")
             } else {
-                // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
-                activity.lifecycleScope.launch(Dispatchers.IO) {
-                    try {
-                        val addresses =
-                            geocoder.getFromLocation(latitude, longitude, 3) as List<Address>
+                // 위치 값이 존재할 경우
+                val latitude = location.latitude
+                val longitude = location.longitude
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
                         val simpleAddress = getSimpleAddress(addresses)
 
                         // 주소 조회가 가능할 경우만 UI 업데이트 실행
                         if (simpleAddress != "") {
                             this@LocationUtils.simpleAddress = simpleAddress
-                            withContext(Dispatchers.Main) {
-                                onResult(simpleAddress, addresses[0].adminArea)
-                            }
+                            onResult(simpleAddress, addresses[0].adminArea)
                         }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
+                    }
+                } else {
+                    // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
+                    activity.lifecycleScope.launch(Dispatchers.IO) {
+                        try {
+                            val addresses =
+                                geocoder.getFromLocation(latitude, longitude, 3) as List<Address>
+
+                            val simpleAddress = getSimpleAddress(addresses)
+
+                            // 주소 조회가 가능할 경우만 UI 업데이트 실행
+                            if (simpleAddress != "") {
+                                this@LocationUtils.simpleAddress = simpleAddress
+                                withContext(Dispatchers.Main) {
+                                    onResult(simpleAddress, addresses[0].adminArea)
+                                }
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }
-        })
+        }
     }
 
+    // 시 구 동 형태로 주소 변경 후 return (조회 불가능 데이터 제외)
     private fun getSimpleAddress(addresses: List<Address>): String {
         addresses.forEach { address ->
             return if (address.locality == null) {
