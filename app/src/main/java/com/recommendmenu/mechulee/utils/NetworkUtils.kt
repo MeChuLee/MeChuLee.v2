@@ -7,6 +7,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.BuildConfig
+import com.recommendmenu.mechulee.BuildConfig.MY_SERVER_BASE_URL
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.data.WeatherInfo
@@ -28,11 +29,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkUtils {
-    // 기기 : http://192.168.0.72:8000/
-    // 에뮬레이터 : http://10.0.2.2:8000/
-    const val MY_SERVER_BASE_URL = "http://192.168.0.40:8000/"
+
     const val NAVER_SEARCH_BASE_URL = "https://openapi.naver.com/"
-    const val WEATHER_BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
 
     private const val ADD_MENU_URL = "static/menu/"
     private const val ADD_INGREDIENT_URL = "static/ingredient/"

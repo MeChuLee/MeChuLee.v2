@@ -27,7 +27,7 @@ android {
 
         def naver_key = ""
 
-        def weather_key = ""
+        def my_server_base_url = ""
 
         def naver_client_id = ""
         def naver_client_secret = ""
@@ -40,8 +40,8 @@ android {
                 naver_client_id = localProperties.getProperty("naver_client_id")
                 naver_client_secret = localProperties.getProperty("naver_client_secret")
             }
-            if (localProperties.getProperty("weather_key") != null) {
-                weather_key = localProperties.getProperty("weather_key")
+            if (localProperties.getProperty("my_server_base_url") != null) {
+                my_server_base_url = localProperties.getProperty("my_server_base_url")
             }
 
         } catch (IOException e) {
@@ -50,8 +50,9 @@ android {
 
         // 네이버 지도
         manifestPlaceholders = [NAVER_KEY:naver_key]
-        
-        buildConfigField("String", "weather_key", weather_key)
+
+        // Flask 서버 URL
+        buildConfigField "String", "MY_SERVER_BASE_URL", my_server_base_url
 
         // 네이버 검색
         buildConfigField "String", "NAVER_CLIENT_ID", naver_client_id
