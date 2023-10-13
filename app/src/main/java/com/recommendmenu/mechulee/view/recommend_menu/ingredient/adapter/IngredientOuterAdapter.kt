@@ -35,7 +35,6 @@ class IngredientOuterAdapter(private val ingredientOuterListener: IngredientOute
         } else {
             when (position) {
                 0 -> nowKey = "야채"
-                1 -> nowKey = "과일"
                 2 -> nowKey = "밥/면"
                 3 -> nowKey = "고기"
                 4 -> nowKey = "생선"
@@ -45,7 +44,6 @@ class IngredientOuterAdapter(private val ingredientOuterListener: IngredientOute
         }
         when (nowKey) {
             "야채" -> englishName = "Vegetables"
-            "과일" -> englishName = "Fruits"
             "밥/면" -> englishName = "Rice&Noodle"
             "고기" -> englishName = "Meat"
             "생선" -> englishName = "Fish"

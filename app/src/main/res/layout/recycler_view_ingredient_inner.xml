@@ -24,7 +24,6 @@
         android:paddingBottom="5dp"
         android:gravity="center"
         app:autoSizeTextType="uniform"
-        android:text="fruit"
         app:autoSizeMinTextSize="10sp"
         app:autoSizeMaxTextSize="16sp"
         android:textColor="@color/black"
