@@ -6,19 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
+import com.recommendmenu.mechulee.BuildConfig.MY_SERVER_BASE_URL
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.data.MenuInfo
-import com.recommendmenu.mechulee.model.network.ingredient.IngredientDto
-import com.recommendmenu.mechulee.model.network.ingredient.IngredientService
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
 import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -110,7 +107,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
 //    }
 
     private fun getResultMenuFromServer() {
-        val call = NetworkUtils.getRetrofitInstance(NetworkUtils.MY_SERVER_BASE_URL).create(
+        val call = NetworkUtils.getRetrofitInstance(MY_SERVER_BASE_URL).create(
             MenuService::class.java
         ).getRecommendAi(totalList) // 서버에 totalList를 보낸다.
 

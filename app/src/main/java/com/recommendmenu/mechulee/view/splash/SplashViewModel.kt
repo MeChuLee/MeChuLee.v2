@@ -2,6 +2,7 @@ package com.recommendmenu.mechulee.view.splash
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.utils.NetworkUtils
 
 class SplashViewModel : ViewModel() {
@@ -27,7 +28,9 @@ class SplashViewModel : ViewModel() {
                 completeGetIngredient = true
                 isAllTrueCheck()
             } else {
-                allComplete.value = false
+                Logger.e("erooootrrrrrrrrrrrrr")
+                //allComplete.value = false
+                allComplete.postValue(false)
             }
         })
     }
@@ -38,7 +41,9 @@ class SplashViewModel : ViewModel() {
                 completeGetMenu = true
                 isAllTrueCheck()
             } else {
-                allComplete.value = false
+                Logger.e("erooootrrrrrrrrrrrrr")
+                //allComplete.value = false
+                allComplete.postValue(false)
             }
         })
     }
@@ -58,7 +63,9 @@ class SplashViewModel : ViewModel() {
                 completeGetTodayMenuList = true
                 isAllTrueCheck()
             } else {
-                allComplete.value = false
+                Logger.e("erooootrrrrrrrrrrrrr")
+                //allComplete.value = false
+                allComplete.postValue(false)
             }
         })
     }
@@ -70,7 +77,9 @@ class SplashViewModel : ViewModel() {
                 completeGetWeather = true
                 isAllTrueCheck()
             } else {
-                allComplete.value = false
+                Logger.e("erooootrrrrrrrrrrrrr")
+                //allComplete.value = false
+                allComplete.postValue(false)
             }
         })
     }
@@ -78,7 +87,8 @@ class SplashViewModel : ViewModel() {
     // 모든 요청 완료 확인
     private fun isAllTrueCheck() {
         if (completeGetIngredient && completeGetMenu && completeGetNearByRestaurant && completeGetTodayMenuList && completeGetWeather) {
-            allComplete.value = true
+            //allComplete.value = true
+            allComplete.postValue(true)
         }
     }
 }
