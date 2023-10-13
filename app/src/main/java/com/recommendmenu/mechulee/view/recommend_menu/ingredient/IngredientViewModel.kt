@@ -15,7 +15,7 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
 
     companion object {
         private val INGREDIENT_CLASSIFICATION_LIST =
-            arrayListOf("전체", "야채", "과일", "밥/면", "고기", "생선", "소스", "기타")
+            arrayListOf("전체", "야채", "밥/면", "고기", "생선", "소스", "기타")
     }
 
     val classificationList: MutableLiveData<ArrayList<String>> = MutableLiveData()
@@ -28,7 +28,6 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
     private var ingredientTotalMap = mapOf<String, ArrayList<IngredientInfo>>()
 
     private var vegetableList = ArrayList<IngredientInfo>()
-    private var fruitList = ArrayList<IngredientInfo>()
     private var riceAndNoodleList = ArrayList<IngredientInfo>()
     private var meatList = ArrayList<IngredientInfo>()
     private var fishList = ArrayList<IngredientInfo>()
@@ -47,14 +46,12 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
                 "고기" -> meatList.add(it)
                 "기타" -> otherList.add(it)
                 "생선" -> fishList.add(it)
-                "과일" -> fruitList.add(it)
                 "밥/면" -> riceAndNoodleList.add(it)
                 else -> {}
             }
         }
         ingredientTotalMap = mapOf(
             "야채" to vegetableList,
-            "과일" to fruitList,
             "밥/면" to riceAndNoodleList,
             "고기" to meatList,
             "생선" to fishList,
@@ -79,7 +76,6 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
             lateinit var tempMap: Map<String, ArrayList<IngredientInfo>>
             when (classification) {
                 "야채" -> tempMap = mapOf(classification to vegetableList)
-                "과일" -> tempMap = mapOf(classification to fruitList)
                 "밥/면" -> tempMap = mapOf(classification to riceAndNoodleList)
                 "고기" -> tempMap = mapOf(classification to meatList)
                 "생선" -> tempMap = mapOf(classification to fishList)

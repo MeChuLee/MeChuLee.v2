@@ -26,8 +26,7 @@
                 android:id="@+id/menuImage"
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:scaleType="fitXY"
-                app:srcCompat="@raw/example_menu" />
+                android:scaleType="fitXY" />
 
         </androidx.cardview.widget.CardView>
 
