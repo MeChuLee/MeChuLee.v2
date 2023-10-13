@@ -84,7 +84,7 @@ class IngredientActivity : AppCompatActivity() {
         binding.completeTextView.setOnClickListener {
             // 여기서 totalList의 정보들을 DataStore에 저장한다.
             viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
-
+            viewModel.getResultMenuFromServer()
             // 로딩 화면
             loadingDialog = LoadingDialog(this)
 
