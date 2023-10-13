@@ -80,18 +80,10 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         val ratingList = menuItems.map { it.rating }
 
         DataStoreUtils.updateDataStoreToRatingList(GlobalScope, dataStore, ratingList)
-
-        // viewModel에 있는 MenuList를 flask서버로 보내고 Ai추천결과메뉴를 받아오는 함수 실행
-        // 실행해서 viewModel에 있는 resultMenu가 변경될 시 감지해서 Intent로 resultMenu를
-        // MenuResultActivity로 보낸다.
-        // MenuList는 보여지는 view에 적용이 되는 것이고 결국 점수를 저장한 뒤의 값들로 결과를
-        // 도출하는 것이기 때문에 점수를 totallList에 저장한 직후에 getResultMenu()함수를 호춯
-        // 하는 것이 적합
-        getResultMenuFromServer()
     }
 
     // refactoring 필요
-    private fun getResultMenuFromServer() {
+    fun getResultMenuFromServer() {
         val call = NetworkUtils.getRetrofitInstance(MY_SERVER_BASE_URL).create(
             MenuService::class.java
         ).getRecommendAi(totalList) // 서버에 totalList를 보낸다.
