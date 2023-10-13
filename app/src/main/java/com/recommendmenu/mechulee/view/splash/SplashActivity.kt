@@ -184,19 +184,23 @@ class SplashActivity : AppCompatActivity() {
 
             // 3.5초 후 부터 observe 처리위해 delay(3500) 이후 observe 실행
             viewModel.allComplete.observe(this@SplashActivity) { allComplete ->
+                Logger.e("옵저버 확인 메시지")
+                Logger.d(allComplete)
                 if (allComplete) {
                     // 통신 완료 시 메인 화면 시작
 //                    job.cancel()
+                    Logger.e("allcomplete 됐다 야호")
                     startActivity(Intent(this@SplashActivity, MainActivity::class.java))
                     finish()
                 } else {
                     // 서버와 통신 실패 시 종료
-                    launch {
+
 //                        job.cancel()
-                        Toast.makeText(this@SplashActivity, "서버 오류가 발생하였습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                        delay(1000)
-                        finish()
-                    }
+                    Logger.e("asdfasdfsadfsadf")
+                    Toast.makeText(this@SplashActivity, "서버 오류가 발생하였습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+
+                    finish()
+
                 }
             }
         }

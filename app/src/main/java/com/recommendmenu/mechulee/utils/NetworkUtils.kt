@@ -165,6 +165,7 @@ object NetworkUtils {
         ).enqueue(object : Callback<SearchDto> {
             override fun onResponse(call: Call<SearchDto>, response: Response<SearchDto>) {
                 if (response.isSuccessful.not()) {
+                    onResult(false)
                     Logger.e("not isSuccessful")
                     return
                 }
@@ -190,6 +191,7 @@ object NetworkUtils {
             .enqueue(object : Callback<MenuDto> {
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                     if (response.isSuccessful.not()) {
+                        onResult(false)
                         return
                     }
                     response.body()?.let { menuDto ->
@@ -212,6 +214,7 @@ object NetworkUtils {
             .enqueue(object : Callback<WeatherInfoDto> {
                 override fun onResponse(call: Call<WeatherInfoDto>, response: Response<WeatherInfoDto>) {
                     if (response.isSuccessful.not()) {
+                        onResult(false)
                         return
                     }
                     response.body()?.let { weatherInfoDto ->
