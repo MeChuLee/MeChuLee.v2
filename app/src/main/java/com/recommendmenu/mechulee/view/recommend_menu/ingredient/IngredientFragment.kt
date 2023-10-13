@@ -115,13 +115,9 @@ class IngredientFragment : Fragment() {
                 return false
             }
 
-            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-                // Handle touch event if needed
-            }
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
 
-            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-                // Handle request disallow intercept event if needed
-            }
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
         })
 
         viewModel.classificationList.observe(requireActivity()) {
@@ -264,7 +260,6 @@ class IngredientFragment : Fragment() {
         binding.circleSelectButton.isEnabled = true
     }
 
-    // onPause시에 DataStore에 저장
     override fun onPause() {
         super.onPause()
         viewModel.storeSelectedIngredient()

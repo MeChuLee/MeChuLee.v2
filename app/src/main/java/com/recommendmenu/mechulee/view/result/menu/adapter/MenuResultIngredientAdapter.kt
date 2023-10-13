@@ -40,5 +40,4 @@ class MenuResultIngredientAdapter : RecyclerView.Adapter<MenuResultIngredientAda
     override fun getItemCount(): Int {
         return ingredientList.size
     }
-
 }

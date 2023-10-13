@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.recommendmenu.mechulee.databinding.FragmentSettingsBinding
-import com.recommendmenu.mechulee.utils.Constants
 
 class SettingsFragment : Fragment() {
 

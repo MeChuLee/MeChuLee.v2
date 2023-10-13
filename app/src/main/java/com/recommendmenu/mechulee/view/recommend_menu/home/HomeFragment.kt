@@ -42,7 +42,6 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
-import com.recommendmenu.mechulee.utils.CalculationUtils
 import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
 import com.recommendmenu.mechulee.utils.LocationUtils
@@ -56,7 +55,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
-
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -111,7 +109,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
         // 식당 정보 결과 응답 감지 시 recyclerview 에 반영
         viewModel.restaurantList.observe(requireActivity()) { restaurantList ->
-            if (!restaurantList.isEmpty()) {
+            if (restaurantList.isNotEmpty()) {
                 binding.restaurantRecyclerViewEmptyView.visibility = View.GONE
                 restaurantRecyclerViewAdapter?.restaurantList?.clear()
                 restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
@@ -304,10 +302,11 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
         // 지도 클릭 시 네이버 맵 webview 페이지로 전환
-        naverMap.setOnMapClickListener { pointF, latLng ->
+        naverMap.setOnMapClickListener { _, _ ->
             val intent = Intent(requireContext(), WebViewMapActivity::class.java)
             val encodedQuery = URLEncoder.encode(LocationUtils.simpleAddress + " 맛집", "UTF-8")
-            val url = "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
+            val url =
+                "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
             intent.putExtra(Constants.INTENT_NAME_WEB_URL, url)
             startActivity(intent)
         }
@@ -322,8 +321,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         restaurantRecyclerViewAdapter?.restaurantList?.forEach {
             val marker = Marker()
             if (it.mapx != null && it.mapy != null) {
-                val nx = CalculationUtils.convertStringToDoubleWithMap(it.mapx)
-                val ny = CalculationUtils.convertStringToDoubleWithMap(it.mapy)
+                val nx = convertStringToDoubleWithMap(it.mapx)
+                val ny = convertStringToDoubleWithMap(it.mapy)
 
                 marker.position = LatLng(ny, nx)
                 marker.width = 50
@@ -468,7 +467,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
         })
 
-        val noScrollLayoutManager = object : LinearLayoutManager(requireContext(), VERTICAL, false) {
+        val noScrollLayoutManager =
+            object : LinearLayoutManager(requireContext(), VERTICAL, false) {
                 override fun canScrollVertically(): Boolean {
                     // false 를 반환하여 세로 스크롤 이벤트 막기
                     return false
@@ -480,5 +480,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             layoutManager = noScrollLayoutManager
             adapter = restaurantRecyclerViewAdapter
         }
+    }
+
+    private fun convertStringToDoubleWithMap(x: String): Double {
+        return (x.dropLast(7) + "." + x.takeLast(7)).toDouble()
     }
 }

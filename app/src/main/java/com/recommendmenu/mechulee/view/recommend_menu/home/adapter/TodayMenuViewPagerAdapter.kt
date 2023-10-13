@@ -17,7 +17,8 @@ class TodayMenuViewPagerAdapter(
 
     lateinit var binding: ViewPagerTodayMenuBinding
 
-    class MyViewHolder(val binding: ViewPagerTodayMenuBinding) : RecyclerView.ViewHolder(binding.root) {
+    class MyViewHolder(val binding: ViewPagerTodayMenuBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun onBind(menuInfo: MenuInfo) {
             binding.menuName.text = menuInfo.name
             binding.mainIngredient.text = menuInfo.ingredients.joinToString(", ")
@@ -25,7 +26,12 @@ class TodayMenuViewPagerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        binding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.view_pager_today_menu, parent, false)
+        binding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            R.layout.view_pager_today_menu,
+            parent,
+            false
+        )
 
         val holder = MyViewHolder(binding)
 

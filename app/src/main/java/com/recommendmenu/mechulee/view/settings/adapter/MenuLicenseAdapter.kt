@@ -11,7 +11,7 @@ import com.recommendmenu.mechulee.databinding.RecyclerViewMenuLicenseBinding
 import com.recommendmenu.mechulee.model.data.LicenseInfo
 
 class MenuLicenseAdapter : RecyclerView.Adapter<MenuLicenseAdapter.MyViewHolder>() {
-    lateinit var binding: RecyclerViewMenuLicenseBinding
+    private lateinit var binding: RecyclerViewMenuLicenseBinding
 
     var list = ArrayList<Pair<LicenseInfo, LicenseInfo>>()
 
@@ -40,14 +40,20 @@ class MenuLicenseAdapter : RecyclerView.Adapter<MenuLicenseAdapter.MyViewHolder>
         // 라이센스 정보 클릭 시 해당 url 로 이동 (url 정보가 없을 경우 x)
         binding.licenseTitleText.setOnClickListener {
             if (list[holder.absoluteAdapterPosition].first.url != "") {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(list[holder.absoluteAdapterPosition].first.url))
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(list[holder.absoluteAdapterPosition].first.url)
+                )
                 it.context.startActivity(intent)
             }
         }
 
         binding.licenseDetailText.setOnClickListener {
             if (list[holder.absoluteAdapterPosition].second.url != "") {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(list[holder.absoluteAdapterPosition].second.url))
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(list[holder.absoluteAdapterPosition].second.url)
+                )
                 it.context.startActivity(intent)
             }
         }

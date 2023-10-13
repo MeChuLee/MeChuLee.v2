@@ -31,7 +31,6 @@ class MenuResultOtherMenuAdapter : RecyclerView.Adapter<MenuResultOtherMenuAdapt
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         // 메뉴 테스트 이미지
         val menuName = datas[position].name
 
@@ -55,6 +54,4 @@ class MenuResultOtherMenuAdapter : RecyclerView.Adapter<MenuResultOtherMenuAdapt
     override fun getItemCount(): Int {
         return datas.size
     }
-
-
 }

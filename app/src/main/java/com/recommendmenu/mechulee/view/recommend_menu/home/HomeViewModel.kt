@@ -2,19 +2,10 @@ package com.recommendmenu.mechulee.view.recommend_menu.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.orhanobut.logger.Logger
-import com.recommendmenu.mechulee.BuildConfig
 import com.recommendmenu.mechulee.model.data.MenuInfo
-import com.recommendmenu.mechulee.model.network.menu.MenuDto
-import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.model.network.search.Item
-import com.recommendmenu.mechulee.model.network.search.SearchDto
-import com.recommendmenu.mechulee.model.network.search.SearchService
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.utils.RecommendUtils
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class HomeViewModel : ViewModel() {
 

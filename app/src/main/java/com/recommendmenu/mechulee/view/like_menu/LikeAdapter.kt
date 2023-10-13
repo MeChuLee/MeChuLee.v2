@@ -3,7 +3,6 @@ package com.recommendmenu.mechulee.view.like_menu
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Intent
-import android.util.Log
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +36,6 @@ class LikeAdapter(private val likeListener: LikeListener) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         // 메뉴 테스트 이미지
         val menuName = datas[position].name
 
@@ -84,10 +82,6 @@ class LikeAdapter(private val likeListener: LikeListener) :
                 DragEvent.ACTION_DRAG_EXITED -> true
                 DragEvent.ACTION_DROP -> true
                 DragEvent.ACTION_DRAG_ENDED -> {
-                    when (event.result) {
-                        true -> Log.d("DRAGANDDROP", "Success")
-                        false -> Log.d("DRAGANDDROP", "Failed")
-                    }
                     v.alpha = 1.0f
                     true
                 }

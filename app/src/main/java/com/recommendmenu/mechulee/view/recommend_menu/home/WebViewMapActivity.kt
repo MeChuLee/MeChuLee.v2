@@ -10,7 +10,6 @@ import androidx.databinding.DataBindingUtil
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.ActivityWebviewMapBinding
 import com.recommendmenu.mechulee.utils.Constants
-import java.net.URLEncoder
 
 class WebViewMapActivity : AppCompatActivity() {
 

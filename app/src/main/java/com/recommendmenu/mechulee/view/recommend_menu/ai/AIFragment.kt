@@ -8,18 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.magicgoop.tagsphere.OnTagLongPressedListener
 import com.magicgoop.tagsphere.OnTagTapListener
 import com.magicgoop.tagsphere.item.TagItem
 import com.magicgoop.tagsphere.item.TextTagItem
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentAiBinding
 import com.recommendmenu.mechulee.utils.EmojiConstantUtils
-import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientActivity
 
-class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
+class AIFragment : Fragment(), OnTagTapListener {
 
     private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
@@ -34,19 +32,19 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
 
         aiViewModel = ViewModelProvider(this)[AIViewModel::class.java]
 
-        aiViewModel.weatherInfo.observe(requireActivity()){
+        aiViewModel.weatherInfo.observe(requireActivity()) {
             binding.weatherText.text = it.sky
             val rainType = it.rainType
 
-            if(rainType == "비" || rainType == "비/눈" || rainType == "빗방울"){
+            if (rainType == "비" || rainType == "비/눈" || rainType == "빗방울") {
                 binding.weatherAnimation.setAnimation(R.raw.weather_cloud_rain_animation)
-            } else if(rainType == "눈" || rainType == "빗방울눈날림" || rainType == "눈날림"){
+            } else if (rainType == "눈" || rainType == "빗방울눈날림" || rainType == "눈날림") {
                 binding.weatherAnimation.setAnimation(R.raw.weather_snow_animation)
-            } else if(it.sky == "맑음") {
+            } else if (it.sky == "맑음") {
                 binding.weatherAnimation.setAnimation(R.raw.weather_sun_animation)
-            } else if(it.sky == "구름많음"){
+            } else if (it.sky == "구름많음") {
                 binding.weatherAnimation.setAnimation(R.raw.weather_cloudcloud_animation)
-            } else if(it.sky == "흐림") {
+            } else if (it.sky == "흐림") {
                 binding.weatherAnimation.setAnimation(R.raw.weather_cloud_animation)
             }
 
@@ -54,7 +52,7 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
             binding.temperature.text = it.temp
         }
 
-        aiViewModel.location.observe(requireActivity()){
+        aiViewModel.location.observe(requireActivity()) {
             binding.locationText.text = it
         }
 
@@ -74,7 +72,6 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
     }
 
     private fun initTagView() {
-
         val tagList = ArrayList<TextTagItem>()
 
         for (i in 0 until EmojiConstantUtils.emojiCodePoints.size) {
@@ -91,11 +88,10 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
                 textSize = resources.getDimension(R.dimen.tag_text_size)
             }
         )
-        binding.tagView.setOnLongPressedListener(this)
         binding.tagView.setOnTagTapListener(this)
     }
 
-    private fun aiButtonRightArrowClickEvent(){
+    private fun aiButtonRightArrowClickEvent() {
         // 버튼 클릭 리스너 설정
         binding.tagView.setOnClickListener {
             // 액티비티로 전환하는 Intent 생성
@@ -129,9 +125,4 @@ class AIFragment : Fragment(), OnTagLongPressedListener, OnTagTapListener {
         super.onDestroyView()
         _binding = null
     }
-
-    override fun onLongPressed(tagItem: TagItem) {
-        TODO("Not yet implemented")
-    }
 }
-

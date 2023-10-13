@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 
-class ClassificationAdapter(val classificationListener: ClassificationListener) :
+class ClassificationAdapter(private val classificationListener: ClassificationListener) :
     RecyclerView.Adapter<ClassificationAdapter.ViewHolder>() {
 
     var datas = ArrayList<String>()
@@ -66,5 +66,4 @@ class ClassificationAdapter(val classificationListener: ClassificationListener) 
     interface ClassificationListener {
         fun changeCurrentClassification(classification: String)
     }
-
 }

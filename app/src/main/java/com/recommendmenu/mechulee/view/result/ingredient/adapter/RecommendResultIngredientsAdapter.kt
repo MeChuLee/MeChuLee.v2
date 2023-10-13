@@ -58,7 +58,10 @@ class RecommendResultIngredientsAdapter(
         if (holder.absoluteAdapterPosition < colorIngredientList.size) {
             holder.onBind(colorIngredientList[holder.absoluteAdapterPosition], false)
         } else {
-            holder.onBind(blackIngredientList[holder.absoluteAdapterPosition - colorIngredientList.size], true)
+            holder.onBind(
+                blackIngredientList[holder.absoluteAdapterPosition - colorIngredientList.size],
+                true
+            )
         }
     }
 

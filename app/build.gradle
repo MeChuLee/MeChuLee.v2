@@ -2,11 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id "com.google.protobuf" version "0.9.1"
-    // 공식문서의 0.8.17 version이 적용이 안돼서 0.9.1 version으로 변경
 }
-
-//Properties properties = new Properties()
-//properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     buildFeatures {
@@ -65,19 +61,21 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-
-
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
     dataBinding {
         enabled = true
     }
+
     buildFeatures {
         buildConfig = true
     }
