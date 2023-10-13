@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.recommendmenu.mechulee.databinding.FragmentRecommendBinding
 
@@ -32,18 +31,18 @@ class RecommendFragment : Fragment() {
     }
 
     private fun initViewPager() {
-        var viewPagerAdapter = ViewPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
+        val viewPagerAdapter = ViewPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
         binding.viewPager.adapter = viewPagerAdapter
 
         TabLayoutMediator(
             binding.tabs,
-            binding.viewPager,
-            TabLayoutMediator.TabConfigurationStrategy { tab, position ->
-                when (position) {
-                    0 -> tab.text = "홈"
-                    1 -> tab.text = "AI 추천"
-                    2 -> tab.text = "재료 추천"
-                }
-            }).attach()
+            binding.viewPager
+        ) { tab, position ->
+            when (position) {
+                0 -> tab.text = "홈"
+                1 -> tab.text = "AI 추천"
+                2 -> tab.text = "재료 추천"
+            }
+        }.attach()
     }
 }

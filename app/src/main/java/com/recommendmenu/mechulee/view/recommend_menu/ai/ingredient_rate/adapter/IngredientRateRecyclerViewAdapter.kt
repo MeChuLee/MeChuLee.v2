@@ -14,7 +14,7 @@ import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.willy.ratingbar.RotationRatingBar
 
-class IngredientRateRecyclerViewAdapter(private val ingredientRateListener : IngredientRateListener) :
+class IngredientRateRecyclerViewAdapter(private val ingredientRateListener: IngredientRateListener) :
     RecyclerView.Adapter<IngredientRateRecyclerViewAdapter.ViewHolder>() {
 
     var itemList = ArrayList<IngredientInfo>()
@@ -27,12 +27,11 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener : Ing
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.recyclerview_rate_item, parent, false)
+            .inflate(R.layout.recycler_view_rate_item, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val item = itemList[position]
 
         holder.imageView.setImageResource(item.imageResId)
@@ -45,7 +44,7 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener : Ing
 
             // fromUser값 판별(유저로 부터 받은 입력일때) -> false, true
             // fromUser값 - 레이팅 값 변경이 사용자로부터 발생했는지 여부를 나타내는 불리언 값
-            if(fromUser){
+            if (fromUser) {
                 ingredientRateListener.changeCurrentItem(item)
             }
         }
@@ -65,7 +64,6 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener : Ing
         val animation: Animation =
             AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_in_row)
         holder.itemView.startAnimation(animation)
-
     }
 
     interface IngredientRateListener {

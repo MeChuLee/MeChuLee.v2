@@ -29,7 +29,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkUtils {
-
     const val NAVER_SEARCH_BASE_URL = "https://openapi.naver.com/"
 
     private const val ADD_MENU_URL = "static/menu/"
@@ -41,15 +40,14 @@ object NetworkUtils {
     // 전체 메뉴 리스트
     var totalMenuList = ArrayList<MenuInfo>()
 
-
     // 주변 식당 리스트
-    val restaurantList = ArrayList<Item>()
+    var restaurantList = ArrayList<Item>()
 
     // 오늘의 추천 메뉴 리스트
-    val todayMenuList = ArrayList<MenuInfo>()
+    var todayMenuList = ArrayList<MenuInfo>()
 
     // 현재 날씨 조회 정보
-    var weatherInfo = WeatherInfo("","","")
+    var weatherInfo = WeatherInfo("", "", "")
 
     // 현재 기기에 인터넷 연결 여부 확인
     fun isNetworkAvailable(context: Context): Boolean {
@@ -90,7 +88,6 @@ object NetworkUtils {
     // 서버에 모든 재료 정보 요청
     fun requestAllIngredient(onResult: (isSuccess: Boolean) -> Unit) {
         val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
-
         val service = retrofit.create(IngredientService::class.java)
 
         service.getAllIngredient()
@@ -119,9 +116,7 @@ object NetworkUtils {
 
     // 서버에 모든 메뉴 정보 요청
     fun requestAllMenu(onResult: (isSuccess: Boolean) -> Unit) {
-        // retrofit instance 획득
         val retrofit = getRetrofitInstance(MY_SERVER_BASE_URL)
-
         val service = retrofit.create(MenuService::class.java)
 
         // retrofit 실행
@@ -136,7 +131,6 @@ object NetworkUtils {
                     response.body()?.let { menuDto ->
                         // 응답으로 온 메뉴 데이터를 viewModel data 에 반영 ( 분류 순 정렬 )
                         val resultMenuList = menuDto.menuList.sortedWith(compareBy { it.category })
-
                         totalMenuList = resultMenuList.toCollection(ArrayList())
 
                         onResult(true)
@@ -166,12 +160,11 @@ object NetworkUtils {
             override fun onResponse(call: Call<SearchDto>, response: Response<SearchDto>) {
                 if (response.isSuccessful.not()) {
                     onResult(false)
-                    Logger.e("not isSuccessful")
                     return
                 }
 
                 response.body()?.let { searchDto ->
-                    restaurantList.addAll(searchDto.items)
+                    restaurantList = searchDto.items.toCollection(ArrayList())
                     onResult(true)
                 }
             }
@@ -195,7 +188,7 @@ object NetworkUtils {
                         return
                     }
                     response.body()?.let { menuDto ->
-                        todayMenuList.addAll(menuDto.menuList)
+                        todayMenuList = menuDto.menuList.toCollection(ArrayList())
                         onResult(true)
                     }
                 }
@@ -212,7 +205,10 @@ object NetworkUtils {
 
         service.sendAdminArea(adminArea)
             .enqueue(object : Callback<WeatherInfoDto> {
-                override fun onResponse(call: Call<WeatherInfoDto>, response: Response<WeatherInfoDto>) {
+                override fun onResponse(
+                    call: Call<WeatherInfoDto>,
+                    response: Response<WeatherInfoDto>
+                ) {
                     if (response.isSuccessful.not()) {
                         onResult(false)
                         return

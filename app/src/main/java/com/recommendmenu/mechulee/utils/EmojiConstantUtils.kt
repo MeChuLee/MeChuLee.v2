@@ -51,7 +51,6 @@ object EmojiConstantUtils {
         // Miscellaneous Symbols And Pictographs - Plant symbols - 20
         0x1F330,  // CHESTNUT
         0x1F331,  // SEEDLING
-        //0x1F332,  // EVERGREEN TREE
         0x1F333,  // DECIDUOUS TREE
         0x1F334,  // PALM TREE
         0x1F335,  // CACTUS

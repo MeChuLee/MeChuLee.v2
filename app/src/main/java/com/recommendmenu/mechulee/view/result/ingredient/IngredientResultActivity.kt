@@ -12,7 +12,6 @@ import com.recommendmenu.mechulee.databinding.ActivityIngredientResultBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.proto.checkedIngredientDataStore
 import com.recommendmenu.mechulee.utils.Constants
-import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.result.ingredient.adapter.IngredientMenuRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
 

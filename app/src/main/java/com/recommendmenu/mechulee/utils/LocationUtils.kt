@@ -12,7 +12,6 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,12 +23,15 @@ import java.io.IOException
 import java.util.Locale
 
 object LocationUtils {
-
     // 간단하게 표현한 주소 저장을 위한 변수 (처음 SplashActivity 에서 조회 후 저장)
     var simpleAddress = ""
 
     // Coroutine 사용 -> 새로운 위치 정보 조회 후 return (5초 안에 조회 불가 시 최근에 조회한 위치 정보 return)
-    private fun getLocationUpdatesAsync(activity:FragmentActivity, locationManager: LocationManager, provider: String): Deferred<Location?> {
+    private fun getLocationUpdatesAsync(
+        activity: FragmentActivity,
+        locationManager: LocationManager,
+        provider: String
+    ): Deferred<Location?> {
         return activity.lifecycleScope.async {
             val location = withTimeoutOrNull(5000) { // 5초 후에 타임아웃
                 suspendCancellableCoroutine<Location?> { continuation ->

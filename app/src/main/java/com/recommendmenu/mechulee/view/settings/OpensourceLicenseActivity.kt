@@ -29,7 +29,11 @@ class OpensourceLicenseActivity : AppCompatActivity() {
         // RecyclerView 초기화
         binding.menuLicenseRecyclerView.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this@OpensourceLicenseActivity, LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(
+                this@OpensourceLicenseActivity,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
             adapter = opensourceLicenseAdapter
         }
     }

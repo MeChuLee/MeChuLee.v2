@@ -32,13 +32,15 @@ class ImageLicenseActivity : AppCompatActivity() {
         // RecyclerView 초기화
         binding.menuLicenseRecyclerView.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this@ImageLicenseActivity, LinearLayoutManager.VERTICAL, false)
+            layoutManager =
+                LinearLayoutManager(this@ImageLicenseActivity, LinearLayoutManager.VERTICAL, false)
             adapter = menuLicenseAdapter
         }
 
         binding.ingredientLicenseRecyclerView.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this@ImageLicenseActivity, LinearLayoutManager.VERTICAL, false)
+            layoutManager =
+                LinearLayoutManager(this@ImageLicenseActivity, LinearLayoutManager.VERTICAL, false)
             adapter = ingredientLicenseAdapter
         }
     }

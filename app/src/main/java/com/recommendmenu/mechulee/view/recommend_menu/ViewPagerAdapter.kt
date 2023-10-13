@@ -8,8 +8,8 @@ import com.recommendmenu.mechulee.view.recommend_menu.ai.AIFragment
 import com.recommendmenu.mechulee.view.recommend_menu.home.HomeFragment
 import com.recommendmenu.mechulee.view.recommend_menu.ingredient.IngredientFragment
 
-class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle)
-    : FragmentStateAdapter(fragmentManager, lifecycle) {
+class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
+    FragmentStateAdapter(fragmentManager, lifecycle) {
 
     override fun getItemCount(): Int {
         return 3

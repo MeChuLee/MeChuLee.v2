@@ -8,7 +8,8 @@ import androidx.core.widget.NestedScrollView
 import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_HIDE
 import com.recommendmenu.mechulee.utils.Constants.BOTTOM_BAR_STATUS_SHOW
 
-class CustomNestedScrollView(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
+class CustomNestedScrollView(context: Context, attrs: AttributeSet) :
+    NestedScrollView(context, attrs) {
 
     // Bottom Bar 를 관리하는 함수
     var onBottomBarStatusChange: ((Int) -> Unit)? = null
@@ -24,6 +25,7 @@ class CustomNestedScrollView(context: Context, attrs: AttributeSet) : NestedScro
                     MotionEvent.ACTION_DOWN -> {
                         prevY = event.y
                     }
+
                     MotionEvent.ACTION_MOVE -> {
                         currentY = event.y
 
@@ -37,6 +39,7 @@ class CustomNestedScrollView(context: Context, attrs: AttributeSet) : NestedScro
 
                         prevY = currentY
                     }
+
                     MotionEvent.ACTION_UP -> {
                         v?.performClick()
                     }
@@ -47,11 +50,8 @@ class CustomNestedScrollView(context: Context, attrs: AttributeSet) : NestedScro
         })
     }
 
-
     override fun performClick(): Boolean {
         super.performClick()
         return true
     }
 }
-
-

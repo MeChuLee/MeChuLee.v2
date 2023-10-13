@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.RecyclerViewRestaurantBinding
 import com.recommendmenu.mechulee.model.network.search.Item
-import com.recommendmenu.mechulee.utils.CalculationUtils
 
 class RestaurantRecyclerViewAdapter(
     private val restaurantClickListener: RestaurantClickListener
@@ -17,7 +16,8 @@ class RestaurantRecyclerViewAdapter(
 
     var restaurantList = ArrayList<Item>()
 
-    class MyViewHolder(val binding: RecyclerViewRestaurantBinding) : RecyclerView.ViewHolder(binding.root) {
+    class MyViewHolder(val binding: RecyclerViewRestaurantBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun onBind(data: Item) {
             // HTML 태그 삭제 후 반영
             binding.restaurantName.text = data.title.replace(Regex("<.*?>"), " ")
@@ -26,7 +26,12 @@ class RestaurantRecyclerViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        binding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.recycler_view_restaurant, parent, false)
+        binding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            R.layout.recycler_view_restaurant,
+            parent,
+            false
+        )
         return MyViewHolder(binding)
     }
 
@@ -38,12 +43,16 @@ class RestaurantRecyclerViewAdapter(
             val restaurantInfo = restaurantList[holder.absoluteAdapterPosition]
 
             if (restaurantInfo.mapx != null && restaurantInfo.mapy != null) {
-                val x = CalculationUtils.convertStringToDoubleWithMap(restaurantInfo.mapx)
-                val y = CalculationUtils.convertStringToDoubleWithMap(restaurantInfo.mapy)
+                val x = convertStringToDoubleWithMap(restaurantInfo.mapx)
+                val y = convertStringToDoubleWithMap(restaurantInfo.mapy)
 
                 restaurantClickListener.restaurantClick(x, y)
             }
         }
+    }
+
+    private fun convertStringToDoubleWithMap(x: String): Double {
+        return (x.dropLast(7) + "." + x.takeLast(7)).toDouble()
     }
 
     override fun getItemCount(): Int = restaurantList.size

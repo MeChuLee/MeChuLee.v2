@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ClipDescription
 import android.os.Bundle
-import android.util.Log
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -83,7 +82,7 @@ class LikeFragment : Fragment() {
                             ad.setMessage("삭제하시겠습니까?")
 
                             ad.setPositiveButton("확인") { dialog, _ ->
-                                Toast.makeText(requireContext(), "삭제했습니다", Toast.LENGTH_SHORT)
+                                Toast.makeText(requireContext(), "삭제 완료", Toast.LENGTH_SHORT)
                                     .show()
                                 dialog.dismiss()
                                 viewModel.removeMenu(myDel)
@@ -104,10 +103,6 @@ class LikeFragment : Fragment() {
                 }
 
                 DragEvent.ACTION_DRAG_ENDED -> {
-                    when (event.result) {
-                        true -> Log.d("DRAGANDDROP", "Success")
-                        false -> Log.d("DRAGANDDROP", "Failed")
-                    }
                     binding.trashLayoutHover.visibility = View.GONE
                     binding.likeRecyclerView.alpha = 1.0f
 

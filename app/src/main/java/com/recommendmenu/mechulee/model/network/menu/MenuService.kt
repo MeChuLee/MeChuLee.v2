@@ -14,12 +14,6 @@ interface MenuService {
     @GET("/recommend/today")
     fun getRecommendToday(): Call<MenuDto>
 
-    @GET("/recommend/random")
-    fun getRecommendRandom(): Call<MenuDto>
-
-    @POST("/recommend/similar")
-    fun getOtherMenuList(@Body menu: MenuInfo): Call<MenuDto>
-
     @POST("/recommend/ai")
     fun getRecommendAi(@Body ingredientList: ArrayList<IngredientInfo>): Call<MenuDto>
 }

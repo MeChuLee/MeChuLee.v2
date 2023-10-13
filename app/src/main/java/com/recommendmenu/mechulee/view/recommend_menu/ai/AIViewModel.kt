@@ -15,9 +15,9 @@ class AIViewModel : ViewModel() {
         weatherInfo.value = NetworkUtils.weatherInfo
         val temp = LocationUtils.simpleAddress.split(" ")
 
-        if(temp.size == 1){
+        if (temp.size == 1) {
             location.value = temp[0]
-        }else{
+        } else {
             location.value = temp[0] + " " + temp[1]
         }
     }

@@ -1,11 +1,9 @@
 package com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.BuildConfig.MY_SERVER_BASE_URL
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
@@ -60,13 +58,11 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
                 spinnerList.add(it)
             }
         }
-        // 리스트에 있는 MenuInfo의 title에 seachWord가 포함돼있을 경우
-        // searchList에 해당 MenuInfo를 추가
 
-        menuList.value = spinnerList
         // UI에 보여지는 menuList를 spinnerList 초기화함으로써
         // 화면에 검색한 요소들이 보여질 수 있게 한다.
         // 값만 바꿔도 menuList가 MutableLiveData이기 때문에 변경이 감지됨
+        menuList.value = spinnerList
     }
 
 
@@ -94,18 +90,7 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         getResultMenuFromServer()
     }
 
-//    // 나중에 지우면 됨
-//    fun showRatingDataStore() {
-//        viewModelScope.launch {
-//            // DataStore에 저장된 ratingList 값을 읽어와서 로그로 출력합니다.
-//            val storedRatingData = dataStore.data.firstOrNull()
-//            storedRatingData?.let {
-//                val storedRatingList = it.ratingList
-//                Log.d("DataStoreTest", "Stored Rating List: $storedRatingList")
-//            }
-//        }
-//    }
-
+    // refactoring 필요
     private fun getResultMenuFromServer() {
         val call = NetworkUtils.getRetrofitInstance(MY_SERVER_BASE_URL).create(
             MenuService::class.java
@@ -114,25 +99,16 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         call.enqueue(object : Callback<MenuDto> {  // MenuDto의 형태로 서버에서 메뉴 결과를 받아온다.
             override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
                 if (response.isSuccessful.not()) {  // API 요청 실패 시
-                    Logger.e("not isSuccessful")
                     return
                 }
-                response.body()?.let { menuDto ->
-                    // 여기서 메뉴결과가 안들어옴.
-                    val menuInfo = menuDto.recommendAiResult // 메뉴 결과를 가져옴
-                    Logger.d(menuInfo) // 무슨 메뉴가 나왔는지 확인
 
+                response.body()?.let { menuDto ->
                     resultMenu.value = menuDto.recommendAiResult
                 }
-
             }
 
-            override fun onFailure(call: Call<MenuDto>, t: Throwable) {
-                // 네트워크 오류 등의 실패 시 처리
-                Logger.d("통신 실패${t.message.toString()}")
-            }
-        }
-        )
+            override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
+        })
     }
 
     fun changeMenuListToTotalList() {
@@ -153,8 +129,4 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
             }
         }
     }
-
 }
-
-
-
