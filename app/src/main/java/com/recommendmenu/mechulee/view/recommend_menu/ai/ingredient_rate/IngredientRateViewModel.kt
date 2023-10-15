@@ -83,24 +83,36 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
     }
 
     // refactoring 필요
-    fun getResultMenuFromServer() {
-        val call = NetworkUtils.getRetrofitInstance(MY_SERVER_BASE_URL).create(
-            MenuService::class.java
-        ).getRecommendAi(totalList) // 서버에 totalList를 보낸다.
-
-        call.enqueue(object : Callback<MenuDto> {  // MenuDto의 형태로 서버에서 메뉴 결과를 받아온다.
-            override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
-                if (response.isSuccessful.not()) {  // API 요청 실패 시
-                    return
-                }
-
-                response.body()?.let { menuDto ->
-                    resultMenu.value = menuDto.recommendAiResult
-                }
+    fun getResultMenuFromServer():Boolean {
+        var isRight = false
+        for (nowValue in totalList) {
+            if (nowValue.rating >= 3.0f) {
+                isRight = true
+                break
             }
+        }
+        if (!isRight) {
+            return false
+        } else {
+            val call = NetworkUtils.getRetrofitInstance(MY_SERVER_BASE_URL).create(
+                MenuService::class.java
+            ).getRecommendAi(totalList) // 서버에 totalList를 보낸다.
 
-            override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
-        })
+            call.enqueue(object : Callback<MenuDto> {  // MenuDto의 형태로 서버에서 메뉴 결과를 받아온다.
+                override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
+                    if (response.isSuccessful.not()) {  // API 요청 실패 시
+                        return
+                    }
+
+                    response.body()?.let { menuDto ->
+                        resultMenu.value = menuDto.recommendAiResult
+                    }
+                }
+
+                override fun onFailure(call: Call<MenuDto>, t: Throwable) {}
+            })
+            return true
+        }
     }
 
     fun changeMenuListToTotalList() {
