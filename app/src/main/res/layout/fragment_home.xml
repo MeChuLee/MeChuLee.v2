@@ -205,6 +205,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/restaurantRecyclerView"
                     android:text="주변 식당 없음"
                     android:textSize="14sp"
+                    android:layout_marginTop="50dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 

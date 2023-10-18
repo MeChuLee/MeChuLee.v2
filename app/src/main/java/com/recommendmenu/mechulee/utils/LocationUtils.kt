@@ -9,6 +9,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +21,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.IOException
+import java.lang.Exception
 import java.util.Locale
 
 object LocationUtils {
@@ -39,6 +41,11 @@ object LocationUtils {
                         override fun onLocationChanged(location: Location) {
                             continuation.resumeWith(Result.success(location))
                             locationManager.removeUpdates(this)
+                        }
+
+                        @Deprecated("API 29 미만에서 필요")
+                        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+                            // API 29 부터 사용되지 않음. 하지만, 이 어플리케이션은 minSdk 가 26 이기 때문에 이 메소드가 필요
                         }
                     }
 
@@ -107,15 +114,25 @@ object LocationUtils {
                 val longitude = location.longitude
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
-                        val simpleAddress = getSimpleAddress(addresses)
+                    try {
+                        geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
+                            if (addresses.isEmpty()) {
+                                onResult("", "")
+                            } else {
+                                val simpleAddress = getSimpleAddress(addresses)
 
-                        // 주소 조회가 가능할 경우만 UI 업데이트 실행
-                        if (simpleAddress != "") {
-                            this@LocationUtils.simpleAddress = simpleAddress
-                            onResult(simpleAddress, addresses[0].adminArea)
+                                // 주소 조회가 가능할 경우만 UI 업데이트 실행
+                                if (simpleAddress != "") {
+                                    this@LocationUtils.simpleAddress = simpleAddress
+                                    onResult(simpleAddress, addresses[0].adminArea)
+                                }
+                            }
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        onResult("", "")
                     }
+
                 } else {
                     // API 31 이하 deprecated 된 함수 사용 -> UI 쓰레드 차단 방지를 위해 Coroutine 사용
                     activity.lifecycleScope.launch(Dispatchers.IO) {
@@ -123,17 +140,22 @@ object LocationUtils {
                             val addresses =
                                 geocoder.getFromLocation(latitude, longitude, 3) as List<Address>
 
-                            val simpleAddress = getSimpleAddress(addresses)
+                            if (addresses.isEmpty()) {
+                                onResult("", "")
+                            } else {
+                                val simpleAddress = getSimpleAddress(addresses)
 
-                            // 주소 조회가 가능할 경우만 UI 업데이트 실행
-                            if (simpleAddress != "") {
-                                this@LocationUtils.simpleAddress = simpleAddress
-                                withContext(Dispatchers.Main) {
-                                    onResult(simpleAddress, addresses[0].adminArea)
+                                // 주소 조회가 가능할 경우만 UI 업데이트 실행
+                                if (simpleAddress != "") {
+                                    this@LocationUtils.simpleAddress = simpleAddress
+                                    withContext(Dispatchers.Main) {
+                                        onResult(simpleAddress, addresses[0].adminArea)
+                                    }
                                 }
                             }
                         } catch (e: IOException) {
                             e.printStackTrace()
+                            onResult("", "")
                         }
                     }
                 }
@@ -143,40 +165,11 @@ object LocationUtils {
 
     // 시 구 동 형태로 주소 변경 후 return (조회 불가능 데이터 제외)
     private fun getSimpleAddress(addresses: List<Address>): String {
-        addresses.forEach { address ->
-            return if (address.locality == null) {
-                // 광역시
-                val adminArea = address.adminArea
-                val subLocality = address.subLocality
-                val thoroughfare = address.thoroughfare
-
-                if (subLocality == null && thoroughfare == null) {
-                    adminArea
-                } else if (subLocality == null && thoroughfare != null) {
-                    "$adminArea $thoroughfare"
-                } else if (subLocality != null && thoroughfare == null) {
-                    "$adminArea $subLocality"
-                } else {
-                    "$adminArea $subLocality $thoroughfare"
-                }
-            } else {
-                // 도
-                val adminArea = address.adminArea
-                val locality = address.locality
-                val thoroughfare = address.thoroughfare
-
-                if (locality == null && thoroughfare == null) {
-                    adminArea
-                } else if (locality == null && thoroughfare != null) {
-                    "$adminArea $thoroughfare"
-                } else if (locality != null && thoroughfare == null) {
-                    "$adminArea $locality"
-                } else {
-                    "$adminArea $locality $thoroughfare"
-                }
-            }
+        return if (addresses.isEmpty()) {
+            ""
+        } else {
+            val address = addresses[0]
+            listOfNotNull(address.adminArea, address.locality ?: address.subLocality, address.thoroughfare).joinToString(" ")
         }
-
-        return ""
     }
 }
