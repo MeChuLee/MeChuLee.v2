@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="homeViewModel"
             type="com.recommendmenu.mechulee.view.recommend_menu.home.HomeViewModel" />
@@ -11,18 +12,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/circularProgressIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:indeterminate="true"
-            app:indicatorColor="@color/clicked"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <com.recommendmenu.mechulee.view.CustomNestedScrollView
             android:id="@+id/nestedScrollView"
@@ -130,7 +119,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/searchRestaurant"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="50dp"
@@ -138,11 +127,19 @@
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@id/currentLocation"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintHorizontal_weight="1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/randomCardView" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/rightArrowIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    app:layout_constraintBottom_toBottomOf="@id/searchRestaurant"
+                    app:layout_constraintStart_toEndOf="@id/searchRestaurant"
+                    app:layout_constraintTop_toTopOf="@id/searchRestaurant"
+                    app:srcCompat="@drawable/right_arrow_icon" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/currentLocation"
@@ -159,32 +156,8 @@
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@id/searchRestaurant"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="2"
-                    app:layout_constraintStart_toEndOf="@id/searchRestaurant"
+                    app:layout_constraintStart_toEndOf="@id/rightArrowIcon"
                     app:layout_constraintTop_toTopOf="@id/searchRestaurant" />
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/mapFragment"
-                    android:name="com.naver.maps.map.MapFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="30dp"
-                    app:layout_constraintDimensionRatio="2:1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/searchRestaurant" />
-
-                <View
-                    android:id="@+id/line"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="20dp"
-                    android:background="@color/gray"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/restaurantRecyclerView" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/restaurantRecyclerView"
@@ -195,19 +168,19 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mapFragment" />
+                    app:layout_constraintTop_toBottomOf="@id/searchRestaurant" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/restaurantRecyclerViewEmptyView"
-                    app:layout_constraintTop_toTopOf="@id/restaurantRecyclerView"
-                    app:layout_constraintStart_toStartOf="@id/restaurantRecyclerView"
-                    app:layout_constraintEnd_toEndOf="@id/restaurantRecyclerView"
-                    app:layout_constraintBottom_toBottomOf="@id/restaurantRecyclerView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
                     android:text="주변 식당 없음"
                     android:textSize="14sp"
-                    android:layout_marginTop="50dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    app:layout_constraintBottom_toBottomOf="@id/restaurantRecyclerView"
+                    app:layout_constraintEnd_toEndOf="@id/restaurantRecyclerView"
+                    app:layout_constraintStart_toStartOf="@id/restaurantRecyclerView"
+                    app:layout_constraintTop_toTopOf="@id/restaurantRecyclerView" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

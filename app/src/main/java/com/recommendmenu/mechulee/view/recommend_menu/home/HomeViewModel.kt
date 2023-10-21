@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.model.network.search.Item
+import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.utils.RecommendUtils
 
@@ -15,14 +16,9 @@ class HomeViewModel : ViewModel() {
     val randomMenuResult = MutableLiveData<MenuInfo>()
 
     init {
-        // 오늘의 추천 메뉴 조회
         todayMenuList.value = NetworkUtils.todayMenuList
-    }
-
-    // 현재 주소와 주변 식당 리스트 반영
-    fun setCurrentAddress(simpleAddress: String) {
-        currentAddress.value = simpleAddress
         restaurantList.value = NetworkUtils.restaurantList
+        currentAddress.value = LocationUtils.simpleAddress
     }
 
     // 메뉴 랜덤 추천
