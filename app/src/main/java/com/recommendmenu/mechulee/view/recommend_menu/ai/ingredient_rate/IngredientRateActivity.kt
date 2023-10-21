@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -84,11 +85,14 @@ class IngredientActivity : AppCompatActivity() {
         binding.completeTextView.setOnClickListener {
             // 여기서 totalList의 정보들을 DataStore에 저장한다.
             viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
-            viewModel.getResultMenuFromServer()
-            // 로딩 화면
-            loadingDialog = LoadingDialog(this)
-
-            loadingDialog.show()
+            val tempOutput = viewModel.getResultMenuFromServer()
+            if(tempOutput) {
+                // 로딩 화면
+                loadingDialog = LoadingDialog(this)
+                loadingDialog.show()
+            } else {
+                Toast.makeText(this, "더 많은 재료를 평가해주세요", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // viewModel에 있는 resultMenu변경 시 감지 후 Intent로 넘긴다.
