@@ -1,28 +1,13 @@
 package com.recommendmenu.mechulee.view.recommend_menu.home
 
-import android.Manifest
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -30,22 +15,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraAnimation
-import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.MapFragment
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.util.FusedLocationSource
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.databinding.FragmentHomeBinding
 import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
 import com.recommendmenu.mechulee.utils.LocationUtils
-import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
 import com.recommendmenu.mechulee.view.dialog.LoadingDialog
 import com.recommendmenu.mechulee.view.recommend_menu.home.adapter.RestaurantRecyclerViewAdapter
@@ -56,11 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 
-class HomeFragment : Fragment(), OnMapReadyCallback {
-
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-    }
+class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -72,14 +43,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private lateinit var job: Job
     private var active = false
 
-    private lateinit var locationSource: FusedLocationSource
-    private lateinit var naverMap: NaverMap
-
     private var restaurantRecyclerViewAdapter: RestaurantRecyclerViewAdapter? = null
 
     private lateinit var loadingDialog: LoadingDialog
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -100,32 +67,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         loadingDialog = LoadingDialog(requireContext())
 
         initRecyclerView()
-        initButton()
-
-        // 오늘의 메뉴 결과 응답 감지 시 viewpager 에 반영
-        viewModel.todayMenuList.observe(requireActivity()) { todayMenuList ->
-            initViewPager(todayMenuList)
-        }
-
-        // 식당 정보 결과 응답 감지 시 recyclerview 에 반영
-        viewModel.restaurantList.observe(requireActivity()) { restaurantList ->
-            if (restaurantList.isNotEmpty()) {
-                binding.restaurantRecyclerViewEmptyView.visibility = View.GONE
-                restaurantRecyclerViewAdapter?.restaurantList?.clear()
-                restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
-                restaurantRecyclerViewAdapter?.notifyDataSetChanged()
-            }
-        }
-
-        binding.nestedScrollView.visibility = View.INVISIBLE
-
-        viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
-            loadingDialog.dismiss()
-
-            val intent = Intent(activity, MenuResultActivity::class.java)
-            intent.putExtra(INTENT_NAME_RESULT, menuInfo)
-            startActivity(intent)
-        }
+        observeData()
+        initOnClickListener()
 
         return binding.root
     }
@@ -135,30 +78,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // viewPager 자동 슬라이드 설정
         active = true
         scrollJobCreate()
-
-        if (NetworkUtils.isNetworkAvailable(requireContext())) {
-            // 네트워크 (인터넷) 연결 시
-            if (isLocationAvailable()) {
-                // 위치 권한 허용 상태
-                initMap()
-            } else {
-                // 위치 권한 요청
-                locationPermissionRequest.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                )
-            }
-        } else {
-            // 네트워크 미연결 시 -> 사용자가 WIFI 서비스를 키도록 AlertDialog 를 사용하여 유도
-            showAlertDialog(
-                "네트워크 연결 활성화",
-                "앱에서 기능을 사용하려면 네트워크를 연결해야 합니다. 네트워크 설정으로 이동하시겠습니까?",
-                Settings.ACTION_WIRELESS_SETTINGS,
-                "네트워크를 연결하고 시도해주세요."
-            )
-        }
     }
 
     override fun onPause() {
@@ -174,10 +93,44 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         restaurantRecyclerViewAdapter = null
     }
 
-    private fun initButton() {
+    @SuppressLint("NotifyDataSetChanged")
+    private fun observeData() {
+        // 오늘의 메뉴 결과 응답 감지 시 viewpager 에 반영
+        viewModel.todayMenuList.observe(requireActivity()) { todayMenuList ->
+            initViewPager(todayMenuList)
+        }
+
+        // 식당 정보 결과 응답 감지 시 recyclerview 에 반영
+        viewModel.restaurantList.observe(requireActivity()) { restaurantList ->
+            if (restaurantList.isNotEmpty()) {
+                binding.restaurantRecyclerViewEmptyView.visibility = View.GONE
+                restaurantRecyclerViewAdapter?.restaurantList?.clear()
+                restaurantRecyclerViewAdapter?.restaurantList?.addAll(restaurantList)
+                restaurantRecyclerViewAdapter?.notifyDataSetChanged()
+            }
+        }
+
+        viewModel.randomMenuResult.observe(requireActivity()) { menuInfo ->
+            loadingDialog.dismiss()
+
+            val intent = Intent(activity, MenuResultActivity::class.java)
+            intent.putExtra(INTENT_NAME_RESULT, menuInfo)
+            startActivity(intent)
+        }
+    }
+
+    private fun initOnClickListener() {
         binding.randomCardView.setOnClickListener {
             loadingDialog.show()
             viewModel.requestRecommendRandomMenu()
+        }
+
+        binding.searchRestaurant.setOnClickListener {
+            startMapWebViewActivity()
+        }
+
+        binding.rightArrowIcon.setOnClickListener {
+            startMapWebViewActivity()
         }
     }
 
@@ -294,178 +247,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    // 네이버 지도가 준비 완료되었을 경우
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onMapReady(naverMap: NaverMap) {
-        this.naverMap = naverMap
-        naverMap.locationSource = locationSource
-        naverMap.locationTrackingMode = LocationTrackingMode.Follow
-
-        // 지도 클릭 시 네이버 맵 webview 페이지로 전환
-        naverMap.setOnMapClickListener { _, _ ->
-            val intent = Intent(requireContext(), WebViewMapActivity::class.java)
-            val encodedQuery = URLEncoder.encode(LocationUtils.simpleAddress + " 맛집", "UTF-8")
-            val url =
-                "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
-            intent.putExtra(Constants.INTENT_NAME_WEB_URL, url)
-            startActivity(intent)
-        }
-
-        val uiSettings = naverMap.uiSettings
-        uiSettings.isLocationButtonEnabled = true
-        uiSettings.isScrollGesturesEnabled = true
-        uiSettings.isZoomGesturesEnabled = true
-        uiSettings.isStopGesturesEnabled = true
-
-        // 지도에 마커 표시
-        restaurantRecyclerViewAdapter?.restaurantList?.forEach {
-            val marker = Marker()
-            if (it.mapx != null && it.mapy != null) {
-                val nx = convertStringToDoubleWithMap(it.mapx)
-                val ny = convertStringToDoubleWithMap(it.mapy)
-
-                marker.position = LatLng(ny, nx)
-                marker.width = 50
-                marker.height = 80
-                marker.captionText = it.title
-                marker.map = naverMap
-            }
-        }
-
-        // 2초 후 VIEW Animation VISIBLE
-        lifecycleScope.launch {
-            delay(1000)
-
-            binding.circularProgressIndicator.visibility = View.GONE
-
-            val animation: Animation =
-                AnimationUtils.loadAnimation(requireContext(), R.anim.item_anim)
-            binding.nestedScrollView.visibility = View.VISIBLE
-            binding.nestedScrollView.animation = animation
-        }
-    }
-
-    // 위치 권한 요청 선언
-    private val locationPermissionRequest = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) ||
-                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // 위치 권한 허용 시 네이버 지도 초기화
-                initMap()
-            }
-
-            else -> {
-                // 위치 권한 미허용 시 -> 권한 허용 화면으로 이동
-                Toast.makeText(requireContext(), "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
-                val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
-                    Uri.parse("package:${requireActivity().packageName}")
-                )
-                startActivity(intent)
-            }
-        }
-    }
-
-    // 지도 초기화 (현재 위치 등록)
-    private fun initMap() {
-        // gps 켜져 있는 지 확인
-        val locationManager =
-            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        ) {
-            locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-
-            val fm = requireActivity().supportFragmentManager
-            val mapFragment = fm.findFragmentById(R.id.mapFragment) as MapFragment?
-                ?: MapFragment.newInstance().also {
-                    fm.beginTransaction().add(R.id.mapFragment, it).commit()
-                }
-
-            mapFragment.getMapAsync(this)
-
-            // 현재 주소 조회하여 반영
-            viewModel.setCurrentAddress(LocationUtils.simpleAddress)
-        } else {
-            // 사용자가 위치 서비스를 키도록 AlertDialog 를 사용하여 유도
-            showAlertDialog(
-                "위치 서비스",
-                "앱에서 위치 기능을 사용하려면 위치 서비스를 활성화해야 합니다. 위치 설정으로 이동하시겠습니까?",
-                Settings.ACTION_LOCATION_SOURCE_SETTINGS,
-                "위치 서비스를 활성화하고 시도해주세요."
-            )
-        }
-    }
-
-    // 위치 서비스가 켜져 있는지 확인 후 true / false return
-    private fun isLocationAvailable(): Boolean {
-        val fineLocationGranted = ActivityCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val coarseLocationGranted = ActivityCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        return fineLocationGranted || coarseLocationGranted
-    }
-
-    // 사용자가 관련 서비스를 키도록 AlertDialog 를 사용하여 유도
-    private fun showAlertDialog(
-        title: String,
-        message: String,
-        positiveIntentName: String,
-        negativeMessage: String
-    ) {
-        AlertDialog.Builder(requireContext()).apply {
-            setTitle(title)
-            setMessage(message)
-            setPositiveButton("이동") { _, _ ->
-                val intent = Intent(positiveIntentName)
-                startActivity(intent)
-            }
-            setNegativeButton("취소") { _, _ ->
-                Toast.makeText(requireContext(), negativeMessage, Toast.LENGTH_SHORT).show()
-                requireActivity().finish()
-            }
-            setCancelable(false)
-            create()
-        }.show()
-    }
-
     private fun initRecyclerView() {
         // 식당 리스트 recyclerView 초기화
-        restaurantRecyclerViewAdapter = RestaurantRecyclerViewAdapter(object :
-            RestaurantRecyclerViewAdapter.RestaurantClickListener {
-            override fun restaurantClick(x: Double, y: Double) {
-                // 스크롤 뷰에서 스크롤할 목적지 Y 좌표 구하기
-                val targetScrollY =
-                    binding.mapFragment.top - (binding.nestedScrollView.height - binding.mapFragment.height) / 2
-
-                // 애니메이션 동작으로 스크롤 하기 (0.5초 동안 스크롤 + 0.5초 딜레이 + 네이버 지도에서 좌표 이동 1초)
-                ObjectAnimator.ofInt(binding.nestedScrollView, "scrollY", targetScrollY).apply {
-                    duration = 500
-                    addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-
-                            // 스크롤 뷰 스크롤 애니메이션이 완료되었을 경우, 코루틴을 사용하여 0.5초 딜레이 후 지도 좌표 이동 애니메이션 동작
-                            lifecycleScope.launch {
-                                delay(500) // 딜레이 시간 설정(밀리초 단위)
-                                val cameraUpdate = CameraUpdate.scrollTo(LatLng(y, x))
-                                    .animate(CameraAnimation.Fly, 1000)
-                                naverMap.moveCamera(cameraUpdate)
-                            }
-                        }
-                    })
-                    start()
-                }
-            }
-        })
+        restaurantRecyclerViewAdapter = RestaurantRecyclerViewAdapter()
 
         val noScrollLayoutManager =
             object : LinearLayoutManager(requireContext(), VERTICAL, false) {
@@ -482,7 +266,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun convertStringToDoubleWithMap(x: String): Double {
-        return (x.dropLast(7) + "." + x.takeLast(7)).toDouble()
+    private fun startMapWebViewActivity() {
+        // webview activity 전환
+        val intent = Intent(requireContext(), WebViewMapActivity::class.java)
+        val encodedQuery = URLEncoder.encode(LocationUtils.simpleAddress + " 맛집", "UTF-8")
+        val url =
+            "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
+        intent.putExtra(Constants.INTENT_NAME_WEB_URL, url)
+        startActivity(intent)
     }
 }
