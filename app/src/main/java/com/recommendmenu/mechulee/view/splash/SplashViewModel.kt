@@ -2,10 +2,18 @@ package com.recommendmenu.mechulee.view.splash
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.utils.NetworkUtils
 
 class SplashViewModel : ViewModel() {
+    companion object {
+        const val NULL_POINT = 0
+        const val SUCCESS_POINT = 1
+        const val FAIL_POINT = 2
+    }
+
     val allComplete = MutableLiveData<Boolean>()
+    var checkArray = arrayOf(NULL_POINT, NULL_POINT, NULL_POINT, NULL_POINT)
 
     private var completeGetIngredient = false
     private var completeGetMenu = false
@@ -23,10 +31,12 @@ class SplashViewModel : ViewModel() {
     private fun requestAllIngredient() {
         NetworkUtils.requestAllIngredient(onResult = { isSuccess ->
             if (isSuccess) {
+                checkArray[0] = SUCCESS_POINT
                 completeGetIngredient = true
                 isAllTrueCheck()
             } else {
-                allComplete.postValue(false)
+                checkArray[0] = FAIL_POINT
+                arrayCheck()
             }
         })
     }
@@ -34,10 +44,12 @@ class SplashViewModel : ViewModel() {
     private fun requestAllMenu() {
         NetworkUtils.requestAllMenu(onResult = { isSuccess ->
             if (isSuccess) {
+                checkArray[1] = SUCCESS_POINT
                 completeGetMenu = true
                 isAllTrueCheck()
             } else {
-                allComplete.postValue(false)
+                checkArray[1] = FAIL_POINT
+                arrayCheck()
             }
         })
     }
@@ -54,10 +66,12 @@ class SplashViewModel : ViewModel() {
     private fun requestTodayMenu() {
         NetworkUtils.readTodayMenuListWithRetrofit(onResult = { isSuccess ->
             if (isSuccess) {
+                checkArray[2] = SUCCESS_POINT
                 completeGetTodayMenuList = true
                 isAllTrueCheck()
             } else {
-                allComplete.postValue(false)
+                checkArray[2] = FAIL_POINT
+                arrayCheck()
             }
         })
     }
@@ -66,12 +80,28 @@ class SplashViewModel : ViewModel() {
     fun requestWeatherInfo(adminArea: String) {
         NetworkUtils.requestWeatherInfo(adminArea, onResult = { isSuccess ->
             if (isSuccess) {
+                checkArray[3] = SUCCESS_POINT
                 completeGetWeather = true
                 isAllTrueCheck()
             } else {
-                allComplete.postValue(false)
+                checkArray[3] = FAIL_POINT
+                arrayCheck()
             }
         })
+    }
+
+    private fun arrayCheck() {
+
+        Logger.d("checkArray $checkArray")
+
+        if (NULL_POINT !in checkArray) {
+            Logger.e("들어온다들어녿다옫나")
+            if (FAIL_POINT in checkArray) {
+                allComplete.postValue(false)
+            }
+        } else {
+            Logger.e("여긴 들ㄹ어옴 ㅇㅇ")
+        }
     }
 
     // 모든 요청 완료 확인
