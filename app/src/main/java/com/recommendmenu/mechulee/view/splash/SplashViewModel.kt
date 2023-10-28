@@ -2,26 +2,31 @@ package com.recommendmenu.mechulee.view.splash
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.orhanobut.logger.Logger
 import com.recommendmenu.mechulee.utils.NetworkUtils
 
 class SplashViewModel : ViewModel() {
     companion object {
-        const val NULL_POINT = 0
+        const val NOT_YET_POINT = 0
         const val SUCCESS_POINT = 1
         const val FAIL_POINT = 2
+        const val IDX_CHECK_REQUEST_ALL_INGREDIENT = 0
+        const val IDX_CHECK_REQUEST_ALL_MENU = 1
+        const val IDX_CHECK_REQUEST_TODAY_MENU = 2
+        const val IDX_CHECK_REQUEST_WEATHER_INFO = 3
+        const val IDX_CHECK_REQUEST_NEAR_BY_RESTAURANT = 4
     }
 
     val allComplete = MutableLiveData<Boolean>()
-    var checkArray = arrayOf(NULL_POINT, NULL_POINT, NULL_POINT, NULL_POINT)
-
-    private var completeGetIngredient = false
-    private var completeGetMenu = false
-    private var completeGetWeather = false
-    private var completeGetNearByRestaurant = false
-    private var completeGetTodayMenuList = false
+    private var checkArray = arrayOf(NOT_YET_POINT, NOT_YET_POINT, NOT_YET_POINT, NOT_YET_POINT, NOT_YET_POINT)
 
     init {
+        requestServer()
+    }
+
+    fun requestServer() {
+        // 서버 통신 확인 Array 초기화
+        setInitValueCheckArray()
+
         // 전체 재료, 전체 메뉴 조회
         requestAllIngredient()
         requestAllMenu()
@@ -31,26 +36,22 @@ class SplashViewModel : ViewModel() {
     private fun requestAllIngredient() {
         NetworkUtils.requestAllIngredient(onResult = { isSuccess ->
             if (isSuccess) {
-                checkArray[0] = SUCCESS_POINT
-                completeGetIngredient = true
-                isAllTrueCheck()
+                checkArray[IDX_CHECK_REQUEST_ALL_INGREDIENT] = SUCCESS_POINT
             } else {
-                checkArray[0] = FAIL_POINT
-                arrayCheck()
+                checkArray[IDX_CHECK_REQUEST_ALL_INGREDIENT] = FAIL_POINT
             }
+            isAllTrueCheck()
         })
     }
 
     private fun requestAllMenu() {
         NetworkUtils.requestAllMenu(onResult = { isSuccess ->
             if (isSuccess) {
-                checkArray[1] = SUCCESS_POINT
-                completeGetMenu = true
-                isAllTrueCheck()
+                checkArray[IDX_CHECK_REQUEST_ALL_MENU] = SUCCESS_POINT
             } else {
-                checkArray[1] = FAIL_POINT
-                arrayCheck()
+                checkArray[IDX_CHECK_REQUEST_ALL_MENU] = FAIL_POINT
             }
+            isAllTrueCheck()
         })
     }
 
@@ -58,7 +59,7 @@ class SplashViewModel : ViewModel() {
     fun searchNearByRestaurant(address: String) {
         // 주변 식당 검색은 꼭 요청이 성공할 필요는 없으므로 isSuccess 로 구별하지 않음
         NetworkUtils.searchNearByRestaurant(address, onResult = {
-            completeGetNearByRestaurant = true
+            checkArray[IDX_CHECK_REQUEST_NEAR_BY_RESTAURANT] = SUCCESS_POINT
             isAllTrueCheck()
         })
     }
@@ -66,13 +67,11 @@ class SplashViewModel : ViewModel() {
     private fun requestTodayMenu() {
         NetworkUtils.readTodayMenuListWithRetrofit(onResult = { isSuccess ->
             if (isSuccess) {
-                checkArray[2] = SUCCESS_POINT
-                completeGetTodayMenuList = true
-                isAllTrueCheck()
+                checkArray[IDX_CHECK_REQUEST_TODAY_MENU] = SUCCESS_POINT
             } else {
-                checkArray[2] = FAIL_POINT
-                arrayCheck()
+                checkArray[IDX_CHECK_REQUEST_TODAY_MENU] = FAIL_POINT
             }
+            isAllTrueCheck()
         })
     }
 
@@ -80,34 +79,31 @@ class SplashViewModel : ViewModel() {
     fun requestWeatherInfo(adminArea: String) {
         NetworkUtils.requestWeatherInfo(adminArea, onResult = { isSuccess ->
             if (isSuccess) {
-                checkArray[3] = SUCCESS_POINT
-                completeGetWeather = true
-                isAllTrueCheck()
+                checkArray[IDX_CHECK_REQUEST_WEATHER_INFO] = SUCCESS_POINT
             } else {
-                checkArray[3] = FAIL_POINT
-                arrayCheck()
+                checkArray[IDX_CHECK_REQUEST_WEATHER_INFO] = FAIL_POINT
             }
+            isAllTrueCheck()
         })
-    }
-
-    private fun arrayCheck() {
-
-        Logger.d("checkArray $checkArray")
-
-        if (NULL_POINT !in checkArray) {
-            Logger.e("들어온다들어녿다옫나")
-            if (FAIL_POINT in checkArray) {
-                allComplete.postValue(false)
-            }
-        } else {
-            Logger.e("여긴 들ㄹ어옴 ㅇㅇ")
-        }
     }
 
     // 모든 요청 완료 확인
     private fun isAllTrueCheck() {
-        if (completeGetIngredient && completeGetMenu && completeGetNearByRestaurant && completeGetTodayMenuList && completeGetWeather) {
+        // 아직 통신 안된 것이 있다면 return
+        if (NOT_YET_POINT in checkArray) {
+            return
+        }
+
+        if (FAIL_POINT in checkArray) {
+            allComplete.postValue(false)
+        } else {
             allComplete.postValue(true)
+        }
+    }
+
+    private fun setInitValueCheckArray() {
+        checkArray.forEachIndexed { index, _ ->
+            checkArray[index] = NOT_YET_POINT
         }
     }
 }

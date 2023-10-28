@@ -55,7 +55,6 @@ class SplashActivity : AppCompatActivity() {
         checkPermission()
     }
 
-
     // 위치 권한 요청 선언
     private val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -164,12 +163,7 @@ class SplashActivity : AppCompatActivity() {
         AlertDialog.Builder(this).apply {
             setMessage(inputString)
             setPositiveButton("다시 시도") { _, _ ->
-                viewModel.checkArray = arrayOf(
-                    SplashViewModel.NULL_POINT,
-                    SplashViewModel.NULL_POINT,
-                    SplashViewModel.NULL_POINT,
-                    SplashViewModel.NULL_POINT
-                )
+                viewModel.requestServer()
                 startApp()
             }
             setCancelable(false)
