@@ -10,19 +10,17 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -38,6 +36,17 @@ class SplashActivity : AppCompatActivity() {
 
         // StatusBar 색 변경
         window.statusBarColor = ContextCompat.getColor(this, R.color.white)
+
+        viewModel.allComplete.observe(this@SplashActivity) { allComplete ->
+            if (allComplete) {
+                // 통신 완료 시 메인 화면 시작
+                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                finish()
+            } else {
+                // 서버와 통신 실패 시 종료
+                showRetryAlertDialog("서버 오류가 발생하였습니다.\n잠시 후 다시 시도해주세요.")
+            }
+        }
     }
 
     override fun onResume() {
@@ -45,7 +54,6 @@ class SplashActivity : AppCompatActivity() {
 
         checkPermission()
     }
-
 
     // 위치 권한 요청 선언
     private val locationPermissionRequest = registerForActivityResult(
@@ -107,6 +115,7 @@ class SplashActivity : AppCompatActivity() {
         }.show()
     }
 
+
     private fun checkPermission() {
         if (NetworkUtils.isNetworkAvailable(this)) {
             // 네트워크 (인터넷) 연결 시
@@ -150,17 +159,33 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    private fun showRetryAlertDialog(inputString: String) {
+        AlertDialog.Builder(this).apply {
+            setMessage(inputString)
+            setPositiveButton("다시 시도") { _, _ ->
+                viewModel.requestServer()
+                startApp()
+            }
+            setCancelable(false)
+            setOnKeyListener { dialogInterface, keyCode, _ ->
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dialogInterface.dismiss()
+                    finish()
+                    true
+                } else {
+                    false
+                }
+            }
+            create()
+        }.show()
+    }
+
     private fun startApp() {
         // 현재 주소 조회하여 반영, onResult : callback 함수
         LocationUtils.getCurrentAddress(this, onResult = { simpleAddress, adminArea ->
-            // 도/광역시 단위 주소가 없을 경우 앱 종료
             if (adminArea == "") {
-                Toast.makeText(
-                    this@SplashActivity,
-                    "위치 오류가 발생하였습니다. 잠시 후 다시 시도해주세요.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                finish()
+                // 도/광역시 단위 주소가 없을 경우 앱 종료
+                showRetryAlertDialog("위치를 조회할 수 없습니다.\n다시 시도해주세요.")
                 return@getCurrentAddress
             }
 
@@ -170,27 +195,5 @@ class SplashActivity : AppCompatActivity() {
             // 주변 식당 검색
             viewModel.searchNearByRestaurant(simpleAddress)
         })
-
-        // 3.5 초 이후부터 observe 처리를 위한 비동기 쓰레드
-        lifecycleScope.launch {
-            delay(3500)
-
-            // 3.5초 후 부터 observe 처리위해 delay(3500) 이후 observe 실행
-            viewModel.allComplete.observe(this@SplashActivity) { allComplete ->
-                if (allComplete) {
-                    // 통신 완료 시 메인 화면 시작
-                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-                    finish()
-                } else {
-                    // 서버와 통신 실패 시 종료
-                    Toast.makeText(
-                        this@SplashActivity,
-                        "서버 오류가 발생하였습니다. 잠시 후 다시 시도해주세요.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    finish()
-                }
-            }
-        }
     }
 }
