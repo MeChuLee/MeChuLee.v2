@@ -64,8 +64,6 @@ class SplashActivity : AppCompatActivity() {
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) ||
                     permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // 위치 권한 허용 시
-                startApp()
             }
 
             else -> {
