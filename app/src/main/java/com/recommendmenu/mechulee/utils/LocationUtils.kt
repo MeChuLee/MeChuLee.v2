@@ -78,7 +78,7 @@ object LocationUtils {
     }
 
     // 현재 주소 가져오기 (activity 가 필요하므로, Activity 나 Fragment 에서 수행)
-    fun getCurrentAddress(activity: FragmentActivity, onResult: (String, String) -> Unit) {
+    fun getCurrentAddress(activity: FragmentActivity, onResult: suspend (String, String) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -104,7 +104,6 @@ object LocationUtils {
 
         activity.lifecycleScope.launch(Dispatchers.Main) {
             val location = getLocationUpdatesAsync(activity, locationManager, provider).await()
-
             if (location == null) {
                 // 위치 값이 null 일 경우, activity 에서 종료할 수 있게 "", "" 로 onResult() 실행
                 onResult("", "")
@@ -114,23 +113,33 @@ object LocationUtils {
                 val longitude = location.longitude
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    try {
-                        geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
-                            if (addresses.isEmpty()) {
-                                onResult("", "")
-                            } else {
-                                val simpleAddress = getSimpleAddress(addresses)
+                    activity.lifecycleScope.launch(Dispatchers.IO) {
+                        try {
+                            geocoder.getFromLocation(latitude, longitude, 3) { addresses ->
+                                if (addresses.isEmpty()) {
+                                    activity.lifecycleScope.launch {
+                                        onResult("", "")
+                                    }
+                                } else {
+                                    val simpleAddress = getSimpleAddress(addresses)
 
-                                // 주소 조회가 가능할 경우만 UI 업데이트 실행
-                                if (simpleAddress != "") {
-                                    this@LocationUtils.simpleAddress = simpleAddress
-                                    onResult(simpleAddress, addresses[0].adminArea)
+                                    // 주소 조회가 가능할 경우만 UI 업데이트 실행
+                                    if (simpleAddress != "") {
+                                        this@LocationUtils.simpleAddress = simpleAddress
+                                        activity.lifecycleScope.launch {
+                                            onResult(simpleAddress, addresses[0].adminArea)
+                                        }
+                                    } else {
+                                        activity.lifecycleScope.launch {
+                                            onResult("", "")
+                                        }
+                                    }
                                 }
                             }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            onResult("", "")
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        onResult("", "")
                     }
 
                 } else {
@@ -151,6 +160,8 @@ object LocationUtils {
                                     withContext(Dispatchers.Main) {
                                         onResult(simpleAddress, addresses[0].adminArea)
                                     }
+                                } else {
+                                    onResult("", "")
                                 }
                             }
                         } catch (e: IOException) {
