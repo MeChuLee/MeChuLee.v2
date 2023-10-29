@@ -21,6 +21,8 @@ import com.recommendmenu.mechulee.R
 import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import com.recommendmenu.mechulee.view.MainActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -44,7 +46,7 @@ class SplashActivity : AppCompatActivity() {
                 finish()
             } else {
                 // 서버와 통신 실패 시 종료
-                showRetryAlertDialog("서버 오류가 발생하였습니다.\n잠시 후 다시 시도해주세요.")
+                showRetryAlertDialogNetwork("서버 오류가 발생하였습니다.\n잠시 후 다시 시도해주세요.")
             }
         }
     }
@@ -159,7 +161,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRetryAlertDialog(inputString: String) {
+    private fun showRetryAlertDialogNetwork(inputString: String) {
         AlertDialog.Builder(this).apply {
             setMessage(inputString)
             setPositiveButton("다시 시도") { _, _ ->
@@ -180,12 +182,40 @@ class SplashActivity : AppCompatActivity() {
         }.show()
     }
 
+    private fun showRetryAlertDialogLocation(inputString: String) {
+        AlertDialog.Builder(this).apply {
+            setMessage(inputString)
+            setPositiveButton("확인") { _, _ ->
+                LocationUtils.simpleAddress = "서울특별시 강남구"
+                // 시/도에 따른 날씨 조회
+                viewModel.requestWeatherInfo("서울특별시")
+
+                // 주변 식당 검색
+                viewModel.searchNearByRestaurant(LocationUtils.simpleAddress)
+            }
+            setCancelable(false)
+            setOnKeyListener { dialogInterface, keyCode, _ ->
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dialogInterface.dismiss()
+                    finish()
+                    true
+                } else {
+                    false
+                }
+            }
+            create()
+        }.show()
+    }
+
     private fun startApp() {
         // 현재 주소 조회하여 반영, onResult : callback 함수
         LocationUtils.getCurrentAddress(this, onResult = { simpleAddress, adminArea ->
+
             if (adminArea == "") {
                 // 도/광역시 단위 주소가 없을 경우 앱 종료
-                showRetryAlertDialog("위치를 조회할 수 없습니다.\n다시 시도해주세요.")
+                withContext(Dispatchers.Main) {
+                    showRetryAlertDialogLocation("위치를 조회할 수 없습니다.\n위치를 서울로 실행합니다.")
+                }
                 return@getCurrentAddress
             }
 
