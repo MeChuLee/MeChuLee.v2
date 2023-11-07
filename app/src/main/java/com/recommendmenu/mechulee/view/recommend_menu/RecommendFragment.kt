@@ -1,5 +1,6 @@
 package com.recommendmenu.mechulee.view.recommend_menu
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.recommendmenu.mechulee.databinding.FragmentRecommendBinding
+import com.recommendmenu.mechulee.view.recommend_menu.home.TutorialActivity
 
 class RecommendFragment : Fragment() {
 
@@ -21,6 +23,10 @@ class RecommendFragment : Fragment() {
         _binding = FragmentRecommendBinding.inflate(layoutInflater)
 
         initViewPager()
+
+        binding.helpButton.setOnClickListener {
+            startActivity(Intent(requireContext(), TutorialActivity::class.java))
+        }
 
         return binding.root
     }

@@ -26,16 +26,27 @@
                 android:id="@+id/resultMenuName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
                 android:text="김치찌개"
                 android:textSize="35sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/ingredientText"
-                app:layout_constraintEnd_toStartOf="@id/heartIcon"
+                app:layout_constraintEnd_toStartOf="@id/restaurantIcon"
                 app:layout_constraintHorizontal_bias="0.065"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/resultMenuImage" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/restaurantIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/ic_restaurant"
+                app:layout_constraintBottom_toBottomOf="@id/resultMenuName"
+                app:layout_constraintEnd_toStartOf="@id/heartIcon"
+                app:layout_constraintStart_toEndOf="@id/resultMenuName"
+                app:layout_constraintTop_toTopOf="@id/resultMenuName" />
 
             <ImageView
                 android:id="@+id/heartIcon"
@@ -52,10 +63,11 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/resultMenuName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@id/resultMenuName"
-                app:layout_constraintTop_toBottomOf="@id/resultMenuImage"
+                app:layout_constraintTop_toTopOf="@id/resultMenuName"
                 app:lottie_loop="false"
                 app:lottie_rawRes="@raw/heart_click" />
 
@@ -75,25 +87,24 @@
                 app:layout_constraintTop_toBottomOf="@+id/resultMenuName" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ingredientList"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:id="@+id/ingredientList"
                 app:layout_constraintBottom_toTopOf="@+id/otherMenuText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ingredientText"
-                            />
-                        <!--            <TextView-->
-<!--                android:id="@+id/ingredientList"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:textSize="20sp"-->
-<!--                app:layout_constraintBottom_toTopOf="@+id/otherMenuText"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintHorizontal_bias="0.07"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/ingredientText" />-->
+                app:layout_constraintTop_toBottomOf="@+id/ingredientText" />
+            <!--            <TextView-->
+            <!--                android:id="@+id/ingredientList"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:textSize="20sp"-->
+            <!--                app:layout_constraintBottom_toTopOf="@+id/otherMenuText"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintHorizontal_bias="0.07"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@+id/ingredientText" />-->
 
             <TextView
                 android:id="@+id/otherMenuText"

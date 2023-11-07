@@ -76,5 +76,9 @@
         <activity
             android:name=".view.settings.OpensourceLicenseActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".view.recommend_menu.home.TutorialActivity"
+            android:exported="false" />
     </application>
 </manifest>
