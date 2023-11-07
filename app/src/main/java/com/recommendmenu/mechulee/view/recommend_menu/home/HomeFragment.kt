@@ -1,6 +1,7 @@
 package com.recommendmenu.mechulee.view.recommend_menu.home
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -69,6 +70,8 @@ class HomeFragment : Fragment() {
         initRecyclerView()
         observeData()
         initOnClickListener()
+
+        checkTutorial()
 
         return binding.root
     }
@@ -274,5 +277,15 @@ class HomeFragment : Fragment() {
             "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
         intent.putExtra(Constants.INTENT_NAME_WEB_URL, url)
         startActivity(intent)
+    }
+
+    private fun checkTutorial() {
+        val preferences = requireContext().getSharedPreferences(Constants.SHARED_PREFERENCES_TUTORIAL_NAME, Context.MODE_PRIVATE)
+        val isTutorial = preferences.getBoolean(Constants.SHARED_PREFERENCES_TUTORIAL_KEY, true)
+
+        if (isTutorial) {
+            preferences.edit().putBoolean(Constants.SHARED_PREFERENCES_TUTORIAL_KEY, false).apply()
+            startActivity(Intent(requireContext(), TutorialActivity::class.java))
+        }
     }
 }

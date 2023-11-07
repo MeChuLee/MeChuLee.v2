@@ -132,6 +132,7 @@ object NetworkUtils {
                         // 응답으로 온 메뉴 데이터를 viewModel data 에 반영 ( 분류 순 정렬 )
                         val resultMenuList = menuDto.menuList.sortedWith(compareBy { it.category })
                         totalMenuList = resultMenuList.toCollection(ArrayList())
+                        totalMenuList.sortBy { it.name }
 
                         onResult(true)
                     }

@@ -1,5 +1,6 @@
 package com.recommendmenu.mechulee.view.result.menu
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -15,9 +16,12 @@ import com.recommendmenu.mechulee.model.data.MenuInfo
 import com.recommendmenu.mechulee.proto.likedMenuDataStore
 import com.recommendmenu.mechulee.utils.Constants
 import com.recommendmenu.mechulee.utils.Constants.INTENT_NAME_RESULT
+import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
+import com.recommendmenu.mechulee.view.recommend_menu.home.WebViewMapActivity
 import com.recommendmenu.mechulee.view.result.menu.adapter.MenuResultIngredientAdapter
 import com.recommendmenu.mechulee.view.result.menu.adapter.MenuResultOtherMenuAdapter
+import java.net.URLEncoder
 
 class MenuResultActivity : AppCompatActivity() {
     private var _binding: ActivityMenuResultBinding? = null
@@ -120,6 +124,16 @@ class MenuResultActivity : AppCompatActivity() {
                         LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
                 }
             }
+        }
+
+        binding.restaurantIcon.setOnClickListener {
+            // webview activity 전환
+            val intent = Intent(this, WebViewMapActivity::class.java)
+            val encodedQuery = URLEncoder.encode(LocationUtils.simpleAddress + " " + binding.resultMenuName.text + " 맛집", "UTF-8")
+            val url =
+                "https://m.map.naver.com/search2/search.naver?query=${encodedQuery}&sm=hty&style=v5"
+            intent.putExtra(Constants.INTENT_NAME_WEB_URL, url)
+            startActivity(intent)
         }
     }
 

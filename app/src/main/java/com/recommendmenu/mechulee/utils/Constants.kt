@@ -12,6 +12,9 @@ object Constants {
     const val INTENT_NAME_WEB_URL = "webUrl"
     const val INTENT_NAME_RESULT = "object"
 
+    const val SHARED_PREFERENCES_TUTORIAL_NAME = "tutorial_name"
+    const val SHARED_PREFERENCES_TUTORIAL_KEY = "tutorial_key"
+
     val OPENSOURCE_LICENSE_LIST = arrayListOf(
         LicenseInfo(
             "Lottie\nCopyright 2017 Airbnb, Inc.\nLicensed under the Apache License 2.0",

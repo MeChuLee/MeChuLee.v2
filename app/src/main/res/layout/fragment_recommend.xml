@@ -28,7 +28,7 @@
                     app:popupTheme="@style/AppTheme.PopupOverlay" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -41,7 +41,6 @@
                         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@id/mechulee"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/mechulee"
                         app:layout_constraintTop_toTopOf="@id/mechulee" />
 
@@ -56,6 +55,16 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@raw/mechulee" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/helpButton"
+                        app:layout_constraintTop_toTopOf="@id/mechulee"
+                        app:layout_constraintBottom_toBottomOf="@id/mechulee"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@drawable/ic_help"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
