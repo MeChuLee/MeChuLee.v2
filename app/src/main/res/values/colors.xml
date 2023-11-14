@@ -27,4 +27,5 @@
 
     <color name="likeCardView">#F8F8F8</color>
 
+    <color name="blackTransparent">#80000000</color>
 </resources>
