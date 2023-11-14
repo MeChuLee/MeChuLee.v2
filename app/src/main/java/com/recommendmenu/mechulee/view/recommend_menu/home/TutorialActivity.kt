@@ -25,7 +25,7 @@ class TutorialActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // StatusBar 색 변경
-        window.statusBarColor = ContextCompat.getColor(this, R.color.white)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.blackTransparent)
 
         initViewPager()
     }
@@ -37,9 +37,12 @@ class TutorialActivity : AppCompatActivity() {
             }
         })
 
-        viewPagerAdapter.tutorialImageList.add(R.raw.mechulee)
-        viewPagerAdapter.tutorialImageList.add(R.raw.mechulee)
-        viewPagerAdapter.tutorialImageList.add(R.raw.mechulee)
+        viewPagerAdapter.tutorialImageList.add(R.raw.tutorial1)
+        viewPagerAdapter.tutorialImageList.add(R.raw.tutorial2)
+        viewPagerAdapter.tutorialImageList.add(R.raw.tutorial3)
+        viewPagerAdapter.tutorialImageList.add(R.raw.tutorial4)
+        viewPagerAdapter.tutorialImageList.add(R.raw.tutorial5)
+
         size = viewPagerAdapter.tutorialImageList.size
 
         // 현재 banner 가 가리키고 있는 position 초기화
