@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,6 +37,8 @@ class IngredientFragment : Fragment() {
 
     private var backPressedTime: Long = 0
     private lateinit var fadeIn: ObjectAnimator
+    private lateinit var clearButtonFadeIn: ObjectAnimator
+    private lateinit var scrollUpButtonFadeOut: ObjectAnimator
     private lateinit var callback: OnBackPressedCallback
 
     // 재료 분류 어댑터
@@ -101,6 +104,28 @@ class IngredientFragment : Fragment() {
             startActivity(Intent(requireContext(), IngredientResultActivity::class.java))
         }
 
+        // 위로 올라가는 버튼
+        binding.scrollUpButton.setOnClickListener {
+            binding.recyclerMain.smoothScrollToPosition(0)
+        }
+
+        // 선택한 재료 초기화하는 버튼
+        binding.clearButton.setOnClickListener{
+            AlertDialog.Builder(requireContext()).apply {
+                setTitle("재료 초기화")
+                setMessage("선택한 재료들을 초기화하시겠습니까?")
+                setPositiveButton("확인") { dialog, _ ->
+                    // 여기서 viewmodel에 있는 초기화 함수를 실행
+                    viewModel.clearSelectedIngredient()
+                    dialog.dismiss()
+                }
+                setNegativeButton("취소") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                create()
+            }.show()
+        }
+
         return binding.root
     }
 
@@ -152,6 +177,35 @@ class IngredientFragment : Fragment() {
             })
         }
 
+        val clearButtonFadeOut = ObjectAnimator.ofFloat(binding.clearButton, "alpha", 1f, 0f).apply {
+            duration = 1000 // 애니메이션 지속 시간 설정 (1초)
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {
+                    binding.clearButton.isEnabled = false
+                }
+
+                override fun onAnimationEnd(animation: Animator) {}
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+        }
+        val scrollUpButtonFadeIn = ObjectAnimator.ofFloat(binding.scrollUpButton, "alpha", 0f, 1f).apply {
+            duration = 1000 // 애니메이션 지속 시간 설정 (1초)
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {
+                    binding.scrollUpButton.isEnabled = true
+                }
+
+                override fun onAnimationEnd(animation: Animator) {}
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+        }
+
         // 버튼을 다시 나타나게 하는 애니메이션
         fadeIn = ObjectAnimator.ofFloat(binding.circleSelectButton, "alpha", 0f, 1f).apply {
             duration = 1000 // 애니메이션 지속 시간 설정 (1초)
@@ -167,6 +221,37 @@ class IngredientFragment : Fragment() {
                 override fun onAnimationRepeat(animation: Animator) {}
             })
         }
+
+        clearButtonFadeIn = ObjectAnimator.ofFloat(binding.clearButton, "alpha", 0f, 1f).apply {
+            duration = 1000 // 애니메이션 지속 시간 설정 (1초)
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {}
+
+                override fun onAnimationEnd(animation: Animator) {
+                    binding.clearButton.isEnabled = true
+                }
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+        }
+
+        scrollUpButtonFadeOut = ObjectAnimator.ofFloat(binding.scrollUpButton, "alpha", 1f, 0f).apply {
+            duration = 1000 // 애니메이션 지속 시간 설정 (1초)
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {}
+
+                override fun onAnimationEnd(animation: Animator) {
+                    binding.scrollUpButton.isEnabled = false
+                }
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+        }
+
 
         // Scroll 이벤트 추가
         // 1. MainActivity Bottom Bar 를 컨트롤하기 위해 MainActivity 에 Listener 로 알림
@@ -185,6 +270,8 @@ class IngredientFragment : Fragment() {
                             || binding.motionLayout.progress <= 0f)
                 ) {
                     fadeIn.start()
+                    clearButtonFadeIn.start()
+                    scrollUpButtonFadeOut.start()
 
                     binding.motionLayout.transitionToStart()
 
@@ -202,6 +289,8 @@ class IngredientFragment : Fragment() {
                             || binding.motionLayout.progress <= 0f)
                 ) {
                     fadeOut.start()
+                    clearButtonFadeOut.start()
+                    scrollUpButtonFadeIn.start()
 
                     binding.motionLayout.transitionToEnd()
 

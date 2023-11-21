@@ -1,6 +1,7 @@
 package com.recommendmenu.mechulee.view.settings
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +30,13 @@ class SettingsFragment : Fragment() {
         // 이미지 라이센스 화면으로 전환
         binding.imageText.setOnClickListener {
             val intent = Intent(activity, ImageLicenseActivity::class.java)
+            startActivity(intent)
+        }
+
+        // 리뷰 남기기 화면 이동
+        binding.reviewText.setOnClickListener {
+            val uriName = Uri.parse("market://details?id=com.recommendmenu.mechulee&hl=ko-KR")
+            val intent = Intent(Intent.ACTION_VIEW, uriName)
             startActivity(intent)
         }
 
