@@ -66,8 +66,9 @@ class AIFragment : Fragment(), OnTagTapListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        aiButtonRightArrowClickEvent()
+        
+        
+        aiClickEvent()
         initTagView()
     }
 
@@ -91,7 +92,7 @@ class AIFragment : Fragment(), OnTagTapListener {
         binding.tagView.setOnTagTapListener(this)
     }
 
-    private fun aiButtonRightArrowClickEvent() {
+    private fun aiClickEvent() {
         // 버튼 클릭 리스너 설정
         binding.tagView.setOnClickListener {
             // 액티비티로 전환하는 Intent 생성
@@ -100,6 +101,12 @@ class AIFragment : Fragment(), OnTagTapListener {
         }
 
         binding.rightArrowIcon.setOnClickListener {
+            // 액티비티로 전환하는 Intent 생성
+            val intent = Intent(activity, IngredientActivity::class.java)
+            startActivity(intent) // 액티비티로 전환
+        }
+
+        binding.ratingText.setOnClickListener {
             // 액티비티로 전환하는 Intent 생성
             val intent = Intent(activity, IngredientActivity::class.java)
             startActivity(intent) // 액티비티로 전환

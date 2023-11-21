@@ -42,8 +42,20 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
                 totalList[i].rating = matchingRating
             }
             menuList.value = totalList
-        }
+            }
         )
+    }
+
+    fun refreshMenuList() {
+        menuList.value = menuList.value?.map { it.copy(rating = 0f) }?.let { ArrayList(it) }
+    }
+
+    fun areAllRatingsZero(): Boolean {
+        // null 체크
+        val currentMenuList = menuList.value ?: return false
+
+        // any 함수를 사용하여 하나라도 0이 아닌 rating이 있으면 false 반환
+        return currentMenuList.all { it.rating == 0f }
     }
 
     fun showMenuList(selectedItem: String, searchWord: String) {
