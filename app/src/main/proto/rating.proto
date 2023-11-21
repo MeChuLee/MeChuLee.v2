@@ -21,3 +21,6 @@ message IngredientData {
 message LikeData {
   repeated string likedMenu = 1;
 }
+message RatingDataMap {
+   map<string, float> ratingMap = 1;
+}

@@ -18,6 +18,7 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener: Ingr
     RecyclerView.Adapter<IngredientRateRecyclerViewAdapter.ViewHolder>() {
 
     var itemList = ArrayList<IngredientInfo>()
+    var isRated = false;
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
@@ -32,6 +33,8 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener: Ingr
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        itemList.sortBy { it.title }
+
         val item = itemList[position]
 
         holder.imageView.setImageResource(item.imageResId)
@@ -40,12 +43,15 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener: Ingr
         // 레이팅바의 리스너를 설정하여 평가 값이 변경되었을 때 평가 값 갱신
         // ratingBar, rating, fromUser
         holder.rotationRatingBar.setOnRatingChangeListener { _, rating, fromUser ->
+
+
             item.rating = rating // 평가 값 갱신
 
             // fromUser값 판별(유저로 부터 받은 입력일때) -> false, true
             // fromUser값 - 레이팅 값 변경이 사용자로부터 발생했는지 여부를 나타내는 불리언 값
             if (fromUser) {
                 ingredientRateListener.changeCurrentItem(item)
+                ingredientRateListener.isRated(!isRated)
             }
         }
 
@@ -68,6 +74,7 @@ class IngredientRateRecyclerViewAdapter(private val ingredientRateListener: Ingr
 
     interface IngredientRateListener {
         fun changeCurrentItem(itemList: IngredientInfo)
+        fun isRated(isRated: Boolean)
     }
 
     override fun getItemCount(): Int {

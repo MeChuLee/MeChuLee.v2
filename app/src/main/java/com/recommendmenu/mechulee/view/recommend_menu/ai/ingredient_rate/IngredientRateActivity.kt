@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,12 +26,14 @@ import com.recommendmenu.mechulee.view.dialog.LoadingDialog
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.CustomSpinnerAdapter
 import com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.adapter.IngredientRateRecyclerViewAdapter
 import com.recommendmenu.mechulee.view.result.menu.MenuResultActivity
+import kotlin.properties.Delegates
 
 class IngredientActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityIngredientRateBinding
     private lateinit var viewModel: IngredientRateViewModel
     private lateinit var loadingDialog: LoadingDialog
+    private var isRated = false
 
     // NotifyDataSetChanged가 함수가 리사이클러뷰 전체를 바꾸는 형식인데
     // 안드로이드에서는 전체를 바꾸는 것을 지양하기 때문에
@@ -46,7 +49,10 @@ class IngredientActivity : AppCompatActivity() {
         )
 
         // ViewModelProvider.Factory를 생성하여 ItemViewModel 인스턴스를 생성
-        val viewModelFactory = IngredientRateViewModelFactory(ratingDataStore)
+        val viewModelFactory =
+            com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientRateViewModelFactory(
+                ratingDataStore
+            )
 
         // ItemViewModelFactory를 provider에 넘겨줌으로서 viewModel에서 DataStore를 접근가능하도록 설정
         viewModel = ViewModelProvider(this, viewModelFactory)[IngredientRateViewModel::class.java]
@@ -58,6 +64,10 @@ class IngredientActivity : AppCompatActivity() {
             override fun changeCurrentItem(itemList: IngredientInfo) {
                 // 카테고리 버튼을 클릭하여 현재 카테고리 변경 시
                 viewModel.changeItemFromItemList(itemList)
+            }
+
+            override fun isRated(isRated: Boolean) {
+                this@IngredientActivity.isRated = isRated
             }
         })
 
@@ -81,17 +91,48 @@ class IngredientActivity : AppCompatActivity() {
         window.statusBarColor =
             ContextCompat.getColor(this, com.recommendmenu.mechulee.R.color.white)
 
-        // 완료 버튼 클릭 시
+        binding.refresh.setOnClickListener {
+            isRated = false // 평가 안됨으로 초기화
+
+            viewModel.refreshMenuList()
+        }
+
+        // 추천 버튼 클릭 시
         binding.completeTextView.setOnClickListener {
-            // 여기서 totalList의 정보들을 DataStore에 저장한다.
-            viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
-            val tempOutput = viewModel.getResultMenuFromServer()
-            if(tempOutput) {
-                // 로딩 화면
-                loadingDialog = LoadingDialog(this)
-                loadingDialog.show()
-            } else {
-                Toast.makeText(this, "더 많은 재료를 평가해주세요", Toast.LENGTH_SHORT).show()
+
+            if(!isRated && !viewModel.areAllRatingsZero()){ // 평가가 한 번도 되지 않은 경우
+                android.app.AlertDialog.Builder(this).apply {
+                    setMessage("변경 사항이 없습니다.\n추천 받으시겠습니까?")
+                    setPositiveButton("추천") { _, _ ->
+                        viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
+                        val tempOutput = viewModel.getResultMenuFromServer()
+                        if(tempOutput) {
+                            // 로딩 화면
+                            loadingDialog = LoadingDialog(this@IngredientActivity)
+                            loadingDialog.show()
+                        } else {
+                            Toast.makeText(this@IngredientActivity, "더 많은 재료를 평가해주세요", Toast.LENGTH_SHORT).show()
+                        }
+                        val intent = Intent(this@IngredientActivity, MenuResultActivity::class.java)
+                        startActivity(intent)
+                    }
+                    setNegativeButton("취소") { _, _ ->
+                        //finish()
+                    }
+                    setCancelable(false)
+                    create()
+                }.show()
+            }else {
+                // 여기서 totalList의 정보들을 DataStore에 저장한다.
+                viewModel.storeRatingDataFromTotalList() // <- 내부에서 getResultMenu()함수를 호출
+                val tempOutput = viewModel.getResultMenuFromServer()
+                if(tempOutput) {
+                    // 로딩 화면
+                    loadingDialog = LoadingDialog(this)
+                    loadingDialog.show()
+                } else {
+                    Toast.makeText(this, "더 많은 재료를 평가해주세요", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -175,5 +216,3 @@ class IngredientActivity : AppCompatActivity() {
         }.show()
     }
 }
-
-

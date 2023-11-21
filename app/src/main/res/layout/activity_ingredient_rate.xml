@@ -63,7 +63,7 @@
                 android:background="@drawable/ripple_effect"
                 android:clickable="true"
                 android:gravity="center"
-                android:text="완료"
+                android:text="추천"
                 android:textColor="#386BF6"
                 android:textSize="15dp" />
         </androidx.cardview.widget.CardView>
@@ -91,18 +91,27 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginEnd="215dp"
+                android:layout_marginEnd="185dp"
                 android:layout_marginBottom="15dp"
                 android:text="목록"
                 android:textColor="#000000"
                 android:textSize="18dp"
                 android:textStyle="bold" />
 
+            <ImageView
+                android:id="@+id/refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/refresh"
+                android:clickable="true"
+                />
+
             <Spinner
                 android:id="@+id/spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"/>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
