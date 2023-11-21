@@ -98,6 +98,12 @@ class IngredientViewModel(private val dataStore: DataStore<IngredientData>) : Vi
         selectedIngredientList.value = tempList
     }
 
+    fun clearSelectedIngredient() {
+        val tempList = ArrayList<String>(selectedIngredientList.value?.toList() ?: ArrayList())
+        tempList.clear()
+        selectedIngredientList.value = tempList
+    }
+
     // 선택한 재료 모두 DataStore에 저장하는 메소드
     @OptIn(DelicateCoroutinesApi::class)
     fun storeSelectedIngredient() {
