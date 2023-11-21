@@ -58,6 +58,10 @@ class IngredientActivity : AppCompatActivity() {
             com.recommendmenu.mechulee.R.layout.activity_ingredient_rate
         )
 
+        binding.scrollUpButton.setOnClickListener {
+            binding.ingredientRaterecyclerView.smoothScrollToPosition(0)
+        }
+
         // ViewModelProvider.Factory를 생성하여 ItemViewModel 인스턴스를 생성
         val viewModelFactory =
             com.recommendmenu.mechulee.view.recommend_menu.ai.ingredient_rate.IngredientRateViewModelFactory(
