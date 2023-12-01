@@ -8,9 +8,11 @@ import com.recommendmenu.mechulee.BuildConfig.MY_SERVER_BASE_URL
 import com.recommendmenu.mechulee.RatingData
 import com.recommendmenu.mechulee.model.data.IngredientInfo
 import com.recommendmenu.mechulee.model.data.MenuInfo
+import com.recommendmenu.mechulee.model.network.menu.RecommendationRequest
 import com.recommendmenu.mechulee.model.network.menu.MenuDto
 import com.recommendmenu.mechulee.model.network.menu.MenuService
 import com.recommendmenu.mechulee.utils.DataStoreUtils
+import com.recommendmenu.mechulee.utils.LocationUtils
 import com.recommendmenu.mechulee.utils.NetworkUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -106,9 +108,19 @@ class IngredientRateViewModel(private val dataStore: DataStore<RatingData>) : Vi
         if (!isRight) {
             return false
         } else {
+            val tempLocation = LocationUtils.simpleAddress.split(" ")
             val call = NetworkUtils.getRetrofitInstance(MY_SERVER_BASE_URL).create(
                 MenuService::class.java
-            ).getRecommendAi(totalList) // 서버에 totalList를 보낸다.
+            ).getRecommendAi(
+                RecommendationRequest(
+                totalList,
+                if (tempLocation.isNotEmpty()) {
+                    tempLocation[0]
+                } else {
+                    "서울특별시"
+                }
+            )
+            ) // 서버에 totalList와 지역 정보을 보낸다.
 
             call.enqueue(object : Callback<MenuDto> {  // MenuDto의 형태로 서버에서 메뉴 결과를 받아온다.
                 override fun onResponse(call: Call<MenuDto>, response: Response<MenuDto>) {
