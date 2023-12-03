@@ -176,8 +176,6 @@ class IngredientActivity : AppCompatActivity() {
                         } else {
                             Toast.makeText(this@IngredientActivity, "더 많은 재료를 평가해주세요", Toast.LENGTH_SHORT).show()
                         }
-                        val intent = Intent(this@IngredientActivity, MenuResultActivity::class.java)
-                        startActivity(intent)
                     }
                     setNegativeButton("취소") { _, _ ->
                         //finish()
